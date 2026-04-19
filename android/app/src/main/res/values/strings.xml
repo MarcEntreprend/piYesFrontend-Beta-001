@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">piYès</string>
+    <string name="title_activity_main">piYès</string>
+    <string name="package_name">ht.piyes.app</string>
+    <string name="custom_url_scheme">ht.piyes.app</string>
+</resources>

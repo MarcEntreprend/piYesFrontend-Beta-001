@@ -1,0 +1,5 @@
+package ht.piyes.app;
+
+import com.getcapacitor.BridgeActivity;
+
+public class MainActivity extends BridgeActivity {}
