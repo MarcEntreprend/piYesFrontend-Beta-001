@@ -1,0 +1,633 @@
+//pages/ScheduledPayments.tsx
+
+import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router';
+import { 
+  ArrowLeft, 
+  Settings2, 
+  Trash2, 
+  X, 
+  Clock, 
+  Calendar, 
+  ArrowUpRight, 
+  ArrowDownLeft, 
+  Check,
+  AlertCircle,
+  Plus,
+  Filter,
+  CalendarClock,
+  Loader2
+} from 'lucide-react';
+import { useTranslation } from '../App';
+import { useToast } from '../App';
+import Modal from '../components/Modal';
+import { api } from '../services/apiService';
+import { Contact, ScheduledPayment as SP, ReminderSlot, User } from '../shared/types';
+import SearchInput from '../components/SearchInput';
+import ScheduledPaymentItem from '../components/ScheduledPaymentItem';
+
+export interface ScheduledPayment {
+  id: string;
+  title: string;
+  counterparty: string;
+  amount: number;
+  dueDate: string;
+  status: 'pending' | 'confirmed' | 'paid' | 'cancelled';
+  type: 'incoming' | 'outgoing';
+}
+
+const ScheduledPayments: React.FC = () => {
+  const { t, language } = useTranslation();
+  const { showToast } = useToast();
+  const navigate = useNavigate();
+  const { search } = useLocation();
+  const searchParams = useMemo(() => new URLSearchParams(search), [search]);
+
+  const [activeTab, setActiveTab] = useState<'outgoing' | 'incoming'>('incoming');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [expandedId, setExpandedId] = useState<string | null>(null); // item déployé depuis URL ?openItem=
+
+  // Modal confirmation suppression groupe
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // Modal confirmation rappel côté payeur (via lien/QR)
+  const [confirmSchedule, setConfirmSchedule] = useState<any>(null);
+  const [confirmPin, setConfirmPin] = useState('');
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  // Surbrillance depuis notification
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
+
+  // IDs des annulés en cours de "grace period" (affichés 30s avant disparition)
+  const [fadingOutIds, setFadingOutIds] = useState<Set<string>>(new Set());
+
+  // Sync tab with URL
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab === 'outgoing' || tab === 'incoming') {
+        setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  // Charger depuis l'API 
+ const [payments, setPayments] = useState<ScheduledPayment[]>([]);
+  const [loadingPayments, setLoadingPayments] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState('');
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const loadPayments = async () => {
+      setLoadingPayments(true);
+      try {
+        const [data, sync] = await Promise.all([
+        api.getScheduledPaymentsFresh(), // Force refresh pour voir les pending immédiatement
+        api.sync()
+        ]);
+        
+        setPayments(data);
+        setCurrentUserId(sync.user.id);
+        setCurrentUser(sync.user);
+      } catch (e) {
+        console.error('Failed to load scheduled payments', e);
+      }
+      setLoadingPayments(false);
+    };
+    loadPayments();
+  }, []);
+
+  // Polling toutes les 10s — détecte les confirmations en temps réel (côté receiver)
+  useEffect(() => {
+    // Référence locale pour comparer les statuts entre deux cycles
+    let prevPayments: typeof payments = [];
+
+    const interval = setInterval(async () => {
+      try {
+        const data = await api.getScheduledPayments();
+
+        // Détecter les items qui viennent de passer pending → confirmed
+        data.forEach(newItem => {
+          const old = prevPayments.find(p => p.id === newItem.id);
+          if (old && old.status === 'pending' && newItem.status === 'confirmed' && newItem.type === 'incoming') {
+            // Toast de confirmation
+            showToast(
+              `✓ ${newItem.counterparty} ${t('scheduler.popup.confirmed_body_short', { amount: newItem.amount.toLocaleString('fr-HT') })}`,
+              'success'
+            );
+            // Surbrillance de l'item dans la liste
+            setHighlightedId(newItem.id);
+            setActiveTab('incoming');
+            setTimeout(() => {
+              const el = document.getElementById(`schedule-item-${newItem.id}`);
+              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              setTimeout(() => setHighlightedId(null), 2500);
+            }, 300);
+          }
+        });
+
+        prevPayments = data;
+        setPayments(data);
+      } catch { /* silently ignore */ }
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [t, showToast]);
+
+
+    // Surbrillance de l'item ciblé par notification
+  useEffect(() => {
+    const targetId = searchParams.get('highlight');
+    if (targetId) {
+      setHighlightedId(targetId);
+      // Scroll vers l'élément
+      setTimeout(() => {
+        const el = document.getElementById(`schedule-item-${targetId}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => setHighlightedId(null), 2500);
+      }, 400);
+    }
+  }, [searchParams]);
+
+  // Ouvrir un item spécifique depuis l'URL (ex: retour depuis TransferFlow)
+  useEffect(() => {
+    const openItem = searchParams.get('openItem');
+    if (openItem) {
+      setExpandedId(openItem);
+      setTimeout(() => {
+        const el = document.getElementById(`schedule-item-${openItem}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
+  }, [searchParams]); 
+
+
+  const fetchContacts = async () => {
+    const data = await api.getContacts();
+    setContacts(data);
+  };
+
+  useEffect(() => {
+    fetchContacts();
+  }, []);
+
+  // Filtrer en excluant les annulés (ou ceux en grace period qui fadent)
+  const filteredPayments = useMemo(() => {
+    return payments.filter(p =>
+      p.type === activeTab &&
+      p.status !== 'cancelled' &&
+      (p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       p.counterparty.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+  }, [payments, activeTab, searchTerm]);
+
+  const stats = useMemo(() => {
+    const relevant = payments.filter(p => p.type === activeTab && p.status !== 'cancelled');
+    return {
+      total: relevant.reduce((acc, p) => acc + p.amount, 0),
+      count: relevant.length, // tous les items actifs
+      confirmedAmount: relevant.filter(p => p.status === 'confirmed' || p.status === 'paid').reduce((acc, p) => acc + p.amount, 0),
+    };
+  }, [payments, activeTab]);
+
+  // Compteurs tabs — exclure cancelled ET paid
+  const outgoingCount = useMemo(() =>
+    payments.filter(p => p.type === 'outgoing' && p.status !== 'cancelled' && p.status !== 'paid').length,
+  [payments]);
+
+  const incomingCount = useMemo(() =>
+    payments.filter(p => p.type === 'incoming' && p.status !== 'cancelled' && p.status !== 'paid').length,
+  [payments]);
+
+  // Ouvrir modal de confirmation si URL contient ?confirm=<id>
+  useEffect(() => {
+    const confirmId = searchParams.get('confirm');
+    if (!confirmId) return;
+    // Charger les infos du rappel via le token ou l'id
+    api.getScheduleByToken(confirmId).catch(() => null).then(data => {
+      if (data) {
+        setConfirmSchedule(data);
+        setShowConfirmModal(true);
+      }
+    });
+  }, [searchParams]);
+
+  const toggleSelection = (id: string) => {
+    const next = new Set(selectedIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelectedIds(next);
+    if (next.size === 0) setIsSelectionMode(false);
+  };
+
+  const handleLongPress = (id: string) => {
+    setIsSelectionMode(true);
+    toggleSelection(id);
+  };
+
+  // ── Supprimer définitivement un rappel (hard delete) ───────────────────────
+  const handleCancelPayment = async (id: string) => {
+    try {
+      await api.cancelScheduledPayment(id);
+      // Grace period : afficher 30s avant de retirer de la liste
+      setFadingOutIds(prev => new Set([...prev, id]));
+      setTimeout(() => {
+        setPayments(prev => prev.filter(p => p.id !== id));
+        setFadingOutIds(prev => { const n = new Set(prev); n.delete(id); return n; });
+      }, 30000);
+    } catch (e) {
+      alert(t('scheduler.errors.delete_failed'));
+    }
+  };
+
+  // ── Supprimer une sélection en groupe ─────────────────────────────────────
+  const handleDeleteSelected = async () => {
+    if (selectedIds.size === 0) return;
+    try {
+      await Promise.all([...selectedIds].map(id => api.cancelScheduledPayment(id)));
+      const ids = new Set(selectedIds);
+      // Grace period 30s
+      setFadingOutIds(prev => new Set([...prev, ...ids]));
+      setTimeout(() => {
+        setPayments(prev => prev.filter(p => !ids.has(p.id)));
+        setFadingOutIds(prev => { const n = new Set(prev); ids.forEach(id => n.delete(id)); return n; });
+      }, 30000);
+      setSelectedIds(new Set());
+      setIsSelectionMode(false);
+      setShowDeleteModal(false);
+    } catch (e) {
+      alert(t('scheduler.errors.bulk_delete_failed'));
+    }
+  };
+
+  // ── handleCancelSelected devient l'ouverture du modal de confirmation ──────
+  const handleCancelSelected = () => {
+    if (selectedIds.size === 0) return;
+    setShowDeleteModal(true);
+  };
+
+  const handleRemindersUpdate = (id: string, reminders: ReminderSlot[]) => {
+    setPayments(prev => prev.map(p => p.id === id ? { ...p, reminders } : p));
+  };
+
+  const handleConfirmSchedule = async () => {
+    if (!confirmSchedule || confirmPin.length < 4) return;
+    setConfirmLoading(true);
+    try {
+      const pinOk = await api.verifyPin(confirmPin);
+      if (!pinOk) { alert(t('otp.error_invalid')); setConfirmLoading(false); return; }
+
+      await api.confirmScheduledPayment(confirmSchedule.qrToken || confirmSchedule.id);
+      setConfirmPin('');
+      setShowConfirmModal(false);
+
+      // Forcer refresh pour voir le nouvel item outgoing immédiatement
+      const data = await api.getScheduledPaymentsFresh();
+      setPayments(data);
+
+      // Trouver le nouvel item outgoing confirmé pour le mettre en surbrillance
+      // On cherche par receiverUserId pour être précis plutôt que par nom
+      const newOutgoing = data.find((p: any) =>
+        p.type === 'outgoing' &&
+        p.status === 'confirmed' &&
+        (p.receiverUserId === confirmSchedule.receiver?.id || p.counterparty === confirmSchedule.receiver?.name)
+      );
+
+      // Basculer vers l'onglet "À régler" et surbrillance
+      setActiveTab('outgoing');
+      if (newOutgoing) {
+        setHighlightedId(newOutgoing.id);
+        setTimeout(() => {
+          const el = document.getElementById(`schedule-item-${newOutgoing.id}`);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => setHighlightedId(null), 2500);
+        }, 300);
+      }
+
+      showToast(t('scheduler.success.confirmed'), 'success');
+    } catch (e: any) {
+      alert(e?.message || t('scheduler.errors.confirm_failed'));
+    }
+    setConfirmLoading(false);
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'pending': return <span className="bg-amber-50 text-amber-600 text-[9px] font-bold px-1.5 py-0.5 rounded uppercase border border-amber-100">{t('scheduler.list.status.pending')}</span>;
+      case 'confirmed': return <span className="bg-blue-50 text-blue-600 text-[9px] font-bold px-1.5 py-0.5 rounded uppercase border border-blue-100">{t('scheduler.list.status.confirmed')}</span>;
+      case 'paid': return <span className="bg-green-50 text-green-600 text-[9px] font-bold px-1.5 py-0.5 rounded uppercase border border-green-100">{t('scheduler.list.status.paid')}</span>;
+      case 'cancelled': return <span className="bg-gray-50 text-gray-400 text-[9px] font-bold px-1.5 py-0.5 rounded uppercase border border-gray-100">{t('scheduler.list.status.cancelled')}</span>;
+      default: return null;
+    }
+  };
+
+  return (
+    <div className="theme-card-bg min-h-screen flex flex-col pb-32">
+      <header className="px-6 pt-12 pb-2 theme-card-bg sticky top-0 z-30 border-b theme-border">
+        <div className="flex items-center justify-between mb-6">
+
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => isSelectionMode ? (setIsSelectionMode(false), setSelectedIds(new Set())) : navigate(-1)} 
+              className="p-2 -ml-2 theme-text-secondary active:scale-90 transition-transform"
+            >
+              {isSelectionMode ? <X size={24} /> : <ArrowLeft size={24} />}
+            </button>
+
+            <h1 className="text-xl font-bold theme-text-main">
+              {isSelectionMode ? t('scheduler.list.selected_count', { count: selectedIds.size }) : t('scheduler.title')}
+            </h1>
+          </div>
+
+          {!isSelectionMode && (
+            <div className="flex gap-2">
+              <button 
+                onClick={() => navigate('/scheduler/create')}
+                className="p-2 theme-text-secondary active:scale-90 transition-transform"
+              >
+                <Plus size={20} />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {!isSelectionMode && (
+          <div className="flex gap-3 pb-4 px-1">
+            {/* Chip "À régler" */}
+            <button
+              onClick={() => setActiveTab('outgoing')}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-full border transition-all text-sm font-bold ${
+                activeTab === 'outgoing'
+                  ? 'theme-primary-bg text-white border-transparent shadow-md'
+                  : 'theme-bubble-bg theme-text-secondary theme-border'
+              }`}
+            >
+              {outgoingCount > 0 && (
+                <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black ${
+                  activeTab === 'outgoing' ? 'bg-white/30 text-white' : 'bg-red-500 text-white'
+                }`}>
+                  {outgoingCount > 9 ? '9+' : outgoingCount}
+                </span>
+              )}
+              {t('scheduler.tabs.to_pay')}
+            </button>
+
+            {/* Chip "Demandes envoyées" */}
+            <button
+              onClick={() => setActiveTab('incoming')}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-full border transition-all text-sm font-bold ${
+                activeTab === 'incoming'
+                  ? 'theme-primary-bg text-white border-transparent shadow-md'
+                  : 'theme-bubble-bg theme-text-secondary theme-border'
+              }`}
+            >
+              {incomingCount > 0 && (
+                <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black ${
+                  activeTab === 'incoming' ? 'bg-white/30 text-white' : 'bg-green-500 text-white'
+                }`}>
+                  {incomingCount > 9 ? '9+' : incomingCount}
+                </span>
+              )}
+              {t('scheduler.tabs.sent')}
+            </button>
+          </div>
+        )}
+      </header>
+
+
+      <div className="flex-1 animate-in fade-in duration-500 overflow-y-auto no-scrollbar">
+        {!isSelectionMode && (
+          <div className="p-6 bg-gray-50 dark:bg-gray-800/50 space-y-4">
+            <div className="flex justify-between items-end">
+              <div>
+                <p className="text-[10px] font-bold theme-text-secondary uppercase tracking-widest mb-1">
+                  {activeTab === 'outgoing' ? t('scheduler.stats.to_pay') : t('scheduler.stats.to_receive')}
+                </p>
+                <h2 className="text-2xl font-bold theme-text-main">{stats.total.toLocaleString('fr-HT')} {t('currency.symbol')}</h2>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] font-bold theme-text-secondary uppercase tracking-widest mb-1">{t('scheduler.stats.confirmed')}</p>
+                <p className="text-sm font-bold text-green-600">{stats.confirmedAmount.toLocaleString('fr-HT')} {t('currency.symbol')}</p>
+              </div>
+            </div>
+            <div className="h-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div 
+                    className="h-full theme-primary-bg transition-all duration-1000"
+                    style={{ width: `${(stats.confirmedAmount / (stats.total || 1)) * 100}%` }}
+                ></div>
+            </div>
+          </div>
+        )}
+
+        <div className="px-6 py-4 space-y-2">
+            <div className="mb-6">
+                <SearchInput 
+                    contacts={contacts} 
+                    onSelect={(user) => setSearchTerm(user.name || '')} 
+                    onQueryChange={setSearchTerm}
+                    placeholder={t('scheduler.list.search_placeholder')}
+                    currentUser={currentUser}
+                />
+            </div>
+
+            <div className="space-y-4">
+                {filteredPayments.map(payment => (
+                  <div
+                    id={`schedule-item-${payment.id}`}
+                    key={payment.id}
+                    className={fadingOutIds.has(payment.id) ? 'opacity-40 pointer-events-none transition-opacity duration-1000' : ''}
+                  >
+                    <ScheduledPaymentItem
+                      payment={payment}
+                      currentUserId={currentUserId}
+                      onCancel={handleCancelPayment}
+                      onRemindersUpdate={handleRemindersUpdate}
+                      isSelected={selectedIds.has(payment.id)}
+                      isSelectionMode={isSelectionMode}
+                      onSelect={toggleSelection}
+                      onLongPress={handleLongPress}
+                      highlighted={highlightedId === payment.id}
+                      defaultExpanded={expandedId === payment.id}
+                    />
+                  </div>
+                ))}
+
+                {filteredPayments.length === 0 && (
+                    <div className="py-20 flex flex-col items-center text-center space-y-4 opacity-40">
+                        <Calendar size={48} strokeWidth={1} />
+                <p className="text-sm font-medium">{t('scheduler.list.empty')}</p>
+                <p className="text-xs theme-text-secondary max-w-[200px] mx-auto">
+                  {activeTab === 'sent'
+                    ? t('scheduler.list.empty_incoming_desc')
+                    : t('scheduler.list.empty_outgoing_desc')}
+                </p>
+                <button 
+                    onClick={() => navigate('/scheduler/create')}
+                    className="theme-primary-text font-bold text-xs underline"
+                >
+                    {t('scheduler.list.create_first')}
+                </button>
+                    </div>
+                )}
+            </div>
+        </div>
+      </div>
+
+      {isSelectionMode && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[90%] max-w-sm theme-card-bg shadow-2xl rounded-[32px] p-4 border theme-border flex items-center justify-between z-[100] animate-in slide-in-from-bottom duration-300">
+          <div className="flex items-center gap-2">
+            {/* X pour annuler la sélection (comportement existant gardé) */}
+            <button
+              onClick={() => { setIsSelectionMode(false); setSelectedIds(new Set()); }}
+              className="p-2 theme-text-secondary active:scale-90"
+            >
+              <X size={20} />
+            </button>
+            <span className="text-xs font-bold theme-text-secondary">{t('scheduler.list.selected_count', { count: selectedIds.size })}</span>
+          </div>
+          <div className="px-4 py-2 theme-bubble-bg rounded-2xl border theme-border">
+            <p className="text-[10px] font-bold theme-primary-text">
+              {t('scheduler.list.total')} {[...selectedIds].reduce((acc, id) => acc + (payments.find(p => p.id === id)?.amount || 0), 0).toLocaleString(t('intl.locale'))} {t('currency.symbol')}
+            </p>
+          </div>
+          {/* Unique bouton "Supprimer sélection" */}
+          <button
+            onClick={handleCancelSelected}
+            disabled={selectedIds.size === 0}
+            className="flex items-center gap-2 px-4 py-2.5 bg-red-500 text-white rounded-2xl text-xs font-bold active:scale-95 transition-all disabled:opacity-40"
+          >
+            <Trash2 size={16} /> {t('scheduler.list.delete_btn')}
+          </button>
+        </div>
+      )}
+
+      {!isSelectionMode && (
+          <div className="px-6 py-4">
+              <div className="p-4 theme-bubble-bg rounded-2xl border theme-border flex gap-3 items-start">
+                  <AlertCircle size={18} className="theme-primary-text shrink-0 mt-0.5" />
+                  <p className="text-[10px] theme-primary-text leading-relaxed">
+                      {t('scheduler.disclaimer')}
+                  </p>
+              </div>
+          </div>
+      )}
+
+      {/* ── Modal confirmation suppression groupe ───────────────────────── */}
+      <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} type="centered">
+        <div className="p-8 space-y-6 text-center">
+          <div className="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto">
+            <Trash2 size={28} />
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-lg font-black theme-text-main">{t('scheduler.modals.delete_title')}</h3>
+            <p className="text-xs theme-text-secondary">{t('scheduler.modals.delete_desc')}</p>
+          </div>
+          {/* Liste des items sélectionnés (scrollable si > 5) */}
+          <div className="max-h-40 overflow-y-auto space-y-1 no-scrollbar">
+            {[...selectedIds].map(id => {
+              const p = payments.find(pay => pay.id === id);
+              if (!p) return null;
+              return (
+                <div key={id} className="flex items-center gap-2 theme-bubble-bg rounded-xl px-3 py-2 text-left">
+                  <span className="text-xs font-bold theme-text-main truncate">{p.title}</span>
+                  <span className="text-[9px] theme-text-secondary shrink-0">{p.amount.toLocaleString()} {t('currency.symbol')}</span>
+                </div>
+              );
+            })}
+          </div>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={handleDeleteSelected}
+              className="w-full py-3.5 bg-red-500 text-white rounded-2xl font-black active:scale-95 transition-all shadow-lg text-sm"
+            >
+              {t('scheduler.modals.confirm_delete_btn')}
+            </button>
+            <button
+              onClick={() => setShowDeleteModal(false)}
+              className="w-full py-3 theme-text-secondary font-bold text-sm"
+            >
+              {t('common.cancel')}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* ── Modal confirmation rappel côté payeur ───────────────────── */}
+      <Modal isOpen={showConfirmModal} onClose={() => { setShowConfirmModal(false); setConfirmPin(''); }} type="centered">
+        {confirmSchedule && (
+          <div className="p-8 space-y-6 text-center">
+            <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto">
+              <CalendarClock size={32} />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xl font-black theme-text-main">{t('scheduler.modals.request_title')}</h3>
+              <p className="text-sm theme-text-secondary">
+                <strong>{confirmSchedule.receiver?.name}</strong> {t('scheduler.modals.request_desc')}
+              </p>
+            </div>
+
+            {/* Infos du rappel */}
+            <div className="space-y-3 text-left theme-bubble-bg rounded-2xl p-4 border theme-border">
+              <div className="flex justify-between">
+                <span className="text-[10px] font-black theme-text-secondary uppercase">{t('scheduler.modals.amount_label')}</span>
+                <span className="text-sm font-black theme-text-main">{confirmSchedule.amount?.toLocaleString('fr-HT')} {t('currency.symbol')}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[10px] font-black theme-text-secondary uppercase">{t('scheduler.modals.due_date_label')}</span>
+                <span className="text-sm font-bold theme-text-main">
+                  {confirmSchedule.dueDate ? new Date(confirmSchedule.dueDate).toLocaleDateString('fr-HT', { day: 'numeric', month: 'long' }) : '—'}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[10px] font-black theme-text-secondary uppercase">{t('scheduler.modals.reminders_label')}</span>
+                <span className="text-sm font-bold theme-text-main">
+                  {t('scheduler.modals.reminders_count', { count: (confirmSchedule.reminders || []).reduce((a: number, r: any) => a + (r.time1Active ? 1 : 0) + (r.time2Active ? 1 : 0), 0) })}
+                </span>
+              </div>
+            </div>
+
+            <div className="p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/20">
+              <p className="text-[10px] text-amber-600 font-medium leading-relaxed">
+                {t('scheduler.modals.confirm_info', { name: confirmSchedule.receiver?.name })}
+              </p>
+            </div>
+
+            {/* PIN */}
+            <div className="space-y-2">
+              <p className="text-[10px] font-black theme-text-secondary uppercase tracking-widest">{t('scheduler.modals.pin_prompt')}</p>
+              <input
+                type="password"
+                maxLength={4}
+                value={confirmPin}
+                onChange={e => setConfirmPin(e.target.value.replace(/\D/g, ''))}
+                placeholder={t('scheduler.modals.pin_placeholder')}
+                className="w-full text-center text-3xl font-black tracking-[0.5em] theme-bubble-bg p-4 rounded-2xl border-2 border-transparent focus:border-[var(--primary-color)] outline-none theme-text-main transition-all"
+              />
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={handleConfirmSchedule}
+                disabled={confirmPin.length < 4 || confirmLoading}
+                className="w-full py-4 theme-primary-bg text-white rounded-2xl font-black active:scale-95 transition-all shadow-lg disabled:opacity-40 flex items-center justify-center gap-2"
+              >
+                {confirmLoading ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
+                {t('scheduler.modals.confirm_btn')}
+              </button>
+              <button
+                onClick={() => { setShowConfirmModal(false); setConfirmPin(''); }}
+                className="w-full py-3 theme-text-secondary font-bold text-sm"
+              >
+                {t('common.cancel')}
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+    </div>
+  );
+};
+
+export default ScheduledPayments;
