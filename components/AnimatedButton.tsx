@@ -47,7 +47,6 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
 }) => {
   const [textWidth, setTextWidth] = useState(0);
 
-  // Mesurer la largeur du texte avec une marge de sécurité
   useEffect(() => {
     const measureEl = document.createElement("span");
     measureEl.style.visibility = "hidden";
@@ -55,19 +54,18 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     measureEl.style.fontSize = "12px";
     measureEl.style.fontWeight = "700";
     measureEl.style.whiteSpace = "nowrap";
-    measureEl.style.fontFamily = "inherit"; // Important : hérite de la police du parent
+    measureEl.style.fontFamily = "inherit";
     measureEl.style.letterSpacing = "normal";
     measureEl.textContent = label;
     document.body.appendChild(measureEl);
     const width = measureEl.getBoundingClientRect().width;
     document.body.removeChild(measureEl);
-    // Ajouter 4px de marge de sécurité pour éviter la coupure
-    setTextWidth(width + 4);
+    setTextWidth(width + 8);
   }, [label]);
 
-  // Largeurs calculées
-  const collapsedWidth = 44; // px (icône seule)
-  const expandedWidth = collapsedWidth + textWidth + 12; // 12px = margin-left (8px) + padding droit (4px)
+  // Boutons plus larges : 52px au lieu de 44px
+  const collapsedWidth = 52;
+  const expandedWidth = collapsedWidth + textWidth + 12;
 
   const textColor = activeText || accentColor;
   const iconBgActive = iconActiveBg || accentColor;
@@ -88,7 +86,10 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
         damping: 35,
         mass: 0.8,
       }}
-      className={`flex items-center ${isSelected ? "pl-3 pr-4" : "justify-center px-0"} py-2 rounded-full whitespace-nowrap text-xs font-bold overflow-hidden h-10 shadow-sm hover:shadow-md ${className}`}
+      className={`flex items-center ${isSelected ? "pl-3 pr-4" : "justify-center px-0"} py-2 rounded-full whitespace-nowrap text-xs font-bold overflow-hidden shadow-sm hover:shadow-md ${className}`}
+      style={{
+        height: "48px", //  Hauteur = largeur pour un cercle parfait
+      }}
     >
       <motion.div
         animate={{
@@ -124,14 +125,13 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
         {isSelected && (
           <motion.span
             initial={{ opacity: 0, maxWidth: 0 }}
-            animate={{ opacity: 1, maxWidth: textWidth + 20 }}
+            animate={{ opacity: 1, maxWidth: textWidth + 12 }}
             exit={{ opacity: 0, maxWidth: 0 }}
             transition={{
               duration: 0.2,
               ease: "easeInOut",
             }}
             className="origin-left overflow-visible ml-2"
-            style={{ maxWidth: textWidth + 20 }}
           >
             {label}
           </motion.span>
