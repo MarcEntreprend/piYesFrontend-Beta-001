@@ -476,7 +476,7 @@ const App: React.FC = () => {
     } catch (error) {
       console.error('Failed to update profile:', error);
       // Fallback to local update if API fails (optional, but good for UX)
-      setUser(updatedUser);
+      setUser(updatedUser); 
       localStorage.setItem('piyes-user', JSON.stringify(updatedUser));
     }
   };
