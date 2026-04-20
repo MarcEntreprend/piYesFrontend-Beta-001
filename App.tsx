@@ -16,6 +16,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import { App as CapacitorApp } from "@capacitor/app";
 import { api } from "./services/apiService";
 import { cacheService } from "./services/cacheService";
 import { User } from "./shared/types";
@@ -219,6 +220,28 @@ const ScrollToTop: React.FC = () => {
 };
 
 const App: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // ✅ AJOUTER TOUT CE BLOC ICI (juste après les deux lignes ci-dessus)
+  useEffect(() => {
+    const handleBackButton = () => {
+      const path = location.pathname;
+      const exitPages = ["/login", "/signup", "/forgot-password", "/"];
+
+      if (exitPages.includes(path)) {
+        CapacitorApp.exitApp();
+      } else {
+        navigate(-1);
+      }
+    };
+
+    CapacitorApp.addListener("backButton", handleBackButton);
+    return () => {
+      CapacitorApp.removeAllListeners();
+    };
+  }, [location.pathname, navigate]);
+
   const [user, setUser] = useState<User | null>(() => {
     const saved = localStorage.getItem("piyes-user");
     return saved ? JSON.parse(saved) : null;

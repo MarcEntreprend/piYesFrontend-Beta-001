@@ -10,3 +10,11 @@
    `npm install`
 2. Run the app:
    `npm run dev`
+
+---
+
+## Android studio :
+
+`npm run build`
+`npx cap sync android`
+`npx cap open android`
