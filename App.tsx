@@ -207,13 +207,20 @@ const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // Standard behavior: scroll to top on any navigation
-    // Note: MemoryRouter doesn't support scroll restoration natively like BrowserHistory might,
-    // but we want to ensure we reset on new page navigation.
-    const mainElement = document.querySelector("main");
-    if (mainElement) {
-      mainElement.scrollTo(0, 0);
-    }
+    // Scroll le conteneur de scroll de la page active, pas le <main>
+    // Chercher tous les éléments avec overflow-y-auto dans le main
+    const scrollContainers = document.querySelectorAll(
+      '[class*="overflow-y-auto"]',
+    );
+
+    scrollContainers.forEach((container) => {
+      if (container.scrollTop > 0) {
+        container.scrollTo({ top: 0, behavior: "instant" });
+      }
+    });
+
+    // Fallback : aussi scroller la fenêtre
+    window.scrollTo({ top: 0, behavior: "instant" });
   }, [pathname]);
 
   return null;
