@@ -1,4 +1,6 @@
-import React from "react";
+// components\AnimatedButton.tsx
+
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import BankIcon from "./BankIcon";
 import { ShieldCheck } from "lucide-react";
@@ -9,7 +11,7 @@ interface AnimatedButtonProps {
   icon: React.ReactNode;
   label: string;
   // Customization
-  accentColor?: string; // Main color for active state
+  accentColor?: string;
   activeBg?: string;
   activeText?: string;
   inactiveBg?: string;
@@ -43,30 +45,57 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   className = "",
   showBadge = false,
 }) => {
-  // Determine text color if not provided
+  const [textWidth, setTextWidth] = useState(0);
+
+  // Mesurer la largeur du texte avec une marge de sécurité
+  useEffect(() => {
+    const measureEl = document.createElement("span");
+    measureEl.style.visibility = "hidden";
+    measureEl.style.position = "absolute";
+    measureEl.style.fontSize = "12px";
+    measureEl.style.fontWeight = "700";
+    measureEl.style.whiteSpace = "nowrap";
+    measureEl.style.fontFamily = "inherit"; // Important : hérite de la police du parent
+    measureEl.style.letterSpacing = "normal";
+    measureEl.textContent = label;
+    document.body.appendChild(measureEl);
+    const width = measureEl.getBoundingClientRect().width;
+    document.body.removeChild(measureEl);
+    // Ajouter 4px de marge de sécurité pour éviter la coupure
+    setTextWidth(width + 4);
+  }, [label]);
+
+  // Largeurs calculées
+  const collapsedWidth = 44; // px (icône seule)
+  const expandedWidth = collapsedWidth + textWidth + 12; // 12px = margin-left (8px) + padding droit (4px)
+
   const textColor = activeText || accentColor;
   const iconBgActive = iconActiveBg || accentColor;
   const iconBgInactive = iconInactiveBg || "rgba(255, 255, 255, 0.2)";
 
   return (
     <motion.button
-      layout
       onClick={onClick}
       initial={false}
       animate={{
-        width: isSelected ? "auto" : "44px",
+        width: isSelected ? expandedWidth : collapsedWidth,
         backgroundColor: isSelected ? activeBg : inactiveBg,
         color: isSelected ? textColor : inactiveText,
       }}
-      transition={{ type: "spring", stiffness: 500, damping: 30 }}
-      className={`flex items-center ${isSelected ? "px-3" : "justify-center"} py-2 rounded-full whitespace-nowrap text-xs font-bold overflow-hidden h-10 shadow-sm transition-shadow hover:shadow-md ${className}`}
+      transition={{
+        type: "spring",
+        stiffness: 400,
+        damping: 35,
+        mass: 0.8,
+      }}
+      className={`flex items-center ${isSelected ? "pl-3 pr-4" : "justify-center px-0"} py-2 rounded-full whitespace-nowrap text-xs font-bold overflow-hidden h-10 shadow-sm hover:shadow-md ${className}`}
     >
       <motion.div
-        layout
         animate={{
           backgroundColor: isSelected ? iconBgActive : iconBgInactive,
           color: isSelected ? iconActiveColor : iconInactiveColor,
         }}
+        transition={{ type: "spring", stiffness: 400, damping: 35 }}
         className="shrink-0 flex items-center justify-center w-6 h-6 rounded-full text-[10px] overflow-hidden relative"
       >
         {logoUrl ? (
@@ -91,15 +120,18 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
         )}
       </motion.div>
 
-      <AnimatePresence mode="popLayout" initial={false}>
+      <AnimatePresence mode="wait">
         {isSelected && (
           <motion.span
-            layout
-            initial={{ opacity: 0, x: -10, width: 0 }}
-            animate={{ opacity: 1, x: 0, width: "auto", marginLeft: "8px" }}
-            exit={{ opacity: 0, x: -10, width: 0, marginLeft: 0 }}
-            transition={{ duration: 0.2 }}
-            className="origin-left overflow-hidden"
+            initial={{ opacity: 0, maxWidth: 0 }}
+            animate={{ opacity: 1, maxWidth: textWidth + 20 }}
+            exit={{ opacity: 0, maxWidth: 0 }}
+            transition={{
+              duration: 0.2,
+              ease: "easeInOut",
+            }}
+            className="origin-left overflow-visible ml-2"
+            style={{ maxWidth: textWidth + 20 }}
           >
             {label}
           </motion.span>

@@ -15,6 +15,7 @@
 
 ## Android studio :
 
-`npm run build`
-`npx cap sync android`
-`npx cap open android`
+cd C:\Users\mmarc\Documents\Programming\myProjects\piYes_projects\piyes-wallet-frontend
+npm run build
+npx cap sync android
+npx cap open android

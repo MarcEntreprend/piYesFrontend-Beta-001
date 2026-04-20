@@ -36,7 +36,9 @@ const BottomNav: React.FC = () => {
     if (isCurrentlyOnRoute) {
       // Second click logic: Dispatch specific reset events
       if (id === "home") {
-        window.dispatchEvent(new CustomEvent("piyes:reset_home"));
+        // ✅ Pour Dashboard : scroller vers le haut ET revenir au compte piYès
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.dispatchEvent(new CustomEvent("piyes:switch_to_piyes"));
       } else if (id === "services") {
         window.dispatchEvent(new CustomEvent("piyes:reset_services"));
       } else if (id === "keys") {

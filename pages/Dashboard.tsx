@@ -317,13 +317,29 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   useEffect(() => {
     const handleReset = () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
-      setSelectedAccountId("acc1");
       setIsSearchFocused(false);
       setSearchTerm("");
     };
+
+    // ✅ Nouvel événement : switcher vers le compte piYès
+    const handleSwitchToPiyes = () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      const piyesAccount = accounts.find((a) => a.provider === "piyes");
+      if (piyesAccount) {
+        setSelectedAccountId(piyesAccount.id);
+      }
+      setIsSearchFocused(false);
+      setSearchTerm("");
+    };
+
     window.addEventListener("piyes:reset_home", handleReset);
-    return () => window.removeEventListener("piyes:reset_home", handleReset);
-  }, []);
+    window.addEventListener("piyes:switch_to_piyes", handleSwitchToPiyes);
+
+    return () => {
+      window.removeEventListener("piyes:reset_home", handleReset);
+      window.removeEventListener("piyes:switch_to_piyes", handleSwitchToPiyes);
+    };
+  }, [accounts]); //  accounts comme dépendance
 
   useEffect(() => {
     if (showAddBank) {
