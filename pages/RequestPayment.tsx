@@ -344,24 +344,6 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
 
             <div className="space-y-2">
               <label className="text-xs font-bold theme-text-secondary uppercase tracking-widest px-1">
-                {t("request.key_label", { optional: t("common.optional") })}
-              </label>
-              <select
-                value={selectedKey}
-                onChange={(e) => setSelectedKey(e.target.value)}
-                className="w-full theme-bubble-bg p-4 rounded-2xl outline-none theme-text-main border theme-border"
-              >
-                <option value="">{t("request.account_default")}</option>
-                {keys.map((k) => (
-                  <option key={k.id} value={k.value}>
-                    {k.type}: {k.value}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-bold theme-text-secondary uppercase tracking-widest px-1">
                 {t("request.payer_label", { optional: t("common.optional") })}
               </label>
               <SearchInput

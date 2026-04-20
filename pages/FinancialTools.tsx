@@ -234,7 +234,7 @@ const FinancialTools: React.FC = () => {
       />
 
       <div className="flex-1 flex flex-col animate-in fade-in duration-500">
-        <div className="flex flex flex-col justify-end py-2 px-8 text-right space-y-4">
+        <div className="flex flex-col justify-end py-2 px-8 text-right space-y-4">
           <div className="min-h-12 flex items-center justify-end overflow-hidden">
             <p
               className={`transition-all duration-300 break-all font-light tracking-wide ${isEvaluated ? "text-lg theme-text-secondary" : "text-5xl theme-text-main"}`}
