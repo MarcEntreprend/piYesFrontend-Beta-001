@@ -21,6 +21,7 @@ import OperationResult from "../components/OperationResult";
 import AiSupportChat from "../components/AiSupportChat";
 import Button from "../components/Button";
 import PageHeader from "../components/PageHeader";
+import StepIndicator from "../components/StepIndicator";
 
 interface DepositFlowProps {
   user: User;
@@ -111,6 +112,9 @@ const DepositFlow: React.FC<DepositFlowProps> = ({ user, onUpdateUser }) => {
         }
         className="sticky top-0 theme-card-bg z-20 hover:bg-gray-50/50 dark:hover:bg-white/5 transition-all cursor-pointer group"
       />
+
+      {/* Indicateur d'étapes - 2 étapes = 1 barre */}
+      <StepIndicator currentStep={step === "amount" ? 1 : 2} totalSteps={3} />
 
       <div className="flex-1 px-6 flex flex-col overflow-y-auto no-scrollbar pb-6 pt-6">
         {step === "amount" && (

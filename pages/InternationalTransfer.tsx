@@ -30,6 +30,7 @@ import { financeService } from "../services/financeService";
 import AiSupportChat from "../components/AiSupportChat";
 import Button from "../components/Button";
 import PageHeader from "../components/PageHeader";
+import StepIndicator from "../components/StepIndicator";
 
 interface InternationalTransferProps {
   user: User;
@@ -133,7 +134,7 @@ const InternationalTransfer: React.FC<InternationalTransferProps> = ({
     );
 
   return (
-    <div className="theme-card-bg min-h-screen flex flex-col relative overflow-hidden">
+    <div className="theme-card-bg min-h-screen flex flex-col relative">
       {isVerifyingPin && (
         <PinOverlay
           mode="action"
@@ -145,7 +146,6 @@ const InternationalTransfer: React.FC<InternationalTransferProps> = ({
 
       <PageHeader
         title="piYès International"
-        subtitle={t("common.step_of", { current: step, total: 3 })}
         onBack={() => (step === 1 ? navigate(-1) : setStep(step - 1))}
         rightElement={
           <div
@@ -161,13 +161,8 @@ const InternationalTransfer: React.FC<InternationalTransferProps> = ({
         className="sticky top-0 theme-card-bg z-20 hover:bg-gray-50/50 dark:hover:bg-white/5 transition-all cursor-pointer group"
       />
 
-      {/* Barre de progression fluide */}
-      <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 shrink-0 overflow-hidden">
-        <div
-          className="h-full theme-primary-bg transition-all duration-700 ease-out shadow-[0_0_10px_var(--primary-color)]"
-          style={{ width: `${(step / 3) * 100}%` }}
-        ></div>
-      </div>
+      {/* Indicateur d'étapes */}
+      <StepIndicator currentStep={step} totalSteps={4} />
 
       <main className="flex-1 p-6 flex flex-col overflow-y-auto no-scrollbar">
         {step === 1 && (

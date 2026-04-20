@@ -7,6 +7,7 @@ import { ArrowLeft, Mail, Lock, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "../App";
 import { api } from "../services/apiService";
 import Button from "../components/Button";
+import StepIndicator from "../components/StepIndicator";
 
 const ForgotPassword = () => {
   const { t } = useTranslation();
@@ -179,18 +180,7 @@ const ForgotPassword = () => {
       </header>
 
       {/* Indicateur d'étapes */}
-      {step < 4 && (
-        <div className="flex gap-2 px-6 pt-4">
-          {[1, 2, 3].map((s) => (
-            <div
-              key={s}
-              className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                s <= step ? "theme-primary-bg" : "bg-gray-200 dark:bg-gray-700"
-              }`}
-            />
-          ))}
-        </div>
-      )}
+      <StepIndicator currentStep={step} totalSteps={4} />
 
       <main className="flex-1 p-6 flex flex-col items-center justify-center max-w-md mx-auto w-full">
         <motion.div

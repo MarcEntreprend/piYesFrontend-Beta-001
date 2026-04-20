@@ -247,7 +247,7 @@ export const ScheduledPaymentItem: React.FC<ScheduledPaymentItemProps> = ({
 
   return (
     <div
-      className={`transition-all duration-300 ${isSelected ? "scale-[0.98]" : ""} ${highlighted ? "ring-2 ring-[var(--primary-color)] rounded-2xl" : ""}`}
+      className={`transition-all duration-300 ${isSelected ? "scale-[0.98]" : ""} ${highlighted ? "ring-2 ring-(--primary-color) rounded-2xl" : ""}`}
       onContextMenu={(e) => {
         e.preventDefault();
         onLongPress?.(payment.id);

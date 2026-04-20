@@ -1,3 +1,5 @@
+// pages\MobileRecharge.tsx
+
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -22,6 +24,7 @@ import BankIcon from "../components/BankIcon";
 import PinOverlay from "../components/PinOverlay";
 import PageHeader from "../components/PageHeader";
 import Button from "../components/Button";
+import StepIndicator from "../components/StepIndicator";
 
 type Step = "number" | "amount" | "confirm" | "receipt";
 
@@ -472,6 +475,20 @@ const MobileRecharge: React.FC = () => {
         }
       />
 
+      {/* Indicateur d'étapes - 4 étapes = 3 barres */}
+      <StepIndicator
+        currentStep={
+          step === "number"
+            ? 1
+            : step === "amount"
+              ? 2
+              : step === "confirm"
+                ? 3
+                : 4
+        }
+        totalSteps={4}
+      />
+
       <div className="flex-1 px-6 mt-4">
         {step === "number" && renderStepNumber()}
         {step === "amount" && renderStepAmount()}
@@ -482,40 +499,46 @@ const MobileRecharge: React.FC = () => {
       <Modal
         isOpen={showContactPicker}
         onClose={() => setShowContactPicker(false)}
-        title={t("recharge.select_contact")}
         type="bottom-sheet"
       >
         <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto no-scrollbar">
-          {contacts.filter((c) => c.phone).length > 0 ? (
-            contacts
-              .filter((c) => c.phone)
-              .map((contact) => (
-                <button
-                  key={contact.id}
-                  onClick={() => handleSelectContact(contact)}
-                  className="w-full flex items-center gap-4 p-4 rounded-2xl theme-bubble-bg border theme-border active:scale-95 transition-all"
-                >
-                  <div className="w-10 h-10 rounded-full bg-theme-primary/10 theme-primary-text flex items-center justify-center font-bold">
-                    {getInitials(contact.name)}
-                  </div>
-                  <div className="text-left">
-                    <p className="font-bold theme-text-main">{contact.name}</p>
-                    <p className="text-xs theme-text-secondary">
-                      {contact.phone}
-                    </p>
-                  </div>
-                </button>
-              ))
-          ) : (
-            <div className="text-center py-10 space-y-4">
-              <div className="w-16 h-16 theme-bubble-bg rounded-full flex items-center justify-center mx-auto theme-text-secondary opacity-20">
-                <HistoryIcon size={32} />
+          <h3 className="text-lg font-black theme-text-main mb-2">
+            {t("recharge.select_contact")}
+          </h3>
+          <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto no-scrollbar">
+            {contacts.filter((c) => c.phone).length > 0 ? (
+              contacts
+                .filter((c) => c.phone)
+                .map((contact) => (
+                  <button
+                    key={contact.id}
+                    onClick={() => handleSelectContact(contact)}
+                    className="w-full flex items-center gap-4 p-4 rounded-2xl theme-bubble-bg border theme-border active:scale-95 transition-all"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-theme-primary/10 theme-primary-text flex items-center justify-center font-bold">
+                      {getInitials(contact.name)}
+                    </div>
+                    <div className="text-left">
+                      <p className="font-bold theme-text-main">
+                        {contact.name}
+                      </p>
+                      <p className="text-xs theme-text-secondary">
+                        {contact.phone}
+                      </p>
+                    </div>
+                  </button>
+                ))
+            ) : (
+              <div className="text-center py-10 space-y-4">
+                <div className="w-16 h-16 theme-bubble-bg rounded-full flex items-center justify-center mx-auto theme-text-secondary opacity-20">
+                  <HistoryIcon size={32} />
+                </div>
+                <p className="text-sm theme-text-secondary">
+                  {t("history.empty")}
+                </p>
               </div>
-              <p className="text-sm theme-text-secondary">
-                {t("history.empty")}
-              </p>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </Modal>
     </div>
