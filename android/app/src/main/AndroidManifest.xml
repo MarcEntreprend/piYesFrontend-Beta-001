@@ -1,7 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- ==================== PERMISSIONS ==================== -->
+    
+    <!-- Internet (obligatoire pour l'API) -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    
+    <!-- Caméra (pour scanner les QR codes) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    
+    <!-- Localisation (pour les agents/ATM à proximité) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    
+    <!-- Microphone (pour les messages vocaux ou support) -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    
+    <!-- Presse-papiers (pour copier/coller des clés PIX, tags, liens) -->
+    <uses-permission android:name="android.permission.READ_CLIPBOARD" />
+    
+    <!-- Android 13+ : accès aux médias -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+
+    <!-- ==================== APPLICATION ==================== -->
+
     <application
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -33,9 +62,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
+        
     </application>
 
-    <!-- Permissions -->
-
-    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
