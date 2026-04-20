@@ -271,53 +271,57 @@ const History: React.FC = () => {
 
   return (
     <div className="theme-card-bg min-h-screen pb-20">
-      <PageHeader
-        title={t("history.title")}
-        rightElement={
-          <button
-            onClick={() => navigate("/report")}
-            className="p-2 theme-text-secondary hover:theme-bubble-bg rounded-full transition-colors active:scale-90"
-          >
-            <BarChart3 size={22} />
-          </button>
-        }
-      >
-        <div className="relative mb-3">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 theme-text-secondary"
-            size={18}
-          />
-          <input
-            type="text"
-            placeholder={t("history.search_placeholder")}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full theme-bubble-bg rounded-full py-2 pl-10 pr-4 text-sm theme-text-main focus:bg-gray-200 transition-colors outline-none border border-transparent focus:border-(--primary-color)"
-          />
-        </div>
-
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-2 px-2">
-          {filters.map((f) => (
-            <AnimatedButton
-              key={f.id}
-              isSelected={activeFilter === f.id}
-              onClick={() => setActiveFilter(f.id)}
-              icon={f.icon}
-              label={f.label}
-              accentColor="var(--primary-color)"
-              activeBg="var(--primary-color)"
-              activeText="#FFFFFF"
-              inactiveBg="var(--bubble-bg)"
-              inactiveText="var(--text-secondary)"
-              iconActiveBg="rgba(255,255,255,0.2)"
-              iconInactiveBg="rgba(0,0,0,0.05)"
-              iconActiveColor="#FFFFFF"
-              iconInactiveColor="var(--text-secondary)"
+      {/* Header sticky - wrapper nécessaire pour que sticky fonctionne */}
+      <div className="sticky top-0 z-30 theme-card-bg border-b theme-border">
+        <PageHeader
+          title={t("history.title")}
+          rightElement={
+            <button
+              onClick={() => navigate("/report")}
+              className="p-2 theme-text-secondary hover:theme-bubble-bg rounded-full transition-colors active:scale-90"
+            >
+              <BarChart3 size={22} />
+            </button>
+          }
+        >
+          <div className="relative mb-3">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 theme-text-secondary"
+              size={18}
             />
-          ))}
-        </div>
-      </PageHeader>
+            <input
+              type="text"
+              placeholder={t("history.search_placeholder")}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full theme-bubble-bg rounded-full py-2 pl-10 pr-4 text-sm theme-text-main focus:bg-gray-200 transition-colors outline-none border border-transparent focus:border-(--primary-color)"
+            />
+          </div>
 
+          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-2 px-2">
+            {filters.map((f) => (
+              <AnimatedButton
+                key={f.id}
+                isSelected={activeFilter === f.id}
+                onClick={() => setActiveFilter(f.id)}
+                icon={f.icon}
+                label={f.label}
+                accentColor="var(--primary-color)"
+                activeBg="var(--primary-color)"
+                activeText="#FFFFFF"
+                inactiveBg="var(--bubble-bg)"
+                inactiveText="var(--text-secondary)"
+                iconActiveBg="rgba(255,255,255,0.2)"
+                iconInactiveBg="rgba(0,0,0,0.05)"
+                iconActiveColor="#FFFFFF"
+                iconInactiveColor="var(--text-secondary)"
+              />
+            ))}
+          </div>
+        </PageHeader>
+      </div>
+
+      {/* Contenu scrollable */}
       <div className="p-6">
         {loading && filtered.length === 0 ? (
           <div className="space-y-8">

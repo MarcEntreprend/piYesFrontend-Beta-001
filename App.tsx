@@ -801,7 +801,7 @@ const App: React.FC = () => {
 
               {/* Main App Content */}
               <ScrollToTop />
-              <div className="flex flex-col min-h-screen theme-bg max-w-md mx-auto relative shadow-2xl overflow-hidden">
+              <div className="flex flex-col min-h-screen theme-bg max-w-md mx-auto relative shadow-2xl">
                 {/* --- PERSISTENT NETWORK STATUS BAR --- */}
                 {!isOnline && (
                   <div className="w-full bg-red-600 text-white py-1.5 px-4 flex items-center justify-center gap-2 animate-in slide-in-from-top duration-500 z-160 shrink-0">
@@ -820,7 +820,7 @@ const App: React.FC = () => {
                   </div>
                 )}
 
-                <main className="flex-1 overflow-y-auto no-scrollbar relative">
+                <main className="flex-1 relative">
                   <Routes>
                     {!user ? (
                       <>
