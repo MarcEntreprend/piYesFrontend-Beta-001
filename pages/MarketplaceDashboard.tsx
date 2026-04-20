@@ -93,11 +93,6 @@ const MarketplaceDashboard: React.FC = () => {
 
   return (
     <div className="theme-card-bg min-h-screen pb-32 flex flex-col">
-      <PageHeader
-        title={t("boutique.dashboard.title")}
-        onBack={() => navigate("/services")}
-      />
-
       <main className="flex-1 p-6 space-y-8">
         {/* Quick Stats */}
         <div className="grid grid-cols-3 gap-4">

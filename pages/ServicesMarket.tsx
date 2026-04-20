@@ -46,6 +46,7 @@ import Modal from "../components/Modal";
 import PageHeader from "../components/PageHeader";
 import { messagingService } from "../services/messagingService";
 import { motion, AnimatePresence } from "motion/react";
+import AnimatedButton from "../components/AnimatedButton";
 
 interface FilterableAd extends Ad {
   type: "product" | "service";
@@ -295,24 +296,34 @@ const ServicesMarket: React.FC = () => {
         }
       />
 
-      <div className="flex gap-4 overflow-x-auto no-scrollbar px-6 py-4 theme-card-bg border-b theme-border sticky top-18 z-40">
+      <div className="flex gap-2 overflow-x-auto no-scrollbar px-6 py-4 theme-card-bg border-b theme-border sticky top-18 z-40">
         {boutiqueTabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() =>
-              tab.id === "notifications"
-                ? navigate("/notifications")
-                : setActiveTab(tab.id as any)
-            }
-            className={`flex items-center gap-2 px-5 py-3 rounded-full whitespace-nowrap transition-all text-xs font-bold relative ${activeTab === tab.id ? "theme-primary-bg text-white shadow-lg scale-105" : "theme-bubble-bg theme-text-secondary"}`}
-          >
-            {tab.icon} {tab.label}
+          <div key={tab.id} className="relative">
+            <AnimatedButton
+              isSelected={activeTab === tab.id}
+              onClick={() =>
+                tab.id === "notifications"
+                  ? navigate("/notifications")
+                  : setActiveTab(tab.id as any)
+              }
+              icon={tab.icon}
+              label={tab.label}
+              accentColor="var(--primary-color)"
+              activeBg="var(--primary-color)"
+              activeText="#FFFFFF"
+              inactiveBg="var(--bubble-bg)"
+              inactiveText="var(--text-secondary)"
+              iconActiveBg="rgba(255,255,255,0.2)"
+              iconInactiveBg="rgba(0,0,0,0.05)"
+              iconActiveColor="#FFFFFF"
+              iconInactiveColor="var(--text-secondary)"
+            />
             {tab.badge && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white dark:border-gray-900 shadow-sm">
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white dark:border-gray-900 shadow-sm z-10">
                 {tab.badge}
               </span>
             )}
-          </button>
+          </div>
         ))}
       </div>
 
