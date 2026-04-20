@@ -223,7 +223,7 @@ const App: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ AJOUTER TOUT CE BLOC ICI (juste après les deux lignes ci-dessus)
+  //  AJOUTER TOUT CE BLOC ICI (juste après les deux lignes ci-dessus)
   useEffect(() => {
     const handleBackButton = () => {
       const path = location.pathname;

@@ -8,7 +8,7 @@ import { cn } from "../src/lib/utils";
 type ButtonVariant = "primary" | "secondary" | "danger" | "utility" | "text";
 type ButtonSize = "sm" | "md" | "lg";
 
-// ✅ ÉTAPE 1 : Exclure onDrag de l'interface
+//  ÉTAPE 1 : Exclure onDrag de l'interface
 interface ButtonProps extends Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   "onDrag"
@@ -55,7 +55,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       lg: "px-8 py-4 text-base rounded-3xl min-h-[56px]",
     };
 
-    // ✅ ÉTAPE 2 : Extraire onDrag des props (si jamais il est passé)
+    //  ÉTAPE 2 : Extraire onDrag des props (si jamais il est passé)
     const { onDrag, ...restProps } = props as any;
 
     return (
@@ -70,7 +70,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           fullWidth ? "w-full" : "w-fit",
           className,
         )}
-        {...restProps} // ✅ ÉTAPE 3 : Utiliser restProps sans onDrag
+        {...restProps} //  ÉTAPE 3 : Utiliser restProps sans onDrag
       >
         {isLoading && (
           <Loader2

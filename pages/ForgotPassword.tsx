@@ -103,11 +103,18 @@ const ForgotPassword = () => {
         newPassword,
       );
 
-      // ✅ AUTO-LOGIN : Si la réponse contient user et token
+      // 🔍 DEBUG : Afficher la réponse complète du backend
+      console.log(
+        "🔍 [ForgotPassword] Reset response:",
+        JSON.stringify(response, null, 2),
+      );
+
+      // AUTO-LOGIN : Si la réponse contient user et token
       if (response.user && response.token) {
         localStorage.setItem("piyes-auth-token", response.token);
         localStorage.setItem("piyes-user", JSON.stringify(response.user));
-        navigate("/"); // Redirige vers dashboard
+        // Redirection forcée pour éviter le flash de login
+        window.location.href = "/";
       } else {
         setStep(4); // Fallback : afficher succès et bouton login
       }
