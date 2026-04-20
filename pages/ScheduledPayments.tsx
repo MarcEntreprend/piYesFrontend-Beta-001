@@ -30,6 +30,9 @@ import {
 } from "../shared/types";
 import SearchInput from "../components/SearchInput";
 import ScheduledPaymentItem from "../components/ScheduledPaymentItem";
+import SegmentedControl from "../components/SegmentedControl";
+// Après les imports
+type SchedulerTab = "outgoing" | "incoming";
 
 export interface ScheduledPayment {
   id: string;
@@ -48,9 +51,7 @@ const ScheduledPayments: React.FC = () => {
   const { search } = useLocation();
   const searchParams = useMemo(() => new URLSearchParams(search), [search]);
 
-  const [activeTab, setActiveTab] = useState<"outgoing" | "incoming">(
-    "incoming",
-  );
+  const [activeTab, setActiveTab] = useState<SchedulerTab>("incoming");
   const [searchTerm, setSearchTerm] = useState("");
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
@@ -437,52 +438,34 @@ const ScheduledPayments: React.FC = () => {
         </div>
 
         {!isSelectionMode && (
-          <div className="flex gap-3 pb-4 px-1">
-            {/* Chip "À régler" */}
-            <button
-              onClick={() => setActiveTab("outgoing")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-full border transition-all text-sm font-bold ${
-                activeTab === "outgoing"
-                  ? "theme-primary-bg text-white border-transparent shadow-md"
-                  : "theme-bubble-bg theme-text-secondary theme-border"
-              }`}
-            >
-              {outgoingCount > 0 && (
-                <span
-                  className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black ${
-                    activeTab === "outgoing"
-                      ? "bg-white/30 text-white"
-                      : "bg-red-500 text-white"
-                  }`}
-                >
-                  {outgoingCount > 9 ? "9+" : outgoingCount}
-                </span>
-              )}
-              {t("scheduler.tabs.to_pay")}
-            </button>
-
-            {/* Chip "Demandes envoyées" */}
-            <button
-              onClick={() => setActiveTab("incoming")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-full border transition-all text-sm font-bold ${
-                activeTab === "incoming"
-                  ? "theme-primary-bg text-white border-transparent shadow-md"
-                  : "theme-bubble-bg theme-text-secondary theme-border"
-              }`}
-            >
-              {incomingCount > 0 && (
-                <span
-                  className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black ${
-                    activeTab === "incoming"
-                      ? "bg-white/30 text-white"
-                      : "bg-green-500 text-white"
-                  }`}
-                >
-                  {incomingCount > 9 ? "9+" : incomingCount}
-                </span>
-              )}
-              {t("scheduler.tabs.sent")}
-            </button>
+          <div className="pb-4 px-1">
+            <SegmentedControl
+              options={[
+                {
+                  id: "outgoing",
+                  label: t("scheduler.tabs.to_pay"),
+                  badge:
+                    outgoingCount > 0
+                      ? outgoingCount > 9
+                        ? "9+"
+                        : outgoingCount
+                      : undefined,
+                },
+                {
+                  id: "incoming",
+                  label: t("scheduler.tabs.sent"),
+                  badge:
+                    incomingCount > 0
+                      ? incomingCount > 9
+                        ? "9+"
+                        : incomingCount
+                      : undefined,
+                },
+              ]}
+              value={activeTab}
+              onChange={(val) => setActiveTab(val as SchedulerTab)}
+              className="flex gap-3"
+            />
           </div>
         )}
       </header>

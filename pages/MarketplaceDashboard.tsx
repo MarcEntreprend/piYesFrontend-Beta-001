@@ -17,6 +17,8 @@ import {
 import { useTranslation } from "../App";
 import PageHeader from "../components/PageHeader";
 import { motion } from "motion/react";
+import SegmentedControl from "../components/SegmentedControl";
+type DashboardSection = "overview" | "ads" | "payments";
 
 const MarketplaceDashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -117,27 +119,16 @@ const MarketplaceDashboard: React.FC = () => {
           ))}
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex gap-2 p-1 theme-bubble-bg rounded-full border theme-border">
-          <button
-            onClick={() => setActiveSection("overview")}
-            className={`flex-1 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeSection === "overview" ? "theme-primary-bg text-white shadow-md" : "theme-text-secondary"}`}
-          >
-            Vue d'ensemble
-          </button>
-          <button
-            onClick={() => setActiveSection("ads")}
-            className={`flex-1 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeSection === "ads" ? "theme-primary-bg text-white shadow-md" : "theme-text-secondary"}`}
-          >
-            {t("boutique.dashboard.manage_posts")}
-          </button>
-          <button
-            onClick={() => setActiveSection("payments")}
-            className={`flex-1 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeSection === "payments" ? "theme-primary-bg text-white shadow-md" : "theme-text-secondary"}`}
-          >
-            {t("boutique.dashboard.payments")}
-          </button>
-        </div>
+        {/* Navigation Tabs  */}
+        <SegmentedControl
+          options={[
+            { id: "overview", label: "Vue d'ensemble" },
+            { id: "ads", label: t("boutique.dashboard.manage_posts") },
+            { id: "payments", label: t("boutique.dashboard.payments") },
+          ]}
+          value={activeSection}
+          onChange={(val) => setActiveSection(val as DashboardSection)}
+        />
 
         {/* Content Sections */}
         <div className="space-y-6">
