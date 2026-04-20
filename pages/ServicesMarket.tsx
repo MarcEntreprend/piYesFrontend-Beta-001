@@ -1,3 +1,5 @@
+// pages\ServicesMarket.tsx
+
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
@@ -102,8 +104,12 @@ const ServicesMarket: React.FC = () => {
 
   useEffect(() => {
     // Listen for Boutique button second click reset
-    const handleReset = () => {
+    const handleReset = (event: CustomEvent) => {
       window.scrollTo({ top: 0, behavior: "smooth" });
+
+      // Revenir à l'onglet "home"
+      setActiveTab("home");
+
       if (trendingRef.current) {
         // Reset infinite scroll position to the start of the visible set
         const firstSetWidth = trendingRef.current.scrollWidth / 3;
@@ -113,9 +119,15 @@ const ServicesMarket: React.FC = () => {
         });
       }
     };
-    window.addEventListener("piyes:reset_services", handleReset);
+    window.addEventListener(
+      "piyes:reset_services",
+      handleReset as EventListener,
+    );
     return () =>
-      window.removeEventListener("piyes:reset_services", handleReset);
+      window.removeEventListener(
+        "piyes:reset_services",
+        handleReset as EventListener,
+      );
   }, []);
 
   const [favorites, setFavorites] = useState<Set<string>>(() => {

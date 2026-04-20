@@ -52,8 +52,10 @@ const BottomNav: React.FC = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
         window.dispatchEvent(new CustomEvent("piyes:switch_to_piyes"));
       } else if (id === "services") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
         window.dispatchEvent(new CustomEvent("piyes:reset_services"));
       } else if (id === "keys") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
         window.dispatchEvent(new CustomEvent("piyes:reset_settings"));
       }
     } else {
