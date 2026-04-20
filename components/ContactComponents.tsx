@@ -44,7 +44,7 @@ export const ContactItem: React.FC<ContactItemProps> = ({
               referrerPolicy="no-referrer"
             />
           ) : (
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold">
+            <div className="w-12 h-12 rounded-full bg-linear-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold">
               {initials}
             </div>
           )}
@@ -88,7 +88,7 @@ export const ContactItem: React.FC<ContactItemProps> = ({
   return (
     <div
       onClick={onClick}
-      className="flex flex-col items-center gap-2 min-w-[80px] cursor-pointer group"
+      className="flex flex-col items-center gap-2 min-w-20 cursor-pointer group"
     >
       <div className="relative">
         {contact.avatarUrl ? (
@@ -99,7 +99,7 @@ export const ContactItem: React.FC<ContactItemProps> = ({
             referrerPolicy="no-referrer"
           />
         ) : (
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl group-active:scale-95 transition-transform">
+          <div className="w-16 h-16 rounded-full bg-linear-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl group-active:scale-95 transition-transform">
             {initials}
           </div>
         )}
