@@ -210,7 +210,7 @@ const ForgotPassword = () => {
                       setIdentifier(e.target.value);
                       setError("");
                     }}
-                    className="w-full pl-12 pr-4 py-4 theme-bg border theme-border rounded-2xl focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none transition-all theme-text-main"
+                    className="w-full pl-12 pr-4 py-4 theme-bg border theme-border rounded-2xl focus:ring-2 focus:ring-(--primary-color) focus:border-transparent outline-none transition-all theme-text-main"
                     placeholder="email@exemple.com ou +509XXXXXXXX"
                     required
                     autoFocus
@@ -269,7 +269,7 @@ const ForgotPassword = () => {
                     className={`w-12 h-14 text-center text-2xl font-bold rounded-xl border-2 transition-all outline-none ${
                       digit
                         ? "theme-primary-bg text-white border-transparent"
-                        : "theme-bg theme-border focus:border-[var(--primary-color)] theme-text-main"
+                        : "theme-bg theme-border focus:border-(--primary-color) theme-text-main"
                     }`}
                     required
                     autoFocus={index === 0}
@@ -329,7 +329,7 @@ const ForgotPassword = () => {
                       setNewPassword(e.target.value);
                       setError("");
                     }}
-                    className="w-full px-4 py-4 theme-bg border theme-border rounded-2xl focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none transition-all theme-text-main"
+                    className="w-full px-4 py-4 theme-bg border theme-border rounded-2xl focus:ring-2 focus:ring-(--primary-color) focus:border-transparent outline-none transition-all theme-text-main"
                     placeholder="••••••••"
                     required
                     autoFocus
@@ -347,7 +347,7 @@ const ForgotPassword = () => {
                       setConfirmPassword(e.target.value);
                       setError("");
                     }}
-                    className="w-full px-4 py-4 theme-bg border theme-border rounded-2xl focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none transition-all theme-text-main"
+                    className="w-full px-4 py-4 theme-bg border theme-border rounded-2xl focus:ring-2 focus:ring-(--primary-color) focus:border-transparent outline-none transition-all theme-text-main"
                     placeholder="••••••••"
                     required
                     minLength={6}

@@ -1,12 +1,30 @@
 // pages/IdentityHub.tsx
 
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ShieldCheck, Copy, Share2, QrCode as QrIcon, Info, ChevronRight, User as UserIcon, Edit2, Save, X, Camera, MapPin, Globe, Calendar, Mail, Smartphone } from 'lucide-react';
-import { User, getInitials } from '../shared/types';
-import { useTranslation, useToast, SecurityContext } from '../App';
-import { QRCodeSVG } from 'qrcode.react';
-import { api } from '../services/apiService';
+import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  ShieldCheck,
+  Copy,
+  Share2,
+  QrCode as QrIcon,
+  Info,
+  ChevronRight,
+  User as UserIcon,
+  Edit2,
+  Save,
+  X,
+  Camera,
+  MapPin,
+  Globe,
+  Calendar,
+  Mail,
+  Smartphone,
+} from "lucide-react";
+import { User, getInitials } from "../shared/types";
+import { useTranslation, useToast, SecurityContext } from "../App";
+import { QRCodeSVG } from "qrcode.react";
+import { api } from "../services/apiService";
 
 interface IdentityHubProps {
   user: User;
@@ -22,23 +40,23 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
-    name: user.name || '',
-    email: user.email || '',
-    phone: user.phone || '',
-    dob: user.dob || '',
-    address: user.address || '',
-    nationality: user.nationality || '',
-    avatarUrl: user.avatarUrl || ''
+    name: user.name || "",
+    email: user.email || "",
+    phone: user.phone || "",
+    dob: user.dob || "",
+    address: user.address || "",
+    nationality: user.nationality || "",
+    avatarUrl: user.avatarUrl || "",
   });
 
   const { triggerSensitiveAction } = React.useContext(SecurityContext);
 
-  const transferUrl = `https://piyes.ht/pay?to=${user.tag?.replace('@', '')}&type=tag`;
+  const transferUrl = `https://piyes.ht/pay?to=${user.tag?.replace("@", "")}&type=tag`;
 
   const copyTag = () => {
     if (user.tag) {
       navigator.clipboard.writeText(user.tag);
-      showToast(t('common.copied'), 'success');
+      showToast(t("common.copied"), "success");
     }
   };
 
@@ -51,15 +69,15 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
 
       if (emailChanged || phoneChanged) {
         const target = emailChanged ? formData.email : formData.phone;
-        const channel = emailChanged ? 'email' : 'sms';
-        
+        const channel = emailChanged ? "email" : "sms";
+
         // Trigger OTP verification for the new contact
-        otpCode = await triggerSensitiveAction('otp', { 
-          email: formData.email, 
+        otpCode = await triggerSensitiveAction("otp", {
+          email: formData.email,
           phone: formData.phone,
-          mode: 'verify' 
+          mode: "verify",
         });
-        
+
         if (!otpCode) {
           setIsSaving(false);
           return;
@@ -69,10 +87,10 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
       const updatedUser = await api.updateProfile({ ...formData, otpCode });
       if (onUpdate) onUpdate(updatedUser);
       setIsEditing(false);
-      showToast(t('profile.save_success'), 'success');
+      showToast(t("profile.save_success"), "success");
     } catch (error) {
-      console.error('Error updating profile:', error);
-      showToast(t('profile.save_error'), 'error');
+      console.error("Error updating profile:", error);
+      showToast(t("profile.save_error"), "error");
     } finally {
       setIsSaving(false);
     }
@@ -83,7 +101,10 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData(prev => ({ ...prev, avatarUrl: reader.result as string }));
+        setFormData((prev) => ({
+          ...prev,
+          avatarUrl: reader.result as string,
+        }));
       };
       reader.readAsDataURL(file);
     }
@@ -93,22 +114,27 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
     <div className="theme-card-bg min-h-screen flex flex-col animate-in fade-in duration-500 pb-32">
       <header className="px-6 pt-12 pb-6 border-b theme-border flex items-center justify-between sticky top-0 theme-card-bg z-30">
         <div className="flex items-center">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2 theme-text-secondary active:scale-90 transition-transform">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 -ml-2 theme-text-secondary active:scale-90 transition-transform"
+          >
             <ArrowLeft size={24} />
           </button>
-          <h1 className="text-lg font-bold ml-4 theme-text-main">Identity Hub</h1>
+          <h1 className="text-lg font-bold ml-4 theme-text-main">
+            Identity Hub
+          </h1>
         </div>
         <div className="flex items-center gap-2">
           {isEditing ? (
             <>
-              <button 
+              <button
                 onClick={() => setIsEditing(false)}
                 className="p-2 theme-text-secondary active:scale-90 transition-transform"
                 disabled={isSaving}
               >
                 <X size={24} />
               </button>
-              <button 
+              <button
                 onClick={handleSave}
                 className="p-2 theme-primary-text active:scale-90 transition-transform disabled:opacity-50"
                 disabled={isSaving}
@@ -121,7 +147,7 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
               </button>
             </>
           ) : (
-            <button 
+            <button
               onClick={() => setIsEditing(true)}
               className="p-2 theme-text-secondary active:scale-90 transition-transform"
             >
@@ -133,11 +159,15 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
 
       <div className="flex-1 overflow-y-auto no-scrollbar p-6 space-y-8">
         {/* Profile Card */}
-        <div className="theme-bubble-bg rounded-[32px] p-8 border theme-border flex flex-col items-center text-center space-y-4 shadow-sm">
+        <div className="theme-bubble-bg rounded-4xl p-8 border theme-border flex flex-col items-center text-center space-y-4 shadow-sm">
           <div className="relative">
             <div className="w-24 h-24 rounded-full border-4 border-white dark:border-gray-800 shadow-xl overflow-hidden bg-gray-100">
               {formData.avatarUrl ? (
-                <img src={formData.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                <img
+                  src={formData.avatarUrl}
+                  alt="Avatar"
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <div className="w-full h-full flex items-center justify-center theme-primary-text text-2xl font-black">
                   {user.initials || getInitials(formData.name || user.name)}
@@ -145,43 +175,52 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
               )}
             </div>
             {isEditing && (
-              <button 
+              <button
                 onClick={() => fileInputRef.current?.click()}
                 className="absolute -bottom-1 -right-1 bg-white dark:bg-gray-800 theme-primary-text p-2 rounded-full shadow-lg border theme-border active:scale-90 transition-transform"
               >
                 <Camera size={16} />
               </button>
             )}
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleFileChange} 
-              className="hidden" 
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
               accept="image/*"
             />
-            {!isEditing && user.verificationStatus === 'verified' && (
+            {!isEditing && user.verificationStatus === "verified" && (
               <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white p-1.5 rounded-full border-4 border-white dark:border-gray-800 shadow-lg">
                 <ShieldCheck size={16} />
               </div>
             )}
           </div>
-          
+
           <div className="space-y-1 w-full">
             {isEditing ? (
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, name: e.target.value }))
+                }
                 className="w-full bg-transparent border-b-2 border-purple-500 text-center text-xl font-black theme-text-main focus:outline-none"
                 placeholder="Votre nom complet"
               />
             ) : (
-              <h2 className="text-xl font-black theme-text-main">{user.name}</h2>
+              <h2 className="text-xl font-black theme-text-main">
+                {user.name}
+              </h2>
             )}
             <div className="flex items-center justify-center gap-2">
-              <span className="text-sm font-bold theme-primary-text">{user.tag || '@piyes.user'}</span>
+              <span className="text-sm font-bold theme-primary-text">
+                {user.tag || "@piyes.user"}
+              </span>
               {!isEditing && (
-                <button onClick={copyTag} className="p-1 theme-text-secondary hover:theme-primary-text transition-colors">
+                <button
+                  onClick={copyTag}
+                  className="p-1 theme-text-secondary hover:theme-primary-text transition-colors"
+                >
                   <Copy size={14} />
                 </button>
               )}
@@ -192,10 +231,12 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
         {/* QR Code Section - Only show when not editing */}
         {!isEditing && (
           <div className="space-y-4">
-            <h3 className="text-[11px] font-bold theme-text-secondary uppercase tracking-[0.2em] px-1">Votre QR Code Permanent</h3>
+            <h3 className="text-[11px] font-bold theme-text-secondary uppercase tracking-[0.2em] px-1">
+              Votre QR Code Permanent
+            </h3>
             <div className="bg-white p-8 rounded-[40px] shadow-xl border theme-border flex flex-col items-center space-y-6">
               <div className="p-4 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-                <QRCodeSVG 
+                <QRCodeSVG
                   value={transferUrl}
                   size={200}
                   level="H"
@@ -211,17 +252,23 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
                 />
               </div>
               <div className="text-center space-y-2">
-                <p className="text-sm font-bold theme-text-main">Scannez pour me payer</p>
+                <p className="text-sm font-bold theme-text-main">
+                  Scannez pour me payer
+                </p>
                 <p className="text-[10px] theme-text-secondary max-w-[200px] mx-auto">
-                  Ce QR code est permanent et lié à votre tag <span className="font-bold theme-primary-text">{user.tag}</span>.
+                  Ce QR code est permanent et lié à votre tag{" "}
+                  <span className="font-bold theme-primary-text">
+                    {user.tag}
+                  </span>
+                  .
                 </p>
               </div>
               <div className="flex gap-3 w-full">
-                <button 
+                <button
                   onClick={() => {
                     if (navigator.share) {
                       navigator.share({
-                        title: 'Mon piYès Tag',
+                        title: "Mon piYès Tag",
                         text: `Payez-moi sur piYès via mon tag: ${user.tag}`,
                         url: transferUrl,
                       });
@@ -238,8 +285,10 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
 
         {/* Identity Details */}
         <div className="space-y-4">
-          <h3 className="text-[11px] font-bold theme-text-secondary uppercase tracking-[0.2em] px-1">Détails d'identité</h3>
-          <div className="theme-bubble-bg rounded-[32px] border theme-border overflow-hidden">
+          <h3 className="text-[11px] font-bold theme-text-secondary uppercase tracking-[0.2em] px-1">
+            Détails d'identité
+          </h3>
+          <div className="theme-bubble-bg rounded-4xl border theme-border overflow-hidden">
             {/* Nom Complet */}
             <div className="p-5 border-b theme-border flex items-center justify-between">
               <div className="flex items-center gap-4 w-full">
@@ -247,16 +296,25 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
                   <UserIcon size={20} />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">Nom Complet</p>
+                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">
+                    Nom Complet
+                  </p>
                   {isEditing ? (
                     <input
                       type="text"
                       value={formData.name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
                       className="w-full bg-transparent text-sm font-bold theme-text-main focus:outline-none border-b border-purple-300"
                     />
                   ) : (
-                    <p className="text-sm font-bold theme-text-main">{user.name}</p>
+                    <p className="text-sm font-bold theme-text-main">
+                      {user.name}
+                    </p>
                   )}
                 </div>
               </div>
@@ -269,16 +327,25 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
                   <Calendar size={20} />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">Date de Naissance</p>
+                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">
+                    Date de Naissance
+                  </p>
                   {isEditing ? (
                     <input
                       type="date"
                       value={formData.dob}
-                      onChange={(e) => setFormData(prev => ({ ...prev, dob: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          dob: e.target.value,
+                        }))
+                      }
                       className="w-full bg-transparent text-sm font-bold theme-text-main focus:outline-none border-b border-purple-300"
                     />
                   ) : (
-                    <p className="text-sm font-bold theme-text-main">{user.dob || 'Non renseigné'}</p>
+                    <p className="text-sm font-bold theme-text-main">
+                      {user.dob || "Non renseigné"}
+                    </p>
                   )}
                 </div>
               </div>
@@ -291,16 +358,25 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
                   <MapPin size={20} />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">Adresse</p>
+                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">
+                    Adresse
+                  </p>
                   {isEditing ? (
                     <input
                       type="text"
                       value={formData.address}
-                      onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          address: e.target.value,
+                        }))
+                      }
                       className="w-full bg-transparent text-sm font-bold theme-text-main focus:outline-none border-b border-purple-300"
                     />
                   ) : (
-                    <p className="text-sm font-bold theme-text-main">{user.address || 'Non renseigné'}</p>
+                    <p className="text-sm font-bold theme-text-main">
+                      {user.address || "Non renseigné"}
+                    </p>
                   )}
                 </div>
               </div>
@@ -313,16 +389,25 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
                   <Globe size={20} />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">Nationalité</p>
+                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">
+                    Nationalité
+                  </p>
                   {isEditing ? (
                     <input
                       type="text"
                       value={formData.nationality}
-                      onChange={(e) => setFormData(prev => ({ ...prev, nationality: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          nationality: e.target.value,
+                        }))
+                      }
                       className="w-full bg-transparent text-sm font-bold theme-text-main focus:outline-none border-b border-purple-300"
                     />
                   ) : (
-                    <p className="text-sm font-bold theme-text-main">{user.nationality || 'Non renseigné'}</p>
+                    <p className="text-sm font-bold theme-text-main">
+                      {user.nationality || "Non renseigné"}
+                    </p>
                   )}
                 </div>
               </div>
@@ -335,16 +420,25 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
                   <Mail size={20} />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">Email</p>
+                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">
+                    Email
+                  </p>
                   {isEditing ? (
                     <input
                       type="email"
                       value={formData.email}
-                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          email: e.target.value,
+                        }))
+                      }
                       className="w-full bg-transparent text-sm font-bold theme-text-main focus:outline-none border-b border-purple-300"
                     />
                   ) : (
-                    <p className="text-sm font-bold theme-text-main">{user.email}</p>
+                    <p className="text-sm font-bold theme-text-main">
+                      {user.email}
+                    </p>
                   )}
                 </div>
               </div>
@@ -357,16 +451,25 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
                   <Smartphone size={20} />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">Téléphone</p>
+                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">
+                    Téléphone
+                  </p>
                   {isEditing ? (
                     <input
                       type="tel"
                       value={formData.phone}
-                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          phone: e.target.value,
+                        }))
+                      }
                       className="w-full bg-transparent text-sm font-bold theme-text-main focus:outline-none border-b border-purple-300"
                     />
                   ) : (
-                    <p className="text-sm font-bold theme-text-main">{user.phone || 'Non renseigné'}</p>
+                    <p className="text-sm font-bold theme-text-main">
+                      {user.phone || "Non renseigné"}
+                    </p>
                   )}
                 </div>
               </div>
@@ -379,14 +482,25 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
                   <ShieldCheck size={20} />
                 </div>
                 <div>
-                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">Statut de Vérification</p>
-                  <p className={`text-sm font-bold ${user.verificationStatus === 'verified' ? 'text-green-500' : 'text-amber-500'}`}>
-                    {user.verificationStatus === 'verified' ? 'Vérifié' : 'Non vérifié'}
+                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">
+                    Statut de Vérification
+                  </p>
+                  <p
+                    className={`text-sm font-bold ${user.verificationStatus === "verified" ? "text-green-500" : "text-amber-500"}`}
+                  >
+                    {user.verificationStatus === "verified"
+                      ? "Vérifié"
+                      : "Non vérifié"}
                   </p>
                 </div>
               </div>
-              {!isEditing && user.verificationStatus !== 'verified' && (
-                <button onClick={() => navigate('/verify-identity')} className="text-xs font-bold theme-primary-text">Vérifier</button>
+              {!isEditing && user.verificationStatus !== "verified" && (
+                <button
+                  onClick={() => navigate("/verify-identity")}
+                  className="text-xs font-bold theme-primary-text"
+                >
+                  Vérifier
+                </button>
               )}
             </div>
 
@@ -397,8 +511,12 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
                   <Info size={20} />
                 </div>
                 <div>
-                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">Numéro de Compte</p>
-                  <p className="text-sm font-bold theme-text-main">{user.accountNumber}</p>
+                  <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">
+                    Numéro de Compte
+                  </p>
+                  <p className="text-sm font-bold theme-text-main">
+                    {user.accountNumber}
+                  </p>
                 </div>
               </div>
             </div>
@@ -406,17 +524,21 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
         </div>
 
         {/* Help Link */}
-        <button 
-          onClick={() => navigate('/help')}
-          className="w-full p-6 theme-bubble-bg rounded-[32px] border theme-border flex items-center justify-between active:scale-[0.98] transition-all"
+        <button
+          onClick={() => navigate("/help")}
+          className="w-full p-6 theme-bubble-bg rounded-4xl border theme-border flex items-center justify-between active:scale-[0.98] transition-all"
         >
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center theme-text-secondary shadow-sm">
               <Info size={20} />
             </div>
             <div className="text-left">
-              <p className="text-sm font-bold theme-text-main">Besoin d'aide ?</p>
-              <p className="text-[10px] theme-text-secondary">En savoir plus sur l'identité piYès</p>
+              <p className="text-sm font-bold theme-text-main">
+                Besoin d'aide ?
+              </p>
+              <p className="text-[10px] theme-text-secondary">
+                En savoir plus sur l'identité piYès
+              </p>
             </div>
           </div>
           <ChevronRight size={18} className="theme-text-secondary opacity-30" />
@@ -427,4 +549,3 @@ const IdentityHub: React.FC<IdentityHubProps> = ({ user, onUpdate }) => {
 };
 
 export default IdentityHub;
-
