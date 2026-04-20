@@ -1,5 +1,4 @@
-
-export type Language = 'fr' | 'ht' | 'en';
+export type Language = "fr" | "ht" | "en";
 
 export const translations = {
   fr: {
@@ -56,7 +55,7 @@ export const translations = {
         sep: "Sept.",
         oct: "Oct.",
         nov: "Nov.",
-        dec: "Déc."
+        dec: "Déc.",
       },
       months_full: {
         january: "Janvier",
@@ -70,12 +69,13 @@ export const translations = {
         september: "Septembre",
         october: "Octobre",
         november: "Novembre",
-        december: "Décembre"
-      }
+        december: "Décembre",
+      },
     },
     otp: {
       title: "Vérification de sécurité",
-      subtitle: "Nous avons envoyé un code de 6 chiffres à votre adresse e-mail ou téléphone.",
+      subtitle:
+        "Nous avons envoyé un code de 6 chiffres à votre adresse e-mail ou téléphone.",
       placeholder: "000000",
       resend: "Renvoyer le code",
       resend_in: "Renvoyer dans {{seconds}}s",
@@ -83,30 +83,34 @@ export const translations = {
       error_invalid: "Le code saisi est incorrect.",
       success: "Appareil vérifié avec succès.",
       trouble: "Vous rencontrez des difficultés ?",
-      contact_info: "Contactez notre support au +509 0000-0000 ou par e-mail à support-otp@piyes.com pour obtenir de l'assistance.",
-      secure_connection: "Connexion sécurisée"
+      contact_info:
+        "Contactez notre support via WhatsApp au +509 4780-4142 ou par e-mail à marcrubenmacean@gmail.com pour obtenir de l'assistance.",
+      secure_connection: "Connexion sécurisée",
     },
     security_flow: {
       pin_intro_title: "Sécurisez vos transactions",
-      pin_intro_desc: "Créez un code PIN de 4 chiffres pour protéger vos transferts et vos données sensibles.",
+      pin_intro_desc:
+        "Créez un code PIN de 4 chiffres pour protéger vos transferts et vos données sensibles.",
       pin_setup_btn: "Créer mon PIN maintenant",
       welcome_title: "Bienvenue sur piYès !",
-      welcome_desc: "Votre compte est maintenant prêt et sécurisé. Explorez la révolution bancaire.",
-      welcome_btn: "Aller au Dashboard"
+      welcome_desc:
+        "Votre compte est maintenant prêt et sécurisé. Explorez la révolution bancaire.",
+      welcome_btn: "Aller au Dashboard",
     },
     currency: {
       symbol: "G.",
       name: "Gourde",
-      name_plural: "Gourdes"
+      name_plural: "Gourdes",
     },
     nav: {
       home: "Accueil",
       services: "Marketplace",
       profile: "Profil",
-      keys: "Opérations"
+      keys: "Opérations",
     },
     auth: {
-      login_greeting: "Salut ! Quel est votre e-mail ou votre numéro de téléphone ?",
+      login_greeting:
+        "Salut ! Quel est votre e-mail ou votre numéro de téléphone ?",
       password_prompt: "Maintenant, entrez votre mot de passe.",
       email_placeholder: "E-mail ou numéro de téléphone",
       password_placeholder: "••••••••",
@@ -137,13 +141,13 @@ export const translations = {
       signup_error: "Erreur d'inscription",
       resend_code: "Renvoyer le code",
       reset_password_btn: "Réinitialiser le mot de passe",
-      login_btn: "Se connecter"
+      login_btn: "Se connecter",
     },
     accounts: {
       piyes_current: "Compte Courant piYès",
       label_piyes: "PiYès!",
       label_moncash: "MonCash",
-      label_buh: "BUH"
+      label_buh: "BUH",
     },
     dashboard: {
       greeting: "Bonjour",
@@ -168,7 +172,7 @@ export const translations = {
       account_piyes: "Compte piYès",
       greeting_morning: "Bonjour",
       greeting_evening: "Bonsoir",
-      no_transactions: "Aucune transaction"
+      no_transactions: "Aucune transaction",
     },
     actions: {
       transfer: "Transférer",
@@ -181,17 +185,18 @@ export const translations = {
       contacts: "Contacts",
       promotions: "Promotions",
       qr_proximity: "Opérations",
-      international: "International"
+      international: "International",
     },
     account_summary: {
       fees_transfer: "Frais de transfert",
       fees_service: "Frais de service",
       transfer_message: "Le destinataire recevra : {{amount}} {{currency}}",
-      withdraw_message: "Vous recevrez : {{amount}} {{currency}} de votre agent",
+      withdraw_message:
+        "Vous recevrez : {{amount}} {{currency}} de votre agent",
       deposit_message: "Vous recevrez : {{amount}} {{currency}}",
       your_piyes_account: "Votre compte piYès",
       your_piyes_agent: "Votre agent piYès",
-      piyes_bank: "Banque piYès"
+      piyes_bank: "Banque piYès",
     },
     contacts: {
       title: "Contacts",
@@ -234,42 +239,49 @@ export const translations = {
         my_interactions_with: "Mes interactions avec {{name}}",
         delete_contact: "Supprimer le contact",
         delete_confirm_title: "Supprimer le contact ?",
-        delete_confirm_desc: "Êtes-vous sûr de vouloir supprimer {{name}} de vos contacts ?",
+        delete_confirm_desc:
+          "Êtes-vous sûr de vouloir supprimer {{name}} de vos contacts ?",
         delete_yes: "Oui, supprimer",
         delete_no: "Annuler",
-        active_schedule_error: "Impossible de supprimer ce contact : un rappel de paiement actif existe entre vous.",
-        active_schedule_friend_error: "Impossible de modifier la relation amicale : un rappel de paiement actif existe entre vous.",
+        active_schedule_error:
+          "Impossible de supprimer ce contact : un rappel de paiement actif existe entre vous.",
+        active_schedule_friend_error:
+          "Impossible de modifier la relation amicale : un rappel de paiement actif existe entre vous.",
         not_found: "Contact introuvable.",
         request: "Demander",
-        reminder: "Rappel"
+        reminder: "Rappel",
       },
-    sync: "Synchroniser",
-    syncing: "Synchronisation...",
-    no_results: "Aucun contact trouvé",
-    new: "Nouveau",
-    add_info_label: "Tag, email, téléphone ou autre clé",
-    non_user_warning: "Ce contact n'est pas encore un utilisateur piYès. Les actions de paiement sont désactivées jusqu'à son inscription.",
-    non_network_contact: "Contact hors-réseau piYès",
-    actions_after_signup: "Actions disponibles après inscription sur piYès",
-    view_full_profile: "Voir le profil complet",
-    import_phone: "Importer depuis le téléphone",
-    import_success: "Importation de {{count}} contacts réussie !",
-    import_not_supported: "L'importation des contacts n'est pas supportée sur ce navigateur.",
-    add_error: "Erreur lors de l'ajout du contact.",
-    checking: "Vérification...",
-    user_found: "Utilisateur piYès trouvé",
-    user_not_found_warning: "Cette clé ne correspond à aucun utilisateur piYès — le contact sera sauvegardé quand même",
-    non_user_confirm_title: "Contact hors-réseau",
-    non_user_confirm_desc: "Cette clé ne correspond à aucun utilisateur piYès. Voulez-vous quand même enregistrer ce contact ?",
-    entered_info: "Informations saisies",
-    key_not_found_db: "Clé non trouvée dans la base piYès",
-    save_anyway: "Oui, enregistrer quand même",
-    saving: "Enregistrement...",
-    cancel_check: "Annuler, vérifier les infos",
-    sync_success: "Contacts synchronisés avec succès !",
-    new_recipient: "Nouveau destinataire",
-    check_recipient: "Vérifiez le destinataire"
-  },
+      sync: "Synchroniser",
+      syncing: "Synchronisation...",
+      no_results: "Aucun contact trouvé",
+      new: "Nouveau",
+      add_info_label: "Tag, email, téléphone ou autre clé",
+      non_user_warning:
+        "Ce contact n'est pas encore un utilisateur piYès. Les actions de paiement sont désactivées jusqu'à son inscription.",
+      non_network_contact: "Contact hors-réseau piYès",
+      actions_after_signup: "Actions disponibles après inscription sur piYès",
+      view_full_profile: "Voir le profil complet",
+      import_phone: "Importer depuis le téléphone",
+      import_success: "Importation de {{count}} contacts réussie !",
+      import_not_supported:
+        "L'importation des contacts n'est pas supportée sur ce navigateur.",
+      add_error: "Erreur lors de l'ajout du contact.",
+      checking: "Vérification...",
+      user_found: "Utilisateur piYès trouvé",
+      user_not_found_warning:
+        "Cette clé ne correspond à aucun utilisateur piYès — le contact sera sauvegardé quand même",
+      non_user_confirm_title: "Contact hors-réseau",
+      non_user_confirm_desc:
+        "Cette clé ne correspond à aucun utilisateur piYès. Voulez-vous quand même enregistrer ce contact ?",
+      entered_info: "Informations saisies",
+      key_not_found_db: "Clé non trouvée dans la base piYès",
+      save_anyway: "Oui, enregistrer quand même",
+      saving: "Enregistrement...",
+      cancel_check: "Annuler, vérifier les infos",
+      sync_success: "Contacts synchronisés avec succès !",
+      new_recipient: "Nouveau destinataire",
+      check_recipient: "Vérifiez le destinataire",
+    },
     settings: {
       title: "Profil & Paramètres",
       account_section: "Compte",
@@ -281,12 +293,13 @@ export const translations = {
       themes: {
         default: "Par défaut",
         dark: "Sombre",
-        bleu_cendre: "Bleu Cendre"
+        bleu_cendre: "Bleu Cendre",
       },
       font_size: "Taille de police",
       logout: "Déconnexion",
       logout_confirm_title: "Se déconnecter ?",
-      logout_confirm_desc: "Vous devrez vous reconnecter pour accéder à votre compte.",
+      logout_confirm_desc:
+        "Vous devrez vous reconnecter pour accéder à votre compte.",
       hub_section: "SÉCURITÉ HUB",
       session_history: "Historique de connexion",
       session_history_sub: "Appareils et sessions actives",
@@ -294,9 +307,11 @@ export const translations = {
       delete_account: "Supprimer mon compte",
       delete_account_sub: "Action irréversible",
       delete_confirm_title: "Supprimer votre compte ?",
-      delete_confirm_desc: "Toutes vos données seront définitivement supprimées. Cette action est irréversible.",
+      delete_confirm_desc:
+        "Toutes vos données seront définitivement supprimées. Cette action est irréversible.",
       logout_all_confirm_title: "Déconnecter toutes les sessions ?",
-      logout_all_confirm_desc: "Vous devrez vous reconnecter sur tous vos appareils.",
+      logout_all_confirm_desc:
+        "Vous devrez vous reconnecter sur tous vos appareils.",
       session_delete_confirm_title: "Supprimer cette session ?",
       session_delete_confirm_desc: "L'appareil sera déconnecté immédiatement.",
       language_modal_title: "Choisir la langue",
@@ -305,22 +320,58 @@ export const translations = {
         small: "Petite",
         default: "Par défaut",
         large: "Grande",
-        extra_large: "Très grande"
+        extra_large: "Très grande",
       },
       items: {
-        profile: { label: "Gérer le profil", sub: "Informations personnelles et avatar" },
-        security: { label: "Sécurité & MFA", sub: "Mot de passe et authentification forte" },
-        pin: { label: "Code PIN piYès", sub: "Sécuriser l'accès et les transferts" },
-        notifications: { label: "Notifications", sub: "Alertes de transaction et actualités" },
-        verify_receipt: { label: "Vérifier un reçu", sub: "Vérifier l'authenticité d'une transaction" },
-        refresh_assets: { label: "Rafraîchir les assets", sub: "Mettre à jour les logos et drapeaux" },
-        appointments: { label: "Rendez-vous", sub: "Gérer vos sessions avec nos agents" },
-        help: { label: "Centre d'aide", sub: "Réponses aux questions fréquentes" },
-        contact: { label: "Contacter le support", sub: "Assistance directe 24/7" },
-        about: { label: "À propos de piYès", sub: "Version 1.2.0 • Build 2025" },
-        terms: { label: "Conditions Générales", sub: "Lire nos termes et conditions" },
-        privacy_settings: { label: "Confidentialité", sub: "Gérez qui peut vous trouver et interagir avec vous" }
-      }
+        profile: {
+          label: "Gérer le profil",
+          sub: "Informations personnelles et avatar",
+        },
+        security: {
+          label: "Sécurité & MFA",
+          sub: "Mot de passe et authentification forte",
+        },
+        pin: {
+          label: "Code PIN piYès",
+          sub: "Sécuriser l'accès et les transferts",
+        },
+        notifications: {
+          label: "Notifications",
+          sub: "Alertes de transaction et actualités",
+        },
+        verify_receipt: {
+          label: "Vérifier un reçu",
+          sub: "Vérifier l'authenticité d'une transaction",
+        },
+        refresh_assets: {
+          label: "Rafraîchir les assets",
+          sub: "Mettre à jour les logos et drapeaux",
+        },
+        appointments: {
+          label: "Rendez-vous",
+          sub: "Gérer vos sessions avec nos agents",
+        },
+        help: {
+          label: "Centre d'aide",
+          sub: "Réponses aux questions fréquentes",
+        },
+        contact: {
+          label: "Contacter le support",
+          sub: "Assistance directe 24/7",
+        },
+        about: {
+          label: "À propos de piYès",
+          sub: "Version 1.2.0 • Build 2025",
+        },
+        terms: {
+          label: "Conditions Générales",
+          sub: "Lire nos termes et conditions",
+        },
+        privacy_settings: {
+          label: "Confidentialité",
+          sub: "Gérez qui peut vous trouver et interagir avec vous",
+        },
+      },
     },
     privacy_settings: {
       title: "Confidentialité des contacts & transferts",
@@ -343,22 +394,31 @@ export const translations = {
       hide_tag: "Masquer mon tag dans les reçus",
       friends_only_requests: "Demandes uniquement de mes amis",
       confirm_block_title: "Confirmer le blocage",
-      confirm_block_msg: "Si vous bloquez les {{type}} de {{tag}}, cette personne ne pourra plus interagir avec vous de cette manière. Confirmer ?",
-      help_requests: "Empêche quiconque de vous envoyer une demande de paiement directe.",
-      help_transfers: "Empêche quiconque de vous envoyer de l'argent (sauf via QR ou lien si autorisé).",
-      help_visibility_contacts: "Les personnes qui n'ont pas votre numéro ou tag ne verront pas votre profil dans l'annuaire.",
-      help_visibility_mutual: "Seuls vos amis mutuels peuvent voir votre tag et profil.",
-      help_visibility_private: "Vous n'apparaissez dans aucune liste. On peut vous joindre uniquement si on connaît votre tag exact.",
-      help_anonymous: "Permet de recevoir de l'argent via QR ou lien sans identification préalable.",
-      help_hide_tag: "Votre tag @ ne sera pas visible sur les reçus de transaction que vous envoyez.",
-      help_friends_only: "Plus strict que 'contacts' : nécessite que vous soyez tous les deux dans vos listes respectives.",
+      confirm_block_msg:
+        "Si vous bloquez les {{type}} de {{tag}}, cette personne ne pourra plus interagir avec vous de cette manière. Confirmer ?",
+      help_requests:
+        "Empêche quiconque de vous envoyer une demande de paiement directe.",
+      help_transfers:
+        "Empêche quiconque de vous envoyer de l'argent (sauf via QR ou lien si autorisé).",
+      help_visibility_contacts:
+        "Les personnes qui n'ont pas votre numéro ou tag ne verront pas votre profil dans l'annuaire.",
+      help_visibility_mutual:
+        "Seuls vos amis mutuels peuvent voir votre tag et profil.",
+      help_visibility_private:
+        "Vous n'apparaissez dans aucune liste. On peut vous joindre uniquement si on connaît votre tag exact.",
+      help_anonymous:
+        "Permet de recevoir de l'argent via QR ou lien sans identification préalable.",
+      help_hide_tag:
+        "Votre tag @ ne sera pas visible sur les reçus de transaction que vous envoyez.",
+      help_friends_only:
+        "Plus strict que 'contacts' : nécessite que vous soyez tous les deux dans vos listes respectives.",
       saving: "Enregistrement...",
       got_it: "J'ai compris",
       block_requests_title: "Bloquer des demandes",
       block_transfers_title: "Bloquer des transferts",
       search_block_placeholder: "Rechercher un tag ou contact...",
-      block_tag_exact: "Bloquer le tag \"{{tag}}\"",
-      block_tag_hint: "Bloquer un utilisateur par son tag exact"
+      block_tag_exact: 'Bloquer le tag "{{tag}}"',
+      block_tag_hint: "Bloquer un utilisateur par son tag exact",
     },
     pin: {
       title_setup: "Créer votre PIN",
@@ -379,11 +439,12 @@ export const translations = {
       setup_success: "Votre code PIN a été enregistré.",
       change_success: "Code PIN modifié avec succès.",
       remove_confirm: "Voulez-vous vraiment supprimer la protection par PIN ?",
-      warning_removal: "Cela réduira la sécurité de votre compte."
+      warning_removal: "Cela réduira la sécurité de votre compte.",
     },
     plans: {
       title: "Plans & Économies",
-      subtitle: "Choisissez le plan qui vous fait économiser plus, tout en profitant de services rapides et sans frais cachés.",
+      subtitle:
+        "Choisissez le plan qui vous fait économiser plus, tout en profitant de services rapides et sans frais cachés.",
       tagline_basic: "Commencez gratuitement. Aucun engagement.",
       tagline_low: "Idéal pour ceux qui transfèrent régulièrement.",
       tagline_mid: "Pour les utilisateurs actifs et les pros du quotidien.",
@@ -392,7 +453,8 @@ export const translations = {
       toast_subscribe_sent: "Demande d'abonnement au plan {{name}} envoyée !",
       exclusive_offers: "Offres exclusives",
       popular_badge: "Populaire",
-      change_anytime: "Vous pouvez changer de plan à tout moment. Les avantages sont activés instantanément après confirmation du paiement de l'abonnement.",
+      change_anytime:
+        "Vous pouvez changer de plan à tout moment. Les avantages sont activés instantanément après confirmation du paiement de l'abonnement.",
       secure_payment: "Paiement 100% sécurisé",
       estimated_value: "Valeur estimée : {{amount}} G / mois",
       month: "/ mois",
@@ -400,11 +462,36 @@ export const translations = {
       learn_more: "En savoir plus",
       active_badge: "Plan Actif",
       perks: {
-        basic: ["Transferts gratuits jusqu'à 500 G", "Sécurité standard", "Accès complet à l'app", "Assistance communautaire"],
-        low: ["Tous les avantages Basic", "Transferts gratuits jusqu'à 2,000 G", "Retraits à 3%", "Support prioritaire par chat", "Offres partenaires"],
-        mid: ["Tous les avantages Low", "Transferts gratuits jusqu'à 5,000 G", "Retraits à 2%", "Sécurité renforcée (OTP + PIN)", "Reçus PDF automatiques", "Assistance vocale"],
-        high: ["Transferts gratuits illimités", "Retraits à 1%", "Gestionnaire dédié", "Accès anticipé aux nouveautés", "Bonus mensuels exclusifs", "Statistiques avancées"]
-      }
+        basic: [
+          "Transferts gratuits jusqu'à 500 G",
+          "Sécurité standard",
+          "Accès complet à l'app",
+          "Assistance communautaire",
+        ],
+        low: [
+          "Tous les avantages Basic",
+          "Transferts gratuits jusqu'à 2,000 G",
+          "Retraits à 3%",
+          "Support prioritaire par chat",
+          "Offres partenaires",
+        ],
+        mid: [
+          "Tous les avantages Low",
+          "Transferts gratuits jusqu'à 5,000 G",
+          "Retraits à 2%",
+          "Sécurité renforcée (OTP + PIN)",
+          "Reçus PDF automatiques",
+          "Assistance vocale",
+        ],
+        high: [
+          "Transferts gratuits illimités",
+          "Retraits à 1%",
+          "Gestionnaire dédié",
+          "Accès anticipé aux nouveautés",
+          "Bonus mensuels exclusifs",
+          "Statistiques avancées",
+        ],
+      },
     },
     cards: {
       title: "Mes Cartes",
@@ -421,7 +508,7 @@ export const translations = {
         cvc: "CVC",
         debit_virtual: "Debit / Virtual",
         physical: "physique",
-        virtual: "virtuelle"
+        virtual: "virtuelle",
       },
       actions: {
         view: "Voir infos",
@@ -430,23 +517,24 @@ export const translations = {
         delete: "Supprimer",
         add_money: "Ajouter $",
         transfer: "Transférer",
-        config: "Config"
+        config: "Config",
       },
       details: {
         title: "Détails de la carte",
         number: "Numéro",
         holder: "Titulaire",
         expiry: "Expiration",
-        type: "Type"
-      }
+        type: "Type",
+      },
     },
     pix: {
       title: "Opérations",
-      tagline: "Vérifiez vos reçus, scannez des QR codes et trouvez des amis à proximité.",
+      tagline:
+        "Vérifiez vos reçus, scannez des QR codes et trouvez des amis à proximité.",
       ai_placeholder: "Ex. : ###, envoie-moi 150 gourdes",
       ai_step_reformulate: {
         title: "Interpretation piYès",
-        hint: "Voici le message interprété. Vous pouvez le modifier si besoin."
+        hint: "Voici le message interprété. Vous pouvez le modifier si besoin.",
       },
       ai_step_confirm: {
         title: "Vérifier l'action",
@@ -457,7 +545,7 @@ export const translations = {
         btn_continue: "Continuer vers {{target}}",
         btn_edit: "Corriger",
         target_transfer: "le transfert",
-        target_request: "la demande"
+        target_request: "la demande",
       },
       key_not_verified: "Non vérifiée",
       no_keys: "Aucune clé enregistrée.",
@@ -465,27 +553,29 @@ export const translations = {
         title: "Quitter sans envoyer ?",
         sub: "Votre message sera effacé si vous quittez cette page maintenant.",
         btn_leave: "Abandonner le texte",
-        btn_stay: "Rester et envoyer"
+        btn_stay: "Rester et envoyer",
       },
       delete_modal: {
         title: "Supprimer cette clé ?",
         sub: "Cette action est irréversible. Vous ne pourrez plus recevoir de fonds via cette clé.",
-        btn_delete: "Supprimer définitivement"
+        btn_delete: "Supprimer définitivement",
       },
       types: {
         email: "email",
         phone: "phone",
         tag: "tag",
-        random: "Aléatoire"
+        random: "Aléatoire",
       },
       labels: {
         email: "Adresse E-mail",
         phone: "Numéro de téléphone",
         tag: "Tag piYès",
         tag_placeholder: "votre_tag",
-        tag_hint: "4-25 caractères, lettres minuscules, chiffres et underscores uniquement.",
+        tag_hint:
+          "4-25 caractères, lettres minuscules, chiffres et underscores uniquement.",
         random: "Clé Aléatoire",
-        random_hint: "Cette clé est générée aléatoirement pour une confidentialité maximale. Elle ne peut pas être modifiée."
+        random_hint:
+          "Cette clé est générée aléatoirement pour une confidentialité maximale. Elle ne peut pas être modifiée.",
       },
       message_placeholder: "Message à envoyer (facultatif)",
       actions: {
@@ -498,14 +588,14 @@ export const translations = {
         voice: "Transfert voix",
         proximity: "Appareils à proximité",
         proximity_searching: "Recherche d'appareils à proximité...",
-        qr_invalid_dest: "QR Code invalide : destinataire manquant."
+        qr_invalid_dest: "QR Code invalide : destinataire manquant.",
       },
       keys_section: "Mes clés enregistrées",
       add_key: "Ajouter",
       modal: {
         title: "Nouvelle clé",
         placeholder: "Entrez votre clé...",
-        btn_confirm: "Confirmer"
+        btn_confirm: "Confirmer",
       },
       paste_modal: {
         title: "Lien de paiement",
@@ -513,7 +603,7 @@ export const translations = {
         placeholder: "https://piyes.ht/pay?...",
         btn_analyze: "Analyser le lien",
         error_invalid: "Lien invalide ou non reconnu.",
-        hint_url: "Le lien doit commencer par https://piyes.ht/pay?"
+        hint_url: "Le lien doit commencer par https://piyes.ht/pay?",
       },
       voice_modal: {
         title: "Dites à qui et combien",
@@ -526,7 +616,7 @@ export const translations = {
         feedback_sent: "Message vocal envoyé pour analyse !",
         step_reformulate: {
           title: "Interpretation piYès",
-          hint: "Mwen byen konprann ?"
+          hint: "Mwen byen konprann ?",
         },
         step_confirm: {
           title: "Vérifier l'action",
@@ -535,35 +625,51 @@ export const translations = {
           label_amount: "Montant",
           label_contact: "Contact",
           btn_continue: "Continuer",
-          btn_edit: "Corriger"
-        }
+          btn_edit: "Corriger",
+        },
       },
       verify_modal: {
         title: "Vérification de la clé",
         sub: "Entrez le code reçu par {{channel}}.",
         placeholder: "000000",
         btn_verify: "Vérifier la clé",
-        success: "Clé vérifiée avec succès !"
+        success: "Clé vérifiée avec succès !",
       },
       schedule_modal: {
         title: "Option de programmation",
         once: "Une seule fois",
         recurring: "Récurrent",
-        automatic: "Automatique"
-      }
+        automatic: "Automatique",
+      },
     },
     notif_settings: {
       title: "Paramètres Notifications",
       channels: "Canaux de réception",
       categories: "Catégories d'alertes",
-      disclaimer: "Note : Les notifications concernant les transactions bancaires majeures et la sécurité critique ne peuvent pas être totalement désactivées pour votre protection.",
+      disclaimer:
+        "Note : Les notifications concernant les transactions bancaires majeures et la sécurité critique ne peuvent pas être totalement désactivées pour votre protection.",
       items: {
-        push: { label: "Notifications Push", sub: "Alertes en temps réel sur l'application" },
-        email: { label: "Notifications E-mail", sub: "Reçus et récapitulatifs par mail" },
-        sms: { label: "Notifications SMS", sub: "Codes de sécurité et alertes critiques" },
-        security: { label: "Sécurité du compte", sub: "Connexions suspectes et changements" },
-        promo: { label: "Actualités & Offres", sub: "Nouveautés piYès et partenaires" }
-      }
+        push: {
+          label: "Notifications Push",
+          sub: "Alertes en temps réel sur l'application",
+        },
+        email: {
+          label: "Notifications E-mail",
+          sub: "Reçus et récapitulatifs par mail",
+        },
+        sms: {
+          label: "Notifications SMS",
+          sub: "Codes de sécurité et alertes critiques",
+        },
+        security: {
+          label: "Sécurité du compte",
+          sub: "Connexions suspectes et changements",
+        },
+        promo: {
+          label: "Actualités & Offres",
+          sub: "Nouveautés piYès et partenaires",
+        },
+      },
     },
     profile_hub: {
       title: "Hub Identitaire",
@@ -573,19 +679,20 @@ export const translations = {
       verify_box: {
         title: "Vérifier mon identité",
         sub: "Débloquez toutes les fonctionnalités piYès.",
-        process: "Processus Persona : Capture de pièce d'identité + Selfie. Validation automatique en moins de 2 minutes.",
-        btn: "Vérifier maintenant"
+        process:
+          "Processus Persona : Capture de pièce d'identité + Selfie. Validation automatique en moins de 2 minutes.",
+        btn: "Vérifier maintenant",
       },
       verified_box: {
         title: "Vérification Persona",
         sub: "Déjà fait • KYC validé le 12/01/2025",
-        badge: "Certifié"
+        badge: "Certifié",
       },
       sections: {
         personal: "Informations Personnelles",
         identity: "Identité & Citoyenneté",
         prefs: "Préférences Compte",
-        security: "Sécurité Hub"
+        security: "Sécurité Hub",
       },
       fields: {
         name: "Nom complet",
@@ -600,11 +707,14 @@ export const translations = {
         language: "Langue de l'interface",
         language_default: "Français",
         timezone: "Fuseau horaire",
-        timezone_default: "GMT-5 (Haïti)"
+        timezone_default: "GMT-5 (Haïti)",
       },
       security_items: {
-        history: { label: "Historique de connexion", sub: "Appareils et sessions actives" },
-        logout_all: "Déconnecter toutes les sessions"
+        history: {
+          label: "Historique de connexion",
+          sub: "Appareils et sessions actives",
+        },
+        logout_all: "Déconnecter toutes les sessions",
       },
       save_btn: "Enregistrer mon identité",
       logout_confirm: "Se déconnecter de ce compte ?",
@@ -624,26 +734,27 @@ export const translations = {
         name_required: "Le nom est requis",
         tag_required: "Le tag est requis",
         verify_email_first: "Veuillez d'abord vérifier votre nouvel email",
-        verify_phone_first: "Veuillez d'abord vérifier votre nouveau téléphone"
+        verify_phone_first: "Veuillez d'abord vérifier votre nouveau téléphone",
       },
       success: {
         email_verified: "Email vérifié ✓",
-        phone_verified: "Téléphone vérifié ✓"
+        phone_verified: "Téléphone vérifié ✓",
       },
       info: {
         no_email_modified: "Aucun email n'a été modifié",
-        no_phone_modified: "Aucun numéro n'a été modifié"
-      }
+        no_phone_modified: "Aucun numéro n'a été modifié",
+      },
     },
     verification: {
       title: "Vérification de Reçu",
-      instructions: "Entrez l'identifiant de transaction ou scannez le QR code pour vérifier l'authenticité.",
+      instructions:
+        "Entrez l'identifiant de transaction ou scannez le QR code pour vérifier l'authenticité.",
       placeholder: "Ex: PIY-HT-...",
       btn_verify: "Vérifier maintenant",
       btn_retry: "Nouvelle vérification",
       authentic_receipt: "Reçu Authentique",
       status_label: "Status: ",
-      invalid_id: "Identifiant Invalide"
+      invalid_id: "Identifiant Invalide",
     },
     help_center: {
       title: "Centre d'aide",
@@ -652,7 +763,7 @@ export const translations = {
         pix: "Pix & Transferts",
         card: "Ma Carte piYès",
         security: "Sécurité",
-        account: "Mon Compte"
+        account: "Mon Compte",
       },
       faqs: {
         title: "Questions fréquentes",
@@ -673,42 +784,53 @@ export const translations = {
         q8: "Pourrai-je effectuer des transferts internationaux ?",
         a8: "Oui, vous pourrez envoyer ou recevoir de l’argent depuis l’étranger. Avant de confirmer, vous verrez le taux de change du jour.",
         q9: "Comment pourrai-je recevoir de l'argent ?",
-        a9: "Vous pourrez générer un QR code ou un lien de paiement pour recevoir rapidement de l'argent d'un proche ou d'un client."
+        a9: "Vous pourrez générer un QR code ou un lien de paiement pour recevoir rapidement de l'argent d'un proche ou d'un client.",
       },
-      btn_contact: "Contacter un conseiller"
+      btn_contact: "Contacter un conseiller",
     },
     support: {
       title: "Assistance piYès",
       need_help: "Besoin d'aide ?",
       sub: "Notre équipe est disponible pour répondre à vos questions et recueillir vos retours pendant la phase de test.",
-      chat: { label: "Démarrer un chat", sub: "Réponse moyenne en quelques minutes" },
-      call: { label: "Appeler le support", sub: "+50947804142 : Disponible uniquement via WhatsApp la semaine aux heures ouvrées" },
+      chat: {
+        label: "Démarrer un chat",
+        sub: "Réponse moyenne en quelques minutes",
+      },
+      call: {
+        label: "Appeler le support",
+        sub: "+50947804142 : Disponible uniquement via WhatsApp la semaine aux heures ouvrées",
+      },
       email: { label: "Envoyer un e-mail", sub: "m.marcruben@yahoo.fr" },
       availability: "Support disponible 7j/7 pendant la période de test",
       assistant_title: "Assistant piYès",
       intelligent_support: "Support intelligent (MVP)",
-      welcome_msg: "Bonjour ! Je suis l'assistant piYès. Comment puis-je vous aider concernant **{{context}}** ?",
-      input_placeholder: "Posez votre question..."
+      welcome_msg:
+        "Bonjour ! Je suis l'assistant piYès. Comment puis-je vous aider concernant **{{context}}** ?",
+      input_placeholder: "Posez votre question...",
     },
     legal_pages: {
       about: {
         title: "À propos de piYès",
-        content: "piYès est un portefeuille électronique en phase de test (MVP), conçue pour simplifier l'accès aux services financiers en Haïti et pour les Haïtiens à l'étranger. Notre mission est de rendre les transferts, dépôts et paiements plus simples, à très bas pris voire gratuitement et accessibles.",
+        content:
+          "piYès est un portefeuille électronique en phase de test (MVP), conçue pour simplifier l'accès aux services financiers en Haïti et pour les Haïtiens à l'étranger. Notre mission est de rendre les transferts, dépôts et paiements plus simples, à très bas pris voire gratuitement et accessibles.",
         build: "Version : 1.0.0 (MVP 2026)",
         made_in: "Fait avec ❤️ pour Haïti.",
-        last_update: "Dernière mise à jour : Avril 2026."
+        last_update: "Dernière mise à jour : Avril 2026.",
       },
       terms: {
         title: "Conditions Générales",
-        content: "L'utilisation de piYès dans cette version MVP implique l'acceptation de nos conditions générales de test. Le service est fourni à titre expérimental et peut évoluer rapidement.",
+        content:
+          "L'utilisation de piYès dans cette version MVP implique l'acceptation de nos conditions générales de test. Le service est fourni à titre expérimental et peut évoluer rapidement.",
         list: "1. Utilisation du service (MVP)\n2. Responsabilité limitée\n3. Frais et limites\n4. Clôture de compte",
-        last_update: "Dernière mise à jour : Avril 2026."
+        last_update: "Dernière mise à jour : Avril 2026.",
       },
       privacy: {
         title: "Confidentialité",
-        content: "Votre vie privée est une priorité. Vous n'êtes pas obligé(e)s de partager vos données personnelles : votre vrai nom ou numéro de téléphone ne sont pas necessaire dans cette phase. Les données d'utilisation collectées pendant la phase de test seront utilisées uniquement pour améliorer l'application. Elles ne seront jamais partagées avec des tiers sans votre consentement.",
-        persona_note: "Nous prévoyons d'intégrer une vérification d'identité sécurisée dans les prochaines versions."
-      }
+        content:
+          "Votre vie privée est une priorité. Vous n'êtes pas obligé(e)s de partager vos données personnelles : votre vrai nom ou numéro de téléphone ne sont pas necessaire dans cette phase. Les données d'utilisation collectées pendant la phase de test seront utilisées uniquement pour améliorer l'application. Elles ne seront jamais partagées avec des tiers sans votre consentement.",
+        persona_note:
+          "Nous prévoyons d'intégrer une vérification d'identité sécurisée dans les prochaines versions.",
+      },
     },
     boutique: {
       title: "Boutique",
@@ -717,33 +839,33 @@ export const translations = {
         home: "Accueil",
         my_ads: "Mes annonces",
         messages: "Messages",
-        notifications: "Notifications"
+        notifications: "Notifications",
       },
       filters: {
         all: "Tout",
         offers: "Offres",
         pros: "Pros",
         products: "Produits",
-        reset: "Reset"
+        reset: "Reset",
       },
       categories: {
         market: "Marché",
         national: "National",
         enterprise: "Entreprises",
         sme: "Commerces",
-        freelance: "Freelance"
+        freelance: "Freelance",
       },
       sections: {
         trending: "À découvrir",
         latest: "Dernières annonces",
-        my_ads_title: "Gérer mes annonces"
+        my_ads_title: "Gérer mes annonces",
       },
       ad_card: {
         published_on: "Publié le {{date}}",
         views: "{{count}} vues",
         messages: "{{count}} messages",
         offer_badge: "Offre",
-        promo_badge: "Promo"
+        promo_badge: "Promo",
       },
       create: {
         btn: "Poster",
@@ -754,8 +876,9 @@ export const translations = {
         field_loc: "Localisation",
         field_desc: "Description",
         field_piyes_pay: "Paiement piYès",
-        field_piyes_pay_sub: "Recevez l'argent instantanément sur votre compte.",
-        submit: "Publier mon annonce"
+        field_piyes_pay_sub:
+          "Recevez l'argent instantanément sur votre compte.",
+        submit: "Publier mon annonce",
       },
       dashboard: {
         title: "Tableau de bord",
@@ -764,7 +887,7 @@ export const translations = {
         payments: "Paiements piYès",
         stats: "Statistiques",
         views: "Vues totales",
-        sales: "Ventes effectuées"
+        sales: "Ventes effectuées",
       },
       search: {
         advanced: "Recherche avancée",
@@ -779,7 +902,7 @@ export const translations = {
         compare: "Comparer",
         comparison_tool: "Outil de comparaison",
         add_to_compare: "Ajouter au comparateur",
-        clear_comparison: "Vider le comparateur"
+        clear_comparison: "Vider le comparateur",
       },
       reviews: {
         title: "Avis et commentaires",
@@ -789,23 +912,23 @@ export const translations = {
         comment_placeholder: "Partagez votre expérience...",
         submit_review: "Publier l'avis",
         no_reviews: "Aucun avis pour le moment.",
-        only_buyers: "Seuls les acheteurs vérifiés peuvent laisser un avis."
-      }
+        only_buyers: "Seuls les acheteurs vérifiés peuvent laisser un avis.",
+      },
     },
     ad_detail: {
       published_on: "Publié le {{date}}",
       specs: {
         storage: "Stockage",
         color: "Couleur",
-        year: "Année"
+        year: "Année",
       },
       member_since: "Membre depuis {{year}}",
       certified_seller: "Utilisateur certifié piYès",
       footer: {
         contact: "Contacter",
         pay: "Payer avec piYès",
-        call: "Appeler"
-      }
+        call: "Appeler",
+      },
     },
     notifications: {
       title: "Notifications",
@@ -814,14 +937,35 @@ export const translations = {
       clear_all: "Tout effacer",
       empty: "Vous n'avez aucune notification pour le moment.",
       types: {
-        FRIEND_REQUEST: { title: "Demande d'ami", body: "{{name}} vous a envoyé une demande d'ami." },
-        FRIEND_ACCEPTED: { title: "Demande acceptée", body: "{{name}} a accepté votre demande d'ami." },
-        transfer_received: { title: "Transfert reçu", body: "Vous avez reçu {{amount}} HTG de {{name}}" },
-        scheduled_created: { title: "Rappel créé", body: "Un rappel de {{amount}} a été créé pour {{name}}. En attente de confirmation." },
-        scheduled_confirmed: { title: "Rappel enregistré", body: "Vous avez confirmé un paiement de {{amount}} pour {{name}} Échéance" },
-        scheduled_cancelled: { title: "Rappel supprimé", body: "Vous avez supprimé le rappel de {{amount}} pour {{name}}" },
-        scheduled_request: { title: "Demande de paiement", body: "{{name}} vous demande {{amount}} avant le {{date}} Confirmez via le QR/lien reçu." }
-      }
+        FRIEND_REQUEST: {
+          title: "Demande d'ami",
+          body: "{{name}} vous a envoyé une demande d'ami.",
+        },
+        FRIEND_ACCEPTED: {
+          title: "Demande acceptée",
+          body: "{{name}} a accepté votre demande d'ami.",
+        },
+        transfer_received: {
+          title: "Transfert reçu",
+          body: "Vous avez reçu {{amount}} HTG de {{name}}",
+        },
+        scheduled_created: {
+          title: "Rappel créé",
+          body: "Un rappel de {{amount}} a été créé pour {{name}}. En attente de confirmation.",
+        },
+        scheduled_confirmed: {
+          title: "Rappel enregistré",
+          body: "Vous avez confirmé un paiement de {{amount}} pour {{name}} Échéance",
+        },
+        scheduled_cancelled: {
+          title: "Rappel supprimé",
+          body: "Vous avez supprimé le rappel de {{amount}} pour {{name}}",
+        },
+        scheduled_request: {
+          title: "Demande de paiement",
+          body: "{{name}} vous demande {{amount}} avant le {{date}} Confirmez via le QR/lien reçu.",
+        },
+      },
     },
     security: {
       title: "Sécurité",
@@ -837,11 +981,12 @@ export const translations = {
       totp_setup: "Configurer TOTP",
       totp_verify: "Vérifier le code",
       totp_placeholder: "Entrez le code à 6 chiffres",
-      warning: "Pour une sécurité maximale, nous vous recommandons d'activer à la fois le MFA et l'authentification TOTP.",
+      warning:
+        "Pour une sécurité maximale, nous vous recommandons d'activer à la fois le MFA et l'authentification TOTP.",
       pin_label: "Code PIN",
       pin_active: "Actif",
       totp_qr_instruction: "Scannez ce QR Code ou entrez la clé manuellement",
-      current_session: "Actuel"
+      current_session: "Actuel",
     },
     receipt: {
       title: "Justificatif",
@@ -865,8 +1010,8 @@ export const translations = {
         WITHDRAW: "Retrait",
         RECHARGE: "Recharge",
         INTERNATIONAL: "International",
-        CARD_PAYMENT: "Paiement Carte"
-      }
+        CARD_PAYMENT: "Paiement Carte",
+      },
     },
     transfer: {
       title: "Transférer",
@@ -879,9 +1024,11 @@ export const translations = {
       review_amount: "Montant",
       review_dest: "Destinataire",
       confirm_btn: "Confirmer le transfert",
-      net_amount_aid: "🎯 Cliquez ici pour que {{name}} reçoive exactement {{amount}} G.",
+      net_amount_aid:
+        "🎯 Cliquez ici pour que {{name}} reçoive exactement {{amount}} G.",
       success_msg: "Transfert de {{amount}} {{currency}} envoyé.",
-      failure_msg: "Transfert de {{amount}} {{currency}} NON envoyé. {{reason}}",
+      failure_msg:
+        "Transfert de {{amount}} {{currency}} NON envoyé. {{reason}}",
       view_receipt: "Voir le reçu",
       go_home: "Retourner à l'accueil",
       search_placeholder: "Tag, téléphone, email ou nom",
@@ -895,7 +1042,8 @@ export const translations = {
       prefilled_qr: "Demande de paiement préremplie (QR code)",
       from_scheduler: "Paiement depuis rappel",
       scheduler_payment: "Rappel de paiement",
-      qr_expired_error: "Ce QR Code a expiré. Veuillez demander au destinataire d'en générer un nouveau.",
+      qr_expired_error:
+        "Ce QR Code a expiré. Veuillez demander au destinataire d'en générer un nouveau.",
       description_link: "Lien de paiement",
       description_qr: "Paiement par QR Code",
       description_scheduler: "Paiement planifié",
@@ -905,7 +1053,7 @@ export const translations = {
       key_phone: "Téléphone",
       key_random: "Aléatoire",
       key_recipient: "Destinataire",
-      verifying_recipient: "Vérification du destinataire..."
+      verifying_recipient: "Vérification du destinataire...",
     },
     deposit: {
       title: "Déposer",
@@ -919,18 +1067,21 @@ export const translations = {
       where_q: "Où souhaitez-vous déposer ?",
       search_agent_placeholder: "Rechercher un agent ou ATM...",
       open: "Ouvert",
-      closed: "Fermé"
+      closed: "Fermé",
     },
     withdraw: {
       title: "Retirer",
       amount_q: "Montant à retirer ({{currency}})",
       exit_confirm_title: "Annuler le retrait ?",
-      exit_confirm_desc: "Si vous quittez cette page, votre demande de retrait sera annulée.",
+      exit_confirm_desc:
+        "Si vous quittez cette page, votre demande de retrait sera annulée.",
       confirm_exit: "Oui, annuler",
-      warning_msg: "Le retrait s'effectue via nos agents certifiés piYès ou dans les points ATM partenaires.",
+      warning_msg:
+        "Le retrait s'effectue via nos agents certifiés piYès ou dans les points ATM partenaires.",
       success_title: "Retrait réussi !",
       success_sub: "Vos fonds sont prêts à être récupérés.",
-      failure_msg: "Retrait de {{amount}} {{currency}} NON effectué. {{reason}}",
+      failure_msg:
+        "Retrait de {{amount}} {{currency}} NON effectué. {{reason}}",
       btn_confirm: "Confirmer retrait",
       code_expired: "Le code de retrait a expiré.",
       code_title: "Code de retrait",
@@ -939,11 +1090,13 @@ export const translations = {
       status_open: "Ouvert",
       status_closed: "Fermé",
       present_code: "Présentez ce code",
-      present_instruction: "Montrez ce code à l'agent <strong>{{name}}</strong> pour finaliser votre retrait de <strong>{{amount}} G</strong>.",
+      present_instruction:
+        "Montrez ce code à l'agent <strong>{{name}}</strong> pour finaliser votre retrait de <strong>{{amount}} G</strong>.",
       alphanumeric_code: "Code Alphanumérique",
-      security_tip: "Ne partagez jamais ce code avec quelqu'un d'autre que l'agent certifié piYès.",
+      security_tip:
+        "Ne partagez jamais ce code avec quelqu'un d'autre que l'agent certifié piYès.",
       received_money: "J'ai reçu l'argent",
-      cancel_btn: "Annuler le retrait"
+      cancel_btn: "Annuler le retrait",
     },
     request: {
       title: "Recevoir un paiement",
@@ -954,18 +1107,21 @@ export const translations = {
       payer_placeholder: "Ex: Jean Dupont",
       btn_qr: "Générer le QR Code",
       btn_schedule: "Programmer la demande",
-      info_tip: "Le QR Code est idéal for un paiement immédiat. La programmation est préférable for les paiements différés.",
+      info_tip:
+        "Le QR Code est idéal for un paiement immédiat. La programmation est préférable for les paiements différés.",
       success_title: "Paiement demandé",
       copy_link: "Copier le lien",
       modify: "Modifier la demande",
-      footer_tip: "Montrez ce QR code au payeur. Il pourra scanner ce code avec son application piYès for initier le transfert immédiatement.",
+      footer_tip:
+        "Montrez ce QR code au payeur. Il pourra scanner ce code avec son application piYès for initier le transfert immédiatement.",
       request_to: "Demande à @",
       amount_placeholder: "0,00",
       send_this_amount: "Envoyer ce montant",
       qr_expired: "QR Code Expiré",
       generate_new: "Générer un nouveau",
       expires_in: "Expire dans",
-      scheduler_friends_only: "Les demandes planifiées sont réservées à vos amis (contacts mutuels).",
+      scheduler_friends_only:
+        "Les demandes planifiées sont réservées à vos amis (contacts mutuels).",
       btn_send_amount: "Envoyer ce montant",
     },
     scheduler: {
@@ -978,28 +1134,30 @@ export const translations = {
         amount_label: "Montant ({{required}})",
         date_label: "Date d'échéance ({{required}})",
         info: "Cette demande sera enregistrée dans votre liste de programmations à recevoir. Le payeur recevra des notifications à l'approche de la date.",
-        btn_create: "Créer la demande planifiée"
+        btn_create: "Créer la demande planifiée",
       },
       tabs: {
         to_pay: "À régler",
-        sent: "Demandes envoyées"
+        sent: "Demandes envoyées",
       },
       stats: {
         to_receive: "Total à recevoir",
         to_pay: "Total à payer",
-        confirmed: "Confirmé"
+        confirmed: "Confirmé",
       },
       list: {
         search_placeholder: "Rechercher par titre ou contact...",
         empty: "Aucun paiement planifié",
-        empty_incoming_desc: "Vous n'avez pas encore créé de demande de paiement planifiée.",
-        empty_outgoing_desc: "Aucun paiement planifié ne vous a été adressé pour le moment.",
+        empty_incoming_desc:
+          "Vous n'avez pas encore créé de demande de paiement planifiée.",
+        empty_outgoing_desc:
+          "Aucun paiement planifié ne vous a été adressé pour le moment.",
         create_first: "Créer ma première programmation",
         status: {
           pending: "En attente",
           confirmed: "Confirmé",
           paid: "Payé",
-          cancelled: "Annulé"
+          cancelled: "Annulé",
         },
         expanded: {
           due_date: "Date d'échéance",
@@ -1007,11 +1165,11 @@ export const translations = {
           reminder_val: "Auto (1j avant)",
           btn_pay: "Payer maintenant",
           btn_remind: "Relancer",
-          btn_modify: "Modifier"
+          btn_modify: "Modifier",
         },
         selected_count: "{{count}} sélectionné(s)",
         total: "Total:",
-        delete_btn: "Supprimer"
+        delete_btn: "Supprimer",
       },
       create: {
         title: "Nouveau rappel",
@@ -1023,34 +1181,40 @@ export const translations = {
         required: "*",
         payer_placeholder: "Nom, tag, email ou téléphone…",
         mutual_friend: "Contact mutuel — rappel autorisé",
-        not_mutual_friend: "Pas encore amis mutuels — une demande d'ami sera nécessaire",
+        not_mutual_friend:
+          "Pas encore amis mutuels — une demande d'ami sera nécessaire",
         amount_label: "Montant",
         due_date_label: "Date d'échéance",
         reminders_label: "Rappels programmés",
         active: "actif",
         actives: "actifs",
-        grid_instruction: "Cliquez sur un jour ou une heure pour activer/désactiver. Au moins un rappel doit rester actif.",
+        grid_instruction:
+          "Cliquez sur un jour ou une heure pour activer/désactiver. Au moins un rappel doit rester actif.",
         time_830: "08h30",
         time_1230: "12h30",
-        info_text: "Le payeur devra confirmer via QR ou lien. Sans confirmation, le rappel reste \"en attente\" et n'apparaît pas dans son onglet \"À régler\".",
+        info_text:
+          'Le payeur devra confirmer via QR ou lien. Sans confirmation, le rappel reste "en attente" et n\'apparaît pas dans son onglet "À régler".',
         btn_create: "Créer le rappel",
         success_title: "Rappel créé !",
         waiting_confirmation: "En attente de confirmation",
-        share_instruction: "Partagez ce QR ou ce lien avec <strong>{{name}}</strong> pour qu'il confirme le rappel.",
+        share_instruction:
+          "Partagez ce QR ou ce lien avec <strong>{{name}}</strong> pour qu'il confirme le rappel.",
         copy_link: "Copier le lien de confirmation",
         view_reminders: "Voir mes rappels",
-        timeout_info: "Sans confirmation du payeur dans les 2 minutes, le rappel restera \"En attente\". Vous pourrez relancer depuis vos rappels.",
+        timeout_info:
+          'Sans confirmation du payeur dans les 2 minutes, le rappel restera "En attente". Vous pourrez relancer depuis vos rappels.',
         friend_request_modal: {
           title: "Relation amicale requise",
           desc: "Pour créer un rappel pour <strong>{{name}}</strong>, vous devez d'abord être amis mutuels sur piYès. Souhaitez-vous envoyer une demande d'ami ?",
           btn_send: "Envoyer une demande d'ami",
           btn_sent: "Demande envoyée ✓",
-          cancel: "Annuler"
+          cancel: "Annuler",
         },
-        friend_request_sent_alert: "Demande d'ami envoyée ! La création du rappel sera possible dès acceptation.",
+        friend_request_sent_alert:
+          "Demande d'ami envoyée ! La création du rappel sera possible dès acceptation.",
         friend_request_error: "Erreur lors de l'envoi de la demande.",
         create_error: "Erreur lors de la création",
-        copy_success: "Lien copié !"
+        copy_success: "Lien copié !",
       },
       item: {
         request_from: "Demande de {{name}}",
@@ -1063,30 +1227,35 @@ export const translations = {
         relancer: "Relancer",
         annuler: "Annuler",
         delete_confirm_title: "Supprimer ce rappel ?",
-        delete_confirm_desc: "\"<strong>{{title}}</strong>\" sera supprimé définitivement. Les deux parties seront notifiées.",
+        delete_confirm_desc:
+          '"<strong>{{title}}</strong>" sera supprimé définitivement. Les deux parties seront notifiées.',
         delete_confirm_btn: "Confirmer la suppression",
         delete_cancel_btn: "Annuler",
-        copy_link: "Copier le lien"
+        copy_link: "Copier le lien",
       },
-      disclaimer: "Vos programmations sont des engagements de paiement. Assurez-vous d'avoir le solde nécessaire le jour de l'échéance.",
+      disclaimer:
+        "Vos programmations sont des engagements de paiement. Assurez-vous d'avoir le solde nécessaire le jour de l'échéance.",
       errors: {
         delete_failed: "Erreur lors de la suppression",
         bulk_delete_failed: "Erreur lors de la suppression groupée",
         pin_incorrect: "PIN incorrect",
-        confirm_failed: "Erreur lors de la confirmation"
+        confirm_failed: "Erreur lors de la confirmation",
       },
       success: {
-        confirmed: "Rappel confirmé ! Il apparaît maintenant dans votre onglet \"À régler\"."
+        confirmed:
+          'Rappel confirmé ! Il apparaît maintenant dans votre onglet "À régler".',
       },
       payment_reminder_prefix: "Rappel de paiement : {{title}}",
       payment_reminder_due_prefix: "Rappel de paiement — échéance {{date}}",
-      pay_info: "En payant via ce bouton, le rappel sera marqué comme réglé et les deux parties seront notifiées.",
+      pay_info:
+        "En payant via ce bouton, le rappel sera marqué comme réglé et les deux parties seront notifiées.",
       paid_on: "Payé le {{date}}",
       reminders_grid: "Grille de rappels",
       delete_this: "Supprimer ce rappel",
       confirm_qr: "QR de confirmation",
       expires_at: "Expire à {{time}}",
-      delete_confirm_item_desc: "\"<strong>{{title}}</strong>\" sera supprimé définitivement. Les deux parties seront notifiées.",
+      delete_confirm_item_desc:
+        '"<strong>{{title}}</strong>" sera supprimé définitivement. Les deux parties seront notifiées.',
       modals: {
         delete_title: "Supprimer ces rappels ?",
         delete_desc: "Voulez-vous supprimer ces rappels de paiement ?",
@@ -1098,14 +1267,15 @@ export const translations = {
         due_date_label: "Échéance",
         reminders_label: "Rappels",
         reminders_count: "rappels programmés",
-        confirm_info: "En confirmant, ce rappel apparaîtra dans votre onglet \"À régler\". Vous ne pourrez le supprimer qu'après paiement ou si {{name}} l'annule.",
+        confirm_info:
+          "En confirmant, ce rappel apparaîtra dans votre onglet \"À régler\". Vous ne pourrez le supprimer qu'après paiement ou si {{name}} l'annule.",
         pin_prompt: "Entrez votre PIN pour confirmer",
         pin_placeholder: "••••",
-        confirm_btn: "Confirmer le rappel"
+        confirm_btn: "Confirmer le rappel",
       },
       popup: {
-        confirmed_body_short: "a confirmé — {{amount}} G."
-      }
+        confirmed_body_short: "a confirmé — {{amount}} G.",
+      },
     },
     history: {
       title: "Historique",
@@ -1118,7 +1288,7 @@ export const translations = {
         sent: "Envoyés",
         deposits: "Dépôts",
         withdrawals: "Retraits",
-        intl: "Intl"
+        intl: "Intl",
       },
       periods: {
         today: "Aujourd'hui",
@@ -1127,12 +1297,12 @@ export const translations = {
         last_week: "Semaine dernière",
         week_of: "Semaine du {{date}}",
         month_of: "{{month}}",
-        month_year: "{{month}} {{year}}"
+        month_year: "{{month}} {{year}}",
       },
       actions: {
         view_reports: "Voir les Rapports",
-        close: "Fermer"
-      }
+        close: "Fermer",
+      },
     },
     reports: {
       title: "Rapports & Relevés",
@@ -1144,20 +1314,25 @@ export const translations = {
         year: "Cette année",
         this_month: "Ce mois",
         six_months: "6 mois",
-        this_year: "Cette année"
+        this_year: "Cette année",
       },
-      summary: "Vous avez effectué {{count}} opérations ce mois-ci for un total net de {{amount}} {{currency}}.",
+      summary:
+        "Vous avez effectué {{count}} opérations ce mois-ci for un total net de {{amount}} {{currency}}.",
       categories: {
         title: "Répartition des dépenses",
         food: "Alimentation",
-        shopping: "Shopping"
+        shopping: "Shopping",
       },
       flow_title: "Flux par semaine",
       export_section: "Exporter mon relevé",
-      export_desc: "Téléchargez l'historique de vos opérations for vos archives personnelles ou administratives.",
+      export_desc:
+        "Téléchargez l'historique de vos opérations for vos archives personnelles ou administratives.",
       formats: {
         pdf: { title: "Relevé format PDF", sub: "Prêt à imprimer ou envoyer" },
-        excel: { title: "Relevé format Excel", sub: "Pour vos propres analyses" }
+        excel: {
+          title: "Relevé format Excel",
+          sub: "Pour vos propres analyses",
+        },
       },
       types: {
         p2p: "Transfert P2P",
@@ -1167,20 +1342,20 @@ export const translations = {
         intl: "International",
         request: "Demande",
         scheduled: "Planifié",
-        card: "Carte"
+        card: "Carte",
       },
       export: {
         filename_prefix: "piyes-rapport-",
         pdf_title: "RAPPORT FINANCIER piYès",
         period_label: "Période :",
-        generated_at: "Généré le :"
+        generated_at: "Généré le :",
       },
       sections: {
         overview: "=== VUE D'ENSEMBLE ===",
         top_payers: "=== TOP PAYEURS ===",
         distribution_by_type: "=== RÉPARTITION PAR TYPE ===",
         savings_costs: "=== ÉCONOMIES & COÛTS ===",
-        peak_hours: "=== HEURES DE POINTE ==="
+        peak_hours: "=== HEURES DE POINTE ===",
       },
       labels: {
         indicator: "Indicateur",
@@ -1217,19 +1392,25 @@ export const translations = {
         apply: "Appliquer",
         overview_title: "Vue d'ensemble",
         net_balance_period: "Solde net de la période",
-        net_balance_help: "Différence entre ce que vous avez encaissé et ce que vous avez dépensé sur la période sélectionnée. Un solde positif indique que vous avez reçu plus que dépensé.",
+        net_balance_help:
+          "Différence entre ce que vous avez encaissé et ce que vous avez dépensé sur la période sélectionnée. Un solde positif indique que vous avez reçu plus que dépensé.",
         received: "Encaissé",
         vs_prev_period: "vs période préc.",
         spent: "Dépensé",
-        transactions_received_help: "Nombre total de paiements que vous avez reçus sur la période. Le montant moyen indique la valeur typique d'un encaissement.",
+        transactions_received_help:
+          "Nombre total de paiements que vous avez reçus sur la période. Le montant moyen indique la valeur typique d'un encaissement.",
         avg_currency: "G. moy.",
-        transactions_sent_help: "Nombre total de paiements que vous avez effectués sur la période. Le montant moyen indique ce que vous dépensez par opération.",
-        total_transactions_help: "Somme de toutes vos opérations financières (envois + réceptions) sur la période sélectionnée.",
+        transactions_sent_help:
+          "Nombre total de paiements que vous avez effectués sur la période. Le montant moyen indique ce que vous dépensez par opération.",
+        total_transactions_help:
+          "Somme de toutes vos opérations financières (envois + réceptions) sur la période sélectionnée.",
         avg_amount: "Montant moyen",
-        avg_amount_help: "Valeur moyenne de toutes vos transactions combinées (envois et réceptions). Utile pour comprendre le ticket typique de vos échanges.",
+        avg_amount_help:
+          "Valeur moyenne de toutes vos transactions combinées (envois et réceptions). Utile pour comprendre le ticket typique de vos échanges.",
         inflow: "Flux entrants",
         top_payers_title: "Top payeurs",
-        top_payers_help: "Les personnes ou entreprises qui vous ont envoyé le plus d'argent sur la période. Les clients fidèles (⭐) ont effectué 5 transactions ou plus.",
+        top_payers_help:
+          "Les personnes ou entreprises qui vous ont envoyé le plus d'argent sur la période. Les clients fidèles (⭐) ont effectué 5 transactions ou plus.",
         top: "Top",
         payers: "payeurs",
         transaction_singular: "transaction",
@@ -1238,23 +1419,30 @@ export const translations = {
         loyals: "Fidèles ⭐",
         no_payments_received: "Aucun paiement reçu sur cette période",
         peak_hours_title: "Heures de pointe",
-        peak_hours_help: "Répartition de vos encaissements par heure de la journée. La barre violette indique l'heure où vous recevez le plus d'argent. Utilisez cette information pour planifier vos promotions ou rappels clients.",
+        peak_hours_help:
+          "Répartition de vos encaissements par heure de la journée. La barre violette indique l'heure où vous recevez le plus d'argent. Utilisez cette information pour planifier vos promotions ou rappels clients.",
         peak: "Pic :",
-        peak_hours_footer: "Vos clients paient surtout entre {{start}} et {{end}}. Idéal pour envoyer des rappels ou promotions.",
+        peak_hours_footer:
+          "Vos clients paient surtout entre {{start}} et {{end}}. Idéal pour envoyer des rappels ou promotions.",
         transaction_distribution: "Répartition des transactions",
         distribution_by_type_title: "Répartition par type",
-        distribution_by_type_help: "Visualisation de vos transactions selon leur nature : transferts P2P, dépôts, retraits, recharges, etc. Le pourcentage indique la part de chaque type dans le volume total.",
+        distribution_by_type_help:
+          "Visualisation de vos transactions selon leur nature : transferts P2P, dépôts, retraits, recharges, etc. Le pourcentage indique la part de chaque type dans le volume total.",
         savings_costs_title: "Économies & Coûts",
         piyes_fees_paid_title: "Frais piYès payés",
-        piyes_fees_paid_help: "Total des frais de service (3%) appliqués sur vos transactions envoyées durant la période. Ces frais couvrent la sécurité, la rapidité et la disponibilité du service.",
+        piyes_fees_paid_help:
+          "Total des frais de service (3%) appliqués sur vos transactions envoyées durant la période. Ces frais couvrent la sécurité, la rapidité et la disponibilité du service.",
         on_sent_transactions: "Sur vos transactions envoyées (3%)",
         estimated_savings_cash_title: "Économie estimée vs cash",
-        estimated_savings_cash_help: "Estimation des coûts évités en utilisant piYès plutôt que le cash : manipulation des billets, erreurs de rendu, risque de vol, et temps perdu. Calculé à 2× vos frais piYès à titre indicatif.",
+        estimated_savings_cash_help:
+          "Estimation des coûts évités en utilisant piYès plutôt que le cash : manipulation des billets, erreurs de rendu, risque de vol, et temps perdu. Calculé à 2× vos frais piYès à titre indicatif.",
         cash_handling_errors: "Manipulation, erreurs, change*",
         estimated_savings_moncash_title: "Économie vs MonCash",
-        estimated_savings_moncash_help: "Différence estimée entre les frais piYès (3%) et les frais MonCash (environ 5%). Sur chaque gourde envoyée, vous économisez environ 2% en choisissant piYès. Plus vous transactionnez, plus l'écart joue en votre faveur.",
+        estimated_savings_moncash_help:
+          "Différence estimée entre les frais piYès (3%) et les frais MonCash (environ 5%). Sur chaque gourde envoyée, vous économisez environ 2% en choisissant piYès. Plus vous transactionnez, plus l'écart joue en votre faveur.",
         moncash_fees_estimated: "Frais MonCash ~5% estimés*",
-        estimations_disclaimer: "* Estimations indicatives. Les frais réels varient selon les opérateurs et les montants.",
+        estimations_disclaimer:
+          "* Estimations indicatives. Les frais réels varient selon les opérateurs et les montants.",
         export_report: "Exporter le rapport",
         export_pdf: "Exporter en PDF",
         export_pdf_sub: "Rapport visuel complet, prêt à partager",
@@ -1283,41 +1471,58 @@ export const translations = {
           for_period: "Pour {{month}} {{year}}",
           all: "Tous",
           sent: "Envoyés",
-          received: "Reçus"
-        }
+          received: "Reçus",
+        },
       },
       frequency: {
         unique: "Unique",
         regular: "Régulier",
-        loyal: "Fidèle"
-      }
+        loyal: "Fidèle",
+      },
     },
     promos: {
       title: "Promotions et Bonus",
       banner: {
         title: "Gagnez plus avec piYès",
         desc: "Découvrez nos offres exclusives et boosts de compte.",
-        btn: "Comment ça marche ?"
+        btn: "Comment ça marche ?",
       },
       available: "Offres disponibles",
       partner_offers_desc: "Profitez de nos offres partenaires",
       share_code: "Partager mon code",
       items: {
-        refer: { title: "Parrainez un ami", desc: "Gagnez 500 HTG pour chaque ami qui s'inscrit et active son compte.", badge: "Populaire" },
-        refer_earn: { title: "Refer and earn", desc: "Gagnez G 1000 quand 5 personnes téléchargent l’appli grâce à vous*", badge: "Nouveau" },
-        welcome: { title: "Bonus de Bienvenue", desc: "Recevez 100 HTG après votre premier dépôt de plus de 1000 HTG.", badge: "Nouveau" },
-        cashback: { title: "Cashback Marché", desc: "2% de remise sur tous vos achats effectués dans la Boutique Services.", badge: "Permanent" }
+        refer: {
+          title: "Parrainez un ami",
+          desc: "Gagnez 500 HTG pour chaque ami qui s'inscrit et active son compte.",
+          badge: "Populaire",
+        },
+        refer_earn: {
+          title: "Refer and earn",
+          desc: "Gagnez G 1000 quand 5 personnes téléchargent l’appli grâce à vous*",
+          badge: "Nouveau",
+        },
+        welcome: {
+          title: "Bonus de Bienvenue",
+          desc: "Recevez 100 HTG après votre premier dépôt de plus de 1000 HTG.",
+          badge: "Nouveau",
+        },
+        cashback: {
+          title: "Cashback Marché",
+          desc: "2% de remise sur tous vos achats effectués dans la Boutique Services.",
+          badge: "Permanent",
+        },
       },
       loyalty: {
         title: "Programme Fidélité",
         points: "Mes Points piYès",
-        next_tier: "Encore {{points}} points for le prochain palier (Statut Gold)",
-        btn: "Voir les récompenses"
+        next_tier:
+          "Encore {{points}} points for le prochain palier (Statut Gold)",
+        btn: "Voir les récompenses",
       },
       club: {
         title: "Plans & Économies",
-        desc: "Plans / économies et avantages imbattables"
-      }
+        desc: "Plans / économies et avantages imbattables",
+      },
     },
     banks: {
       add_title: "Ajouter une banque",
@@ -1341,11 +1546,13 @@ export const translations = {
       unlink_btn: "Supprimer la banque",
       manage_banks: "Gérer mes banques",
       unlink_confirm_title: "Dissocier cette banque ?",
-      unlink_confirm_desc: "Vous ne pourrez plus effectuer de transferts avec ce compte, mais l'historique sera conservé.",
+      unlink_confirm_desc:
+        "Vous ne pourrez plus effectuer de transferts avec ce compte, mais l'historique sera conservé.",
       confirm_unlink: "Dissocier le compte",
       unlink_success: "Banque dissociée avec succès",
       unlink_error: "Erreur lors de la dissociation",
-      no_external_history: "Aucun transfert interbancaire trouvé pour ce compte."
+      no_external_history:
+        "Aucun transfert interbancaire trouvé pour ce compte.",
     },
     interbank: {
       title: "Pont Bancaire",
@@ -1370,12 +1577,14 @@ export const translations = {
       picker_sub: "Sélectionnez un compte for le transfert.",
       btn_proceed: "Procéder au transfert",
       success_title: "Transfert effectué !",
-      success_sub: "L'argent a été déplacé avec succès entre vos comptes."
+      success_sub: "L'argent a été déplacé avec succès entre vos comptes.",
     },
     identity_process: {
       main_title: "Passez au niveau supérieur",
-      sub_title: "Pour débloquer les transferts et sécuriser votre compte, nous devons vérifier votre identité.",
-      persona_note: "Nous utilisons Persona for garantir la sécurité de vos données.",
+      sub_title:
+        "Pour débloquer les transferts et sécuriser votre compte, nous devons vérifier votre identité.",
+      persona_note:
+        "Nous utilisons Persona for garantir la sécurité de vos données.",
       start_btn: "Commencer la vérification",
       header_title: "Vérification piYès",
       step1_title: "Vérifions votre identité",
@@ -1392,7 +1601,7 @@ export const translations = {
       finalizing: "Finalisation...",
       congrats: "Félicitations !",
       verified_msg: "Identité vérifiée avec succès.",
-      back_home: "Retourner à l'accueil"
+      back_home: "Retourner à l'accueil",
     },
     recharge: {
       title: "Recharge mobile",
@@ -1405,7 +1614,8 @@ export const translations = {
       select_contact: "Choisir un contact",
       custom_amount: "Montant personnalisé",
       operator_detected: "Opérateur détecté",
-      confirm_msg: "Vous allez recharger le {{number}} de {{amount}} HTG ({{operator}}).",
+      confirm_msg:
+        "Vous allez recharger le {{number}} de {{amount}} HTG ({{operator}}).",
       success_msg: "Recharge effectuée avec succès !",
       failure_msg: "Échec de la recharge. Veuillez réessayer.",
       view_receipt: "Voir le reçu",
@@ -1413,7 +1623,7 @@ export const translations = {
       payment_method_subtitle: "Sélectionnez le mode de paiement",
       done: "Terminé",
       share: "Partager le reçu",
-      download: "Télécharger PDF"
+      download: "Télécharger PDF",
     },
     intl: {
       locale: "fr-HT",
@@ -1431,7 +1641,7 @@ export const translations = {
       methods: {
         bank: "Compte bancaire",
         cash: "Cash Pickup (Agence)",
-        mobile: "Portefeuille mobile"
+        mobile: "Portefeuille mobile",
       },
       info_label: "Détails de réception (IBAN, Tél...)",
       example_name: "Jean-Marc Valerius",
@@ -1449,7 +1659,8 @@ export const translations = {
       success_title: "Transfert envoyé !",
       success_sub: "Votre argent est en route vers {{country}}.",
       search_country: "Chercher un pays...",
-      notif_received: "Vous avez reçu un transfert international de {{amount}} de {{sender}}. Code de retrait : {{code}}",
+      notif_received:
+        "Vous avez reçu un transfert international de {{amount}} de {{sender}}. Code de retrait : {{code}}",
       code_label: "Code du transfert",
       countries: {
         us: "États-Unis",
@@ -1457,21 +1668,26 @@ export const translations = {
         fr: "France",
         do: "Rép. Dominicaine",
         br: "Brésil",
-        cl: "Chili"
+        cl: "Chili",
       },
       choose_provider: "Choisissez un prestataire",
-      select_service_desc: "Sélectionnez le service qui vous convient le mieux pour votre transfert international.",
+      select_service_desc:
+        "Sélectionnez le service qui vous convient le mieux pour votre transfert international.",
       piyes_intl: "piYès International",
       recommended: "Recommandé",
-      piyes_intl_desc: "Transfert instantané vers plus de 50 pays avec les meilleurs taux.",
-      real_rate_desc: "Envoyez de l'argent à l'étranger au taux de change réel.",
+      piyes_intl_desc:
+        "Transfert instantané vers plus de 50 pays avec les meilleurs taux.",
+      real_rate_desc:
+        "Envoyez de l'argent à l'étranger au taux de change réel.",
       coming_soon: "Bientôt disponible",
-      fast_reliable_desc: "Transferts d'argent rapides et fiables dans le monde entier.",
+      fast_reliable_desc:
+        "Transferts d'argent rapides et fiables dans le monde entier.",
       online_person_desc: "Envoyez de l'argent en ligne ou en personne.",
       secure_transfers: "Transferts Sécurisés",
-      secure_transfers_desc: "Tous nos partenaires sont certifiés et vos fonds sont protégés par notre garantie de sécurité piYès.",
+      secure_transfers_desc:
+        "Tous nos partenaires sont certifiés et vos fonds sont protégés par notre garantie de sécurité piYès.",
       need_help: "Besoin d'aide ?",
-      learn_more: "En savoir plus sur les transferts internationaux"
+      learn_more: "En savoir plus sur les transferts internationaux",
     },
     tools: {
       calculator: {
@@ -1480,31 +1696,45 @@ export const translations = {
         collect: "Encaisser ce montant",
         modal_title: "Autres Outils",
         modal_sub: "Services financiers intégrés for piYès.",
-        error: "Erreur"
+        error: "Erreur",
       },
       items: {
-        analysis: { title: "Analyses & Rapports", desc: "Visualisez vos habitudes de consommation avec des graphiques détaillés.", badge: "Indispensable" },
-        converter: { title: "Convertisseur de Devises", desc: "Calculez instantanément les conversions HTG, USD et EUR." },
-        statements: { title: "Exportation de Relevés", desc: "Générez des documents PDF certifiés for vos besoins administratifs." },
-        credit: { title: "Simulateur de Prêt", desc: "Estimez vos capacités d'emprunt et vos mensualités de remboursement.", badge: "Nouveau" }
-      }
+        analysis: {
+          title: "Analyses & Rapports",
+          desc: "Visualisez vos habitudes de consommation avec des graphiques détaillés.",
+          badge: "Indispensable",
+        },
+        converter: {
+          title: "Convertisseur de Devises",
+          desc: "Calculez instantanément les conversions HTG, USD et EUR.",
+        },
+        statements: {
+          title: "Exportation de Relevés",
+          desc: "Générez des documents PDF certifiés for vos besoins administratifs.",
+        },
+        credit: {
+          title: "Simulateur de Prêt",
+          desc: "Estimez vos capacités d'emprunt et vos mensualités de remboursement.",
+          badge: "Nouveau",
+        },
+      },
     },
     advanced: {
       title: "Outils Avancés",
       sections: {
         accounts: "Mes Comptes",
         health: "Santé du Système",
-        debug: "Debug Mode"
+        debug: "Debug Mode",
       },
       health: {
         status: "Status",
         version: "Version",
-        uptime: "Uptime"
+        uptime: "Uptime",
       },
       debug: {
         label: "ID Decryption",
-        placeholder: "ID to decrypt"
-      }
+        placeholder: "ID to decrypt",
+      },
     },
     onboarding: {
       skip: "Passer",
@@ -1513,24 +1743,28 @@ export const translations = {
       step1: {
         title: "Bienvenue sur piYès",
         subtitle: "Votre compagnon financier pour une gestion intelligente",
-        description: "Prenez le contrôle de votre avenir financier avec notre suite complète d'outils conçus pour vous aider à épargner et gérer votre argent."
+        description:
+          "Prenez le contrôle de votre avenir financier avec notre suite complète d'outils conçus pour vous aider à épargner et gérer votre argent.",
       },
       step2: {
         title: "Budget Intelligent",
         subtitle: "Créez et suivez vos budgets sans effort",
-        description: "Fixez des objectifs financiers, suivez vos habitudes de dépenses et obtenez des informations en temps réel."
+        description:
+          "Fixez des objectifs financiers, suivez vos habitudes de dépenses et obtenez des informations en temps réel.",
       },
       step3: {
         title: "Transferts Instantanés",
         subtitle: "Envoyez de l'argent en un clin d'œil",
-        description: "Effectuez des transferts sécurisés vers vos contacts piYès ou vers d'autres banques instantanément."
+        description:
+          "Effectuez des transferts sécurisés vers vos contacts piYès ou vers d'autres banques instantanément.",
       },
       step4: {
         title: "Sécurisé & Privé",
         subtitle: "Vos données sont protégées",
-        description: "Ayez l'esprit tranquille en sachant que vos informations financières sont cryptées et surveillées 24h/24."
-      }
-    }
+        description:
+          "Ayez l'esprit tranquille en sachant que vos informations financières sont cryptées et surveillées 24h/24.",
+      },
+    },
   },
   ht: {
     common: {
@@ -1586,7 +1820,7 @@ export const translations = {
         sep: "Sept.",
         oct: "Okt.",
         nov: "Novanm",
-        dec: "Des."
+        dec: "Des.",
       },
       months_full: {
         january: "Janvye",
@@ -1600,8 +1834,8 @@ export const translations = {
         september: "Septanm",
         october: "Oktòb",
         november: "Novanm",
-        december: "Desanm"
-      }
+        december: "Desanm",
+      },
     },
     otp: {
       title: "Verifikasyon Sekirite",
@@ -1613,27 +1847,29 @@ export const translations = {
       error_invalid: "Kòd sa pa bon.",
       success: "Aparèy ou verifye !",
       trouble: "Èske w gen pwoblèm ?",
-      contact_info: "Kontakte sipò nou nan +509 0000-0000 oswa pa e-mail nan support-otp@piyes.com pou jwenn èd.",
-      secure_connection: "Koneksyon an sekirite"
+      contact_info:
+        "Kontakte sipò nou sou WhatsApp nan +509 4780-4142 oswa pa e-mail nan marcrubenmacean@gmail.com pou jwenn èd.",
+      secure_connection: "Koneksyon an sekirite",
     },
     security_flow: {
       pin_intro_title: "Pwoteje kòb ou",
-      pin_intro_desc: "Kreye yon kòd PIN 4 chif pou w ka voye kòb ak plis sekirite.",
+      pin_intro_desc:
+        "Kreye yon kòd PIN 4 chif pou w ka voye kòb ak plis sekirite.",
       pin_setup_btn: "Kreye PIN mwen kounye a",
       welcome_title: "Byenvini sou piYès !",
       welcome_desc: "Kont ou pare e li byen pwoteje. Ann gade kisa k nèf.",
-      welcome_btn: "Ale sou Akèy"
+      welcome_btn: "Ale sou Akèy",
     },
     currency: {
       symbol: "G.",
       name: "Goud",
-      name_plural: "Goud"
+      name_plural: "Goud",
     },
     nav: {
       home: "Akèy",
       services: "Mache",
       profile: "Pwofil",
-      keys: "Operasyon"
+      keys: "Operasyon",
     },
     auth: {
       login_greeting: "Salut ! Ki imèl oswa nimewo telefòn ou ?",
@@ -1667,13 +1903,13 @@ export const translations = {
       signup_error: "Erè nan enskripsyon",
       resend_code: "Voye kòd la ankò",
       reset_password_btn: "Chanje modpas la",
-      login_btn: "Konekte"
+      login_btn: "Konekte",
     },
     accounts: {
       piyes_current: "Kont Kouran piYès",
       label_piyes: "PiYès!",
       label_moncash: "MonCash",
-      label_buh: "BUH"
+      label_buh: "BUH",
     },
     dashboard: {
       greeting: "Bonjou",
@@ -1694,7 +1930,7 @@ export const translations = {
       transfer_again: "Vire ankò",
       promo_desc: "Dekouvri bonis ak of espesyal ou yo",
       private_balance_not_available: "Lajan prive pa disponib",
-      consult_via: "Gade sou"
+      consult_via: "Gade sou",
     },
     actions: {
       transfer: "Vire lajan",
@@ -1707,14 +1943,14 @@ export const translations = {
       contacts: "Kontak yo",
       promotions: "Pwomosyon",
       qr_proximity: "Operasyon",
-      international: "Entènasyonal"
+      international: "Entènasyonal",
     },
     account_summary: {
       fees_transfer: "Frè pou vire",
       fees_service: "Frè sèvis",
       transfer_message: "Moun nan ap resevwa : {{amount}} {{currency}}",
       withdraw_message: "W ap resevwa : {{amount}} {{currency}} na men ajan an",
-      deposit_message: "W ap resevwa : {{amount}} {{currency}}"
+      deposit_message: "W ap resevwa : {{amount}} {{currency}}",
     },
     contacts: {
       title: "Kontak yo",
@@ -1757,79 +1993,92 @@ export const translations = {
         my_interactions_with: "Entèraksyon m ak {{name}}",
         delete_contact: "Siprime kontak sa",
         delete_confirm_title: "Siprime kontak sa ?",
-        delete_confirm_desc: "Èske w sèten ou vle siprime {{name}} nan kontak ou yo ?",
+        delete_confirm_desc:
+          "Èske w sèten ou vle siprime {{name}} nan kontak ou yo ?",
         delete_yes: "Wi, siprime",
         delete_no: "Anile",
-        active_schedule_error: "Ou pa ka siprime kontak sa : gen yon rapèl peman ki aktif ant nou.",
-        active_schedule_friend_error: "Ou pa ka chanje relasyon zanmi an : gen yon rapèl peman ki aktif ant nou.",
+        active_schedule_error:
+          "Ou pa ka siprime kontak sa : gen yon rapèl peman ki aktif ant nou.",
+        active_schedule_friend_error:
+          "Ou pa ka chanje relasyon zanmi an : gen yon rapèl peman ki aktif ant nou.",
         not_found: "Kontak la pa jwenn.",
         request: "Mande",
-        reminder: "Rapèl"
+        reminder: "Rapèl",
       },
-    sync: "Senkronize",
-    syncing: "Senkronizasyon...",
-    no_results: "Nou pa jwenn okenn kontak",
-    new: "Nouvo",
-    add_info_label: "Tag, imèl, telefòn oswa lòt kle",
-    non_user_warning: "Kontak sa a poko sou piYès. Aksyon peman yo dezaktive jiskaske li enskri.",
-    non_network_contact: "Kontak andeyò rezo piYès",
-    actions_after_signup: "Aksyon ki disponib apre li enskri sou piYès",
-    view_full_profile: "Gade pwofil konplè a",
-    import_phone: "Enpòte soti nan telefòn",
-    import_success: "Enpòtasyon {{count}} kontak reyisi !",
-    import_not_supported: "Enpòtasyon kontak pa sipòte sou navigatè sa a.",
-    add_error: "Erè lè w ap ajoute kontak la.",
-    checking: "Verifikasyon...",
-    user_found: "Itilizatè piYès jwenn",
-    user_not_found_warning: "Kle sa a pa koresponn ak okenn itilizatè piYès — kontak la ap sove kanmenm",
-    non_user_confirm_title: "Kontak andeyò rezo",
-    non_user_confirm_desc: "Kle sa a pa koresponn ak okenn itilizatè piYès. Èske w vle anrejistre kontak sa a kanmenm ?",
-    entered_info: "Enfòmasyon ou antre",
-    key_not_found_db: "Kle pa jwenn nan baz piYès",
-    save_anyway: "Wi, anrejistre kanmenm",
-    saving: "Enregistrement...",
-    cancel_check: "Anile, tcheke enfòmasyon yo",
-    sync_success: "Kontak yo senkronize ak siksè !",
-    new_recipient: "Nouvo moun k ap resevwa"
-  },
-  privacy_settings: {
-    title: "Konfidansyalite kontak & transfè",
-    sub: "Jere ki moun ki ka jwenn ou ak kominike avèk ou",
-    requests_section: "Demann lajan",
-    transfers_section: "Transfè",
-    visibility_section: "Vizibilite pwofil",
-    others_section: "Lòt paramèt",
-    block_everyone: "Bloke demann tout moun",
-    allow_everyone: "Mwen pèmèt demann tout moun",
-    block_transfers_everyone: "Bloke transfè tout moun",
-    allow_transfers_everyone: "Mwen pèmèt transfè tout moun",
-    contacts_only: "Kontak mwen yo sèlman",
-    specific_contacts: "Gen kèk kontak espesifik",
-    visibility_everyone: "Tout moun",
-    visibility_contacts: "Kontak sèlman",
-    visibility_mutual: "Zanmi sèlman (Mityèl)",
-    visibility_private: "Prive (Envizib)",
-    anonymous_transfers: "Pèmèt transfè anonim",
-    hide_tag: "Kache tag mwen nan resi yo",
-    friends_only_requests: "Demann zanmi m yo sèlman",
-    confirm_block_title: "Konfime blokaj la",
-    confirm_block_msg: "Si w bloke {{type}} {{tag}}, moun sa a p ap ka kominike avèk ou konsa ankò. Konfime ?",
-    help_requests: "Anpeche nenpòt moun voye yon demann peman dirèk ba ou.",
-    help_transfers: "Anpeche nenpòt moun voye lajan ba ou (eksepte via QR oswa lyen si sa otorize).",
-    help_visibility_contacts: "Moun ki pa gen nimewo w oswa tag ou p ap wè pwofil ou nan anyè a.",
-    help_visibility_mutual: "Se sèlman zanmi mityèl ou yo ki ka wè tag ou ak pwofil ou.",
-    help_visibility_private: "Ou pa parèt nan okenn lis. Moun ka kontakte w sèlman si yo konnen tag egzak ou.",
-    help_anonymous: "Pèmèt ou resevwa lajan via QR oswa lyen san idantifikasyon davans.",
-    help_hide_tag: "Tag @ ou p ap vizib sou resi tranzaksyon ou voye yo.",
-    help_friends_only: "Plis strik pase 'kontak' : sa mande pou nou tou de nan lis lòt la.",
-    saving: "Anrejistreman...",
-    got_it: "Mwen konprann",
-    block_requests_title: "Bloke demann yo",
-    block_transfers_title: "Bloke transfè yo",
-    search_block_placeholder: "Chèche yon tag oswa kontak...",
-    block_tag_exact: "Bloke tag \"{{tag}}\"",
-    block_tag_hint: "Bloke yon itilizatè pa tag egzak li"
-  },
+      sync: "Senkronize",
+      syncing: "Senkronizasyon...",
+      no_results: "Nou pa jwenn okenn kontak",
+      new: "Nouvo",
+      add_info_label: "Tag, imèl, telefòn oswa lòt kle",
+      non_user_warning:
+        "Kontak sa a poko sou piYès. Aksyon peman yo dezaktive jiskaske li enskri.",
+      non_network_contact: "Kontak andeyò rezo piYès",
+      actions_after_signup: "Aksyon ki disponib apre li enskri sou piYès",
+      view_full_profile: "Gade pwofil konplè a",
+      import_phone: "Enpòte soti nan telefòn",
+      import_success: "Enpòtasyon {{count}} kontak reyisi !",
+      import_not_supported: "Enpòtasyon kontak pa sipòte sou navigatè sa a.",
+      add_error: "Erè lè w ap ajoute kontak la.",
+      checking: "Verifikasyon...",
+      user_found: "Itilizatè piYès jwenn",
+      user_not_found_warning:
+        "Kle sa a pa koresponn ak okenn itilizatè piYès — kontak la ap sove kanmenm",
+      non_user_confirm_title: "Kontak andeyò rezo",
+      non_user_confirm_desc:
+        "Kle sa a pa koresponn ak okenn itilizatè piYès. Èske w vle anrejistre kontak sa a kanmenm ?",
+      entered_info: "Enfòmasyon ou antre",
+      key_not_found_db: "Kle pa jwenn nan baz piYès",
+      save_anyway: "Wi, anrejistre kanmenm",
+      saving: "Enregistrement...",
+      cancel_check: "Anile, tcheke enfòmasyon yo",
+      sync_success: "Kontak yo senkronize ak siksè !",
+      new_recipient: "Nouvo moun k ap resevwa",
+    },
+    privacy_settings: {
+      title: "Konfidansyalite kontak & transfè",
+      sub: "Jere ki moun ki ka jwenn ou ak kominike avèk ou",
+      requests_section: "Demann lajan",
+      transfers_section: "Transfè",
+      visibility_section: "Vizibilite pwofil",
+      others_section: "Lòt paramèt",
+      block_everyone: "Bloke demann tout moun",
+      allow_everyone: "Mwen pèmèt demann tout moun",
+      block_transfers_everyone: "Bloke transfè tout moun",
+      allow_transfers_everyone: "Mwen pèmèt transfè tout moun",
+      contacts_only: "Kontak mwen yo sèlman",
+      specific_contacts: "Gen kèk kontak espesifik",
+      visibility_everyone: "Tout moun",
+      visibility_contacts: "Kontak sèlman",
+      visibility_mutual: "Zanmi sèlman (Mityèl)",
+      visibility_private: "Prive (Envizib)",
+      anonymous_transfers: "Pèmèt transfè anonim",
+      hide_tag: "Kache tag mwen nan resi yo",
+      friends_only_requests: "Demann zanmi m yo sèlman",
+      confirm_block_title: "Konfime blokaj la",
+      confirm_block_msg:
+        "Si w bloke {{type}} {{tag}}, moun sa a p ap ka kominike avèk ou konsa ankò. Konfime ?",
+      help_requests: "Anpeche nenpòt moun voye yon demann peman dirèk ba ou.",
+      help_transfers:
+        "Anpeche nenpòt moun voye lajan ba ou (eksepte via QR oswa lyen si sa otorize).",
+      help_visibility_contacts:
+        "Moun ki pa gen nimewo w oswa tag ou p ap wè pwofil ou nan anyè a.",
+      help_visibility_mutual:
+        "Se sèlman zanmi mityèl ou yo ki ka wè tag ou ak pwofil ou.",
+      help_visibility_private:
+        "Ou pa parèt nan okenn lis. Moun ka kontakte w sèlman si yo konnen tag egzak ou.",
+      help_anonymous:
+        "Pèmèt ou resevwa lajan via QR oswa lyen san idantifikasyon davans.",
+      help_hide_tag: "Tag @ ou p ap vizib sou resi tranzaksyon ou voye yo.",
+      help_friends_only:
+        "Plis strik pase 'kontak' : sa mande pou nou tou de nan lis lòt la.",
+      saving: "Anrejistreman...",
+      got_it: "Mwen konprann",
+      block_requests_title: "Bloke demann yo",
+      block_transfers_title: "Bloke transfè yo",
+      search_block_placeholder: "Chèche yon tag oswa kontak...",
+      block_tag_exact: 'Bloke tag "{{tag}}"',
+      block_tag_hint: "Bloke yon itilizatè pa tag egzak li",
+    },
     settings: {
       title: "Pwofil & Paramèt",
       account_section: "Kont",
@@ -1841,12 +2090,13 @@ export const translations = {
       themes: {
         default: "Pa defo",
         dark: "Nwa",
-        bleu_cendre: "Bleu Cendre"
+        bleu_cendre: "Bleu Cendre",
       },
       font_size: "Gwosè lèt yo",
       logout: "Dekonekte",
       logout_confirm_title: "Dekonekte ?",
-      logout_confirm_desc: "W ap bezwen rekonekte pou w ka jwenn aksè nan kont ou.",
+      logout_confirm_desc:
+        "W ap bezwen rekonekte pou w ka jwenn aksè nan kont ou.",
       hub_section: "SEKIRITE HUB",
       session_history: "Istwa koneksyon",
       session_history_sub: "Aparèy ak sesyon ki aktif yo",
@@ -1854,7 +2104,8 @@ export const translations = {
       delete_account: "Siprime kont mwen",
       delete_account_sub: "Aksyon sa pa ka chanje",
       delete_confirm_title: "Siprime kont ou ?",
-      delete_confirm_desc: "Tout done w yo ap siprime nèt. Aksyon sa pa ka chanje.",
+      delete_confirm_desc:
+        "Tout done w yo ap siprime nèt. Aksyon sa pa ka chanje.",
       logout_all_confirm_title: "Dekonekte tout sesyon yo ?",
       logout_all_confirm_desc: "W ap bezwen rekonekte sou tout aparèy ou yo.",
       session_delete_confirm_title: "Siprime sesyon sa ?",
@@ -1865,21 +2116,33 @@ export const translations = {
         small: "Piti",
         default: "Nòmal",
         large: "Gwo",
-        extra_large: "Trè gwo"
+        extra_large: "Trè gwo",
       },
       items: {
         profile: { label: "Jere pwofil", sub: "Enfòmasyon pèsonèl ak foto" },
         security: { label: "Sekirite & MFA", sub: "Modpas ak pwoteksyon kont" },
-        pin: { label: "Kòd PIN piYès", sub: "Pwoteje kont ou ak tranzaksyon w" },
+        pin: {
+          label: "Kòd PIN piYès",
+          sub: "Pwoteje kont ou ak tranzaksyon w",
+        },
         notifications: { label: "Notifikasyon", sub: "Alerte sou tranzaksyon" },
-        verify_receipt: { label: "Verifye yon resi", sub: "Tcheke si yon resi se tout bon" },
-        refresh_assets: { label: "Rafrechi asèt yo", sub: "Mete logo ak drapo yo ajou" },
-        appointments: { label: "Randevou", sub: "Jere randevou ak ajan nou yo" },
+        verify_receipt: {
+          label: "Verifye yon resi",
+          sub: "Tcheke si yon resi se tout bon",
+        },
+        refresh_assets: {
+          label: "Rafrechi asèt yo",
+          sub: "Mete logo ak drapo yo ajou",
+        },
+        appointments: {
+          label: "Randevou",
+          sub: "Jere randevou ak ajan nou yo",
+        },
         help: { label: "Sant èd", sub: "Repons pou keksyon w genyen" },
         contact: { label: "Kontakte sipò", sub: "Asistans 24è/7" },
         about: { label: "Konsènan piYès", sub: "Vèsyon 1.2.0 • Build 2025" },
-        terms: { label: "Kondisyon Jeneral", sub: "Li kondisyon sèvis nou yo" }
-      }
+        terms: { label: "Kondisyon Jeneral", sub: "Li kondisyon sèvis nou yo" },
+      },
     },
     pin: {
       title_setup: "Kreye PIN ou",
@@ -1900,11 +2163,12 @@ export const translations = {
       setup_success: "PIN ou anrejistre.",
       change_success: "PIN la chanje.",
       remove_confirm: "Ou vle wete PIN la tout bon ?",
-      warning_removal: "Sa ap fè kont ou mwens an sekirite."
+      warning_removal: "Sa ap fè kont ou mwens an sekirite.",
     },
     plans: {
       title: "Plan & Ekonomi",
-      subtitle: "Chwazi plan k ap fè w ekonomize plis, pandan w ap jwi sèvis rapid san frè kache.",
+      subtitle:
+        "Chwazi plan k ap fè w ekonomize plis, pandan w ap jwi sèvis rapid san frè kache.",
       tagline_basic: "Kòmanse gratis. Pa gen angajman.",
       tagline_low: "Ideyal pou moun ki fè transfè regilyèman.",
       tagline_mid: "Pou itilizatè aktif ak pwofesyonèl chak jou.",
@@ -1913,7 +2177,8 @@ export const translations = {
       toast_subscribe_sent: "Demann abònman nan plan {{name}} voye!",
       exclusive_offers: "Of eksklizif",
       popular_badge: "Popilè",
-      change_anytime: "Ou ka chanje plan nenpòt lè. Avantaj yo aktive imedyatman apre konfimasyon peman abònman an.",
+      change_anytime:
+        "Ou ka chanje plan nenpòt lè. Avantaj yo aktive imedyatman apre konfimasyon peman abònman an.",
       secure_payment: "Peman 100% sekirize",
       estimated_value: "Valè : {{amount}} G / mwa",
       month: "/ mwa",
@@ -1921,11 +2186,35 @@ export const translations = {
       learn_more: "Plis enfòmasyon",
       active_badge: "Plan aktif",
       perks: {
-        basic: ["Vire kòb gratis jiska 500 G", "Sekirite estanda", "Aksè konplè na app la", "Èd kominotè"],
-        low: ["Tout avantaj Basic", "Vire kòb gratis jiska 2,000 G", "Retrè ak 3%", "Sipò priyoritè", "Of patnè yo"],
-        mid: ["Tout avantaj Low", "Vire kòb gratis jiska 5,000 G", "Retrè ak 2%", "Sekirite total (OTP + PIN)", "Resi PDF otomatik", "Asistans vwa"],
-        high: ["Vire kòb gratis san limit", "Retrè ak 1%", "Mèt kont devwe", "Of eksklizif chak mwa", "Estatistik avanse"]
-      }
+        basic: [
+          "Vire kòb gratis jiska 500 G",
+          "Sekirite estanda",
+          "Aksè konplè na app la",
+          "Èd kominotè",
+        ],
+        low: [
+          "Tout avantaj Basic",
+          "Vire kòb gratis jiska 2,000 G",
+          "Retrè ak 3%",
+          "Sipò priyoritè",
+          "Of patnè yo",
+        ],
+        mid: [
+          "Tout avantaj Low",
+          "Vire kòb gratis jiska 5,000 G",
+          "Retrè ak 2%",
+          "Sekirite total (OTP + PIN)",
+          "Resi PDF otomatik",
+          "Asistans vwa",
+        ],
+        high: [
+          "Vire kòb gratis san limit",
+          "Retrè ak 1%",
+          "Mèt kont devwe",
+          "Of eksklizif chak mwa",
+          "Estatistik avanse",
+        ],
+      },
     },
     cards: {
       title: "Kat mwen yo",
@@ -1942,7 +2231,7 @@ export const translations = {
         cvc: "CVC",
         debit_virtual: "Debit / Virtual",
         physical: "fizik",
-        virtual: "vityèl"
+        virtual: "vityèl",
       },
       actions: {
         view: "Wè enfòmasyon",
@@ -1951,15 +2240,15 @@ export const translations = {
         delete: "Siprime l",
         add_money: "Mete $",
         transfer: "Vire lajan",
-        config: "Konfig"
+        config: "Konfig",
       },
       details: {
         title: "Enfòmasyon kat la",
         number: "Nimewo",
         holder: "Non mèt la",
         expiry: "Dat li fini",
-        type: "Kalite"
-      }
+        type: "Kalite",
+      },
     },
     pix: {
       title: "Operasyon",
@@ -1967,7 +2256,7 @@ export const translations = {
       ai_placeholder: "Egz : ###, voye 150 goud ban mwen",
       ai_step_reformulate: {
         title: "Entèpretasyon piYès",
-        hint: "Men mesaj nou konprann lan. Ou ka chanje l si w vle."
+        hint: "Men mesaj nou konprann lan. Ou ka chanje l si w vle.",
       },
       ai_step_confirm: {
         title: "Verifye sa w ap fè a",
@@ -1978,7 +2267,7 @@ export const translations = {
         btn_continue: "Kontinye pou {{target}}",
         btn_edit: "Chanje",
         target_transfer: "vire kòb la",
-        target_request: "demann lan"
+        target_request: "demann lan",
       },
       key_not_verified: "Poko verifye",
       no_keys: "Pa gen okenn kle ki anrejistre.",
@@ -1986,22 +2275,22 @@ export const translations = {
         title: "Kite san w pa voye ?",
         sub: "Mesaj ou a ap efase si w kite paj sa a kounye a.",
         btn_leave: "Efase mesaj la",
-        btn_stay: "Rete epi voye"
+        btn_stay: "Rete epi voye",
       },
       delete_modal: {
         title: "Siprime kle sa a ?",
         sub: "Ou pa ka tounen dèyè. Ou p ap ka resevwa kòb ak kle sa a ankò.",
-        btn_delete: "Siprime nèt"
+        btn_delete: "Siprime nèt",
       },
       types: {
         email: "email",
         phone: "phone",
         tag: "tag",
-        random: "Aléatoire"
+        random: "Aléatoire",
       },
       labels: {
         email: "Adrès Imèl",
-        phone: "Nimewo telefòn"
+        phone: "Nimewo telefòn",
       },
       message_placeholder: "Mesaj pou w voye (si w vle)",
       actions: {
@@ -2012,14 +2301,14 @@ export const translations = {
         receive: "Resevwa",
         deposit: "Depoze",
         voice: "Vire ak vwa",
-        proximity: "Aparèy ki toupre w"
+        proximity: "Aparèy ki toupre w",
       },
       keys_section: "Kle mwen anrejistre yo",
       add_key: "Ajoute",
       modal: {
         title: "Nouvo kle",
         placeholder: "Mete kle w la...",
-        btn_confirm: "Konfime"
+        btn_confirm: "Konfime",
       },
       paste_modal: {
         title: "Lyen peman",
@@ -2027,7 +2316,7 @@ export const translations = {
         placeholder: "https://piyes.ht/pay?...",
         btn_analyze: "Gade lyen an",
         error_invalid: "Lyen sa pa bon.",
-        hint_url: "Lyen an dwe kòmanse ak https://piyes.ht/pay?"
+        hint_url: "Lyen an dwe kòmanse ak https://piyes.ht/pay?",
       },
       voice_modal: {
         title: "Di pou ki moun ak konbe",
@@ -2036,21 +2325,21 @@ export const translations = {
         processing: "N ap chache...",
         btn_start: "Kòmanse",
         btn_stop: "Fini",
-        feedback_sent: "Mesaj vwa a pati pou nou tcheke l !"
+        feedback_sent: "Mesaj vwa a pati pou nou tcheke l !",
       },
       verify_modal: {
         title: "Verifikasyon kle a",
         sub: "Mete kòd ou resevwa pa {{channel}}.",
         placeholder: "000000",
         btn_verify: "Verifye kle a",
-        success: "Kle a verifye ak siksè !"
+        success: "Kle a verifye ak siksè !",
       },
       schedule_modal: {
         title: "Opsyon planifikasyon",
         once: "Yon sèl fwa",
         recurring: "Chak fwa",
-        automatic: "Otomatik"
-      }
+        automatic: "Otomatik",
+      },
     },
     notif_settings: {
       title: "Paramèt Notifikasyon",
@@ -2058,12 +2347,18 @@ export const translations = {
       categories: "Kalite alète yo",
       disclaimer: "Nòt : Notifikasyon sou gwo kòb ak sekirite pa ka fèmen.",
       items: {
-        push: { label: "Notifikasyon Push", sub: "Alerte menm kote sou telefòn ou" },
+        push: {
+          label: "Notifikasyon Push",
+          sub: "Alerte menm kote sou telefòn ou",
+        },
         email: { label: "Notifikasyon E-mail", sub: "Resi pa imèl" },
         sms: { label: "Notifikasyon SMS", sub: "Kòd sekirite ak alerte" },
-        security: { label: "Sekirite kont", sub: "Lè yon moun konekte sou kont ou" },
-        promo: { label: "Nouvèl & Of", sub: "Sa ki nèf na piYès" }
-      }
+        security: {
+          label: "Sekirite kont",
+          sub: "Lè yon moun konekte sou kont ou",
+        },
+        promo: { label: "Nouvèl & Of", sub: "Sa ki nèf na piYès" },
+      },
     },
     profile_hub: {
       title: "Hub Idantite",
@@ -2073,19 +2368,20 @@ export const translations = {
       verify_box: {
         title: "Verifye idantite m",
         sub: "Limen tout sèvis piYès yo.",
-        process: "Sistèm Persona : Eskane pyès idantite + Selfie. Sa pran mwens pase 2 minit.",
-        btn: "Verifye kounye a"
+        process:
+          "Sistèm Persona : Eskane pyès idantite + Selfie. Sa pran mwens pase 2 minit.",
+        btn: "Verifye kounye a",
       },
       verified_box: {
         title: "Verifikasyon Persona",
         sub: "Fèt deja • KYC aksepte le 12/01/2025",
-        badge: "Sètifye"
+        badge: "Sètifye",
       },
       sections: {
         personal: "Enfòmasyon Pèsonèl",
         identity: "Idantite & Sitwayènte",
         prefs: "Preferans Kont",
-        security: "Sekirite Hub"
+        security: "Sekirite Hub",
       },
       fields: {
         name: "Non konplè",
@@ -2100,11 +2396,11 @@ export const translations = {
         language: "Lang sistèm lan",
         language_default: "Kreyòl",
         timezone: "Zòn lè",
-        timezone_default: "GMT-5 (Ayiti)"
+        timezone_default: "GMT-5 (Ayiti)",
       },
       security_items: {
         history: { label: "Istwa koneksyon", sub: "Aparèy ki sou kont ou" },
-        logout_all: "Dekonekte tout aparèy yo"
+        logout_all: "Dekonekte tout aparèy yo",
       },
       save_btn: "Anrejistre idantite m",
       logout_confirm: "Dekonekte nan kont sa a ?",
@@ -2124,16 +2420,16 @@ export const translations = {
         name_required: "Non an obligatwa",
         tag_required: "Tag la obligatwa",
         verify_email_first: "Tanpri verifye nouvo imèl ou an anvan",
-        verify_phone_first: "Tanpri verifye nouvo telefòn ou an anvan"
+        verify_phone_first: "Tanpri verifye nouvo telefòn ou an anvan",
       },
       success: {
         email_verified: "Imèl verifye ✓",
-        phone_verified: "Telefòn verifye ✓"
+        phone_verified: "Telefòn verifye ✓",
       },
       info: {
         no_email_modified: "Pa gen okenn imèl ki modifye",
-        no_phone_modified: "Pa gen okenn nimewo ki modifye"
-      }
+        no_phone_modified: "Pa gen okenn nimewo ki modifye",
+      },
     },
     verification: {
       title: "Verifye yon resi",
@@ -2143,7 +2439,7 @@ export const translations = {
       btn_retry: "Tcheke yon lòt",
       authentic_receipt: "Resi Tout Bon",
       status_label: "Eta: ",
-      invalid_id: "Nimewo sa a pa bon"
+      invalid_id: "Nimewo sa a pa bon",
     },
     help_center: {
       title: "Sant èd",
@@ -2152,7 +2448,7 @@ export const translations = {
         pix: "Pix & Vire Lajan",
         card: "Kat piYès mwen",
         security: "Sekirite",
-        account: "Kont mwen"
+        account: "Kont mwen",
       },
       faqs: {
         title: "Kesyon yo poze souvan",
@@ -2173,42 +2469,53 @@ export const translations = {
         q8: "Èske m ap ka fè transfè entènasyonal?",
         a8: "Wi, ou ap ka voye oswa resevwa lajan soti aletranje. Anvan ou konfime, ou ap wè to chanj jou a.",
         q9: "Kijan m ap ka resevwa lajan?",
-        a9: "Ou ap ka jenere yon QR code oswa yon lyen peman pou resevwa lajan rapid nan men yon fanmi oswa yon kliyan."
+        a9: "Ou ap ka jenere yon QR code oswa yon lyen peman pou resevwa lajan rapid nan men yon fanmi oswa yon kliyan.",
       },
-      btn_contact: "Pale ak yon moun"
+      btn_contact: "Pale ak yon moun",
     },
     support: {
       title: "Sipò piYès",
       need_help: "Bezwen èd?",
       sub: "Ekip nou disponib pou reponn kesyon ou yo epi ranmase fidbak pandan faz tès la.",
-      chat: { label: "Kòmanse yon chat", sub: "Repons an mwayèn nan kèk minit" },
-      call: { label: "Rele sipò", sub: "+50947804142: Disponib sèlman pa WhatsApp pandan lè travay lasemèn" },
+      chat: {
+        label: "Kòmanse yon chat",
+        sub: "Repons an mwayèn nan kèk minit",
+      },
+      call: {
+        label: "Rele sipò",
+        sub: "+50947804142: Disponib sèlman pa WhatsApp pandan lè travay lasemèn",
+      },
       email: { label: "Voye yon imèl", sub: "m.marcruben@yahoo.fr" },
       availability: "Sipò disponib 7/7 pandan peryòd tès la",
       assistant_title: "Asistan piYès",
       intelligent_support: "Sipò entelijan (MVP)",
-      welcome_msg: "Bonjou! Mwen se asistan piYès. Kijan mwen ka ede ou sou sijè **{{context}}**?",
-      input_placeholder: "Poze kesyon ou..."
+      welcome_msg:
+        "Bonjou! Mwen se asistan piYès. Kijan mwen ka ede ou sou sijè **{{context}}**?",
+      input_placeholder: "Poze kesyon ou...",
     },
     legal_pages: {
       about: {
         title: "Sou piYès",
-        content: "piYès se yon bous elektwonik ki nan faz tès li (MVP), ki fèt pou senplifye aksè a sèvis finansye an Ayiti ak pou Ayisyen ki aletranje. Misyon nou se fè transfè, depo ak peman yo pi senp, trè bon mache oswa menm gratis, epi aksesib.",
+        content:
+          "piYès se yon bous elektwonik ki nan faz tès li (MVP), ki fèt pou senplifye aksè a sèvis finansye an Ayiti ak pou Ayisyen ki aletranje. Misyon nou se fè transfè, depo ak peman yo pi senp, trè bon mache oswa menm gratis, epi aksesib.",
         build: "Vèsyon: 1.0.0 (MVP 2026)",
         made_in: "Fè ak ❤️ pou Ayiti.",
-        last_update: "Dènye mizajou: Avril 2026."
+        last_update: "Dènye mizajou: Avril 2026.",
       },
       terms: {
         title: "Kondisyon Jeneral",
-        content: "Itilizasyon piYès nan vèsyon MVP sa a vle di ou aksepte kondisyon jeneral tès nou yo. Sèvis la ap bay a tit eksperimantal e li ka evolye rapidman.",
+        content:
+          "Itilizasyon piYès nan vèsyon MVP sa a vle di ou aksepte kondisyon jeneral tès nou yo. Sèvis la ap bay a tit eksperimantal e li ka evolye rapidman.",
         list: "1. Itilizasyon sèvis la (MVP)\n2. Responsablite limite\n3. Frè ak limit\n4. Fèmen kont",
-        last_update: "Dènye mizajou: Avril 2026."
+        last_update: "Dènye mizajou: Avril 2026.",
       },
       privacy: {
         title: "Konfidansyalite",
-        content: "Vi prive ou se yon priyorite. Ou pa oblije pataje done pèsonèl: non reyèl ou oswa nimewo telefòn ou pa nesesè nan faz sa a. Done itilizasyon yo ranmase pandan faz tès la ap sèvi sèlman pou amelyore aplikasyon an. Yo pap janm pataje ak twazyèm san konsantman ou.",
-        persona_note: "Nou prevwa pou entegre yon verifikasyon idantite sekirize nan pwochen vèsyon yo."
-      }
+        content:
+          "Vi prive ou se yon priyorite. Ou pa oblije pataje done pèsonèl: non reyèl ou oswa nimewo telefòn ou pa nesesè nan faz sa a. Done itilizasyon yo ranmase pandan faz tès la ap sèvi sèlman pou amelyore aplikasyon an. Yo pap janm pataje ak twazyèm san konsantman ou.",
+        persona_note:
+          "Nou prevwa pou entegre yon verifikasyon idantite sekirize nan pwochen vèsyon yo.",
+      },
     },
     boutique: {
       title: "Boutik",
@@ -2217,33 +2524,33 @@ export const translations = {
         home: "Akèy",
         my_ads: "Anons mwen",
         messages: "Mesaj",
-        notifications: "Notifikasyon"
+        notifications: "Notifikasyon",
       },
       filters: {
         all: "Tout",
         offers: "Of",
         pros: "Pwo",
         products: "Pwodui",
-        reset: "Reset"
+        reset: "Reset",
       },
       categories: {
         market: "Mache",
         national: "National",
         enterprise: "Antrepriz",
         sme: "Komès",
-        freelance: "Freelance"
+        freelance: "Freelance",
       },
       sections: {
         trending: "Sa w ka renmen",
         latest: "Dènye anons yo",
-        my_ads_title: "Jere anons mwen yo"
+        my_ads_title: "Jere anons mwen yo",
       },
       ad_card: {
         published_on: "Pibliye le {{date}}",
         views: "{{count}} wè sa",
         messages: "{{count}} mesaj",
         offer_badge: "Of",
-        promo_badge: "Pwo"
+        promo_badge: "Pwo",
       },
       create: {
         btn: "Poste",
@@ -2255,7 +2562,7 @@ export const translations = {
         field_desc: "Deskripsyon",
         field_piyes_pay: "Peman piYès",
         field_piyes_pay_sub: "Resevwa kòb la menm kote.",
-        submit: "Pibliye l"
+        submit: "Pibliye l",
       },
       dashboard: {
         title: "Tablo bò",
@@ -2264,7 +2571,7 @@ export const translations = {
         payments: "Peman piYès",
         stats: "Statistik",
         views: "Total vi",
-        sales: "Vant ki fèt"
+        sales: "Vant ki fèt",
       },
       search: {
         advanced: "Rechèch avanse",
@@ -2279,7 +2586,7 @@ export const translations = {
         compare: "Konpare",
         comparison_tool: "Zouti konparezon",
         add_to_compare: "Ajoute nan konparezon",
-        clear_comparison: "Vide konparezon"
+        clear_comparison: "Vide konparezon",
       },
       reviews: {
         title: "Avis ak kòmantè",
@@ -2289,23 +2596,23 @@ export const translations = {
         comment_placeholder: "Pataje eksperyans ou...",
         submit_review: "Pibliye avis la",
         no_reviews: "Pa gen avis pou kounye a.",
-        only_buyers: "Se sèlman achtè verifye ki ka kite yon avis."
-      }
+        only_buyers: "Se sèlman achtè verifye ki ka kite yon avis.",
+      },
     },
     ad_detail: {
       published_on: "Pibliye le {{date}}",
       specs: {
         storage: "Stockage",
         color: "Koulè",
-        year: "Ane"
+        year: "Ane",
       },
       member_since: "Mèt kont lan depi {{year}}",
       certified_seller: "Moun piYès sètifye",
       footer: {
         contact: "Kontakte l",
         pay: "Peye ak piYès",
-        call: "Rele l"
-      }
+        call: "Rele l",
+      },
     },
     notifications: {
       title: "Notifikasyon",
@@ -2314,20 +2621,50 @@ export const translations = {
       clear_all: "Efase tout",
       empty: "Ou pa gen okenn notifikasyon.",
       types: {
-        transfer_in: { title: "Vire resevwa", desc: "{{name}} voye kòb pou ou." },
+        transfer_in: {
+          title: "Vire resevwa",
+          desc: "{{name}} voye kòb pou ou.",
+        },
         transfer_out: { title: "Vire voye", desc: "Vire pou {{name}} a fèt." },
-        security: { title: "Nouvo koneksyon", desc: "Yon lòt aparèy sou kont ou." },
+        security: {
+          title: "Nouvo koneksyon",
+          desc: "Yon lòt aparèy sou kont ou.",
+        },
         promo: { title: "Of Espesyal", desc: "Gade sa ki nèf." },
-        card: { title: "Acha ak kat", desc: "{{merchant}} • Kat {{lastFour}}." },
+        card: {
+          title: "Acha ak kat",
+          desc: "{{merchant}} • Kat {{lastFour}}.",
+        },
         request: { title: "Demann peman", desc: "{{name}} mande w kòb." },
-        FRIEND_REQUEST: { title: "Demann zanmi", desc: "{{name}} voye yon demann zanmi pou ou." },
-        FRIEND_ACCEPTED: { title: "Demann aksepte", desc: "{{name}} aksepte demann zanmi ou an." },
-        transfer_received: { title: "Transfè resevwa", desc: "Ou resevwa {{amount}} HTG nan men {{name}}" },
-        scheduled_created: { title: "Rapèl kreye", desc: "Yon rapèl {{amount}} fèt pou {{name}}. Ap tann konfimasyon." },
-        scheduled_confirmed: { title: "Rapèl anrejistre", desc: "Ou konfime yon peman {{amount}} pou {{name}} Dat limit" },
-        scheduled_cancelled: { title: "Rapèl anile", desc: "Ou anile rapèl {{amount}} pou {{name}} an." },
-        scheduled_request: { title: "Demann peman", desc: "{{name}} mande w {{amount}} anvan {{date}}. Konfime ak QR/lyen ou resevwa a." }
-      }
+        FRIEND_REQUEST: {
+          title: "Demann zanmi",
+          desc: "{{name}} voye yon demann zanmi pou ou.",
+        },
+        FRIEND_ACCEPTED: {
+          title: "Demann aksepte",
+          desc: "{{name}} aksepte demann zanmi ou an.",
+        },
+        transfer_received: {
+          title: "Transfè resevwa",
+          desc: "Ou resevwa {{amount}} HTG nan men {{name}}",
+        },
+        scheduled_created: {
+          title: "Rapèl kreye",
+          desc: "Yon rapèl {{amount}} fèt pou {{name}}. Ap tann konfimasyon.",
+        },
+        scheduled_confirmed: {
+          title: "Rapèl anrejistre",
+          desc: "Ou konfime yon peman {{amount}} pou {{name}} Dat limit",
+        },
+        scheduled_cancelled: {
+          title: "Rapèl anile",
+          desc: "Ou anile rapèl {{amount}} pou {{name}} an.",
+        },
+        scheduled_request: {
+          title: "Demann peman",
+          desc: "{{name}} mande w {{amount}} anvan {{date}}. Konfime ak QR/lyen ou resevwa a.",
+        },
+      },
     },
     security: {
       title: "Sekirite",
@@ -2347,7 +2684,7 @@ export const translations = {
       pin_label: "Kòd PIN",
       pin_active: "Limen",
       totp_qr_instruction: "Eskane QR kòd sa a oswa mete kle a ak men ou",
-      current_session: "Kounye a"
+      current_session: "Kounye a",
     },
     receipt: {
       title: "Resi",
@@ -2369,8 +2706,8 @@ export const translations = {
         transfer: "Vire Lajan",
         deposit: "Depoze Lajan",
         withdraw: "Retire Lajan",
-        recharge: "Rechaj telefòn"
-      }
+        recharge: "Rechaj telefòn",
+      },
     },
     transfer: {
       title: "Vire lajan",
@@ -2383,7 +2720,8 @@ export const translations = {
       review_amount: "Kantite",
       review_dest: "Moun k ap resevwa",
       confirm_btn: "Konfime tranzaksyon",
-      net_amount_aid: "🎯 Klike la pou {{name}} resevwa egzakteman {{amount}} G.",
+      net_amount_aid:
+        "🎯 Klike la pou {{name}} resevwa egzakteman {{amount}} G.",
       success_msg: "Vire lajan {{amount}} {{currency}} fèt.",
       failure_msg: "Vire lajan {{amount}} {{currency}} PA fèt. {{reason}}",
       view_receipt: "Wè resi a",
@@ -2410,7 +2748,7 @@ export const translations = {
       key_random: "Aléatoire",
       key_recipient: "Moun k ap resevwa",
       verifying_recipient: "N ap tcheke moun nan...",
-      recipient_error_title: "Nou pa jwenn li, vire a pa ka fèt"
+      recipient_error_title: "Nou pa jwenn li, vire a pa ka fèt",
     },
     deposit: {
       title: "Depoze lajan",
@@ -2420,7 +2758,7 @@ export const translations = {
       success_title: "Depoze a fèt !",
       success_sub: "Lajan w lan mete ajou.",
       failure_msg: "Depoze {{amount}} {{currency}} a PA fèt. {{reason}}",
-      btn_confirm: "Konfime depo"
+      btn_confirm: "Konfime depo",
     },
     withdraw: {
       title: "Retire lajan",
@@ -2440,11 +2778,12 @@ export const translations = {
       status_open: "Louvri",
       status_closed: "Fèmen",
       present_code: "Montre kòd sa a",
-      present_instruction: "Montre kòd sa a bay ajan <strong>{{name}}</strong> pou w ka pran <strong>{{amount}} G</strong> ou an.",
+      present_instruction:
+        "Montre kòd sa a bay ajan <strong>{{name}}</strong> pou w ka pran <strong>{{amount}} G</strong> ou an.",
       alphanumeric_code: "Kòd Alfanimerik",
       security_tip: "Pa janm bay pèsonn kòd sa a, sof ajan piYès ki sètifye a.",
       received_money: "Mwen jwenn kòb la",
-      cancel_btn: "Anile retrè a"
+      cancel_btn: "Anile retrè a",
     },
     request: {
       title: "Resevwa kòb",
@@ -2466,7 +2805,8 @@ export const translations = {
       qr_expired: "QR Kòd la fini",
       generate_new: "Fè yon lòt",
       expires_in: "Ap fini nan",
-      scheduler_friends_only: "Demann planifye yo se pou zanmi w sèlman (kontak mutuel).",
+      scheduler_friends_only:
+        "Demann planifye yo se pou zanmi w sèlman (kontak mutuel).",
       btn_send_amount: "Voye montan sa a",
     },
     scheduler: {
@@ -2479,28 +2819,29 @@ export const translations = {
         amount_label: "Kantite ({{required}})",
         date_label: "Dat limit ({{required}})",
         info: "L ap anrejistre na lis ou a.",
-        btn_create: "Anrejistre l"
+        btn_create: "Anrejistre l",
       },
       tabs: {
         to_pay: "Pou m peye",
-        sent: "Mwen voye"
+        sent: "Mwen voye",
       },
       stats: {
         to_receive: "Total resevwa",
         to_pay: "Total peye",
-        confirmed: "Konfime"
+        confirmed: "Konfime",
       },
       list: {
         search_placeholder: "Chache na lis la...",
         empty: "Pa gen anyen planifye",
         empty_incoming_desc: "Ou poko kreye okenn demann peman planifye.",
-        empty_outgoing_desc: "Pa gen okenn peman planifye ki voye ba ou pou kounye a.",
+        empty_outgoing_desc:
+          "Pa gen okenn peman planifye ki voye ba ou pou kounye a.",
         create_first: "Fè premye planifikasyon ou",
         status: {
           pending: "L ap tann",
           confirmed: "Konfime",
           paid: "Peye",
-          cancelled: "Anile"
+          cancelled: "Anile",
         },
         expanded: {
           due_date: "Dat limit",
@@ -2508,11 +2849,11 @@ export const translations = {
           reminder_val: "Auto (1 jou anvan)",
           btn_pay: "Peye kounye a",
           btn_remind: "Fè l sonje",
-          btn_modify: "Chanje l"
+          btn_modify: "Chanje l",
         },
         selected_count: "{{count}} chwazi",
         total: "Total:",
-        delete_btn: "Siprime"
+        delete_btn: "Siprime",
       },
       create: {
         title: "Nouvo rapèl",
@@ -2530,28 +2871,33 @@ export const translations = {
         reminders_label: "Rapèl planifye",
         active: "aktif",
         actives: "aktif",
-        grid_instruction: "Klike sou yon jou oswa yon lè pou aktive/dezaktive. Omwen yon rapèl dwe rete aktif.",
+        grid_instruction:
+          "Klike sou yon jou oswa yon lè pou aktive/dezaktive. Omwen yon rapèl dwe rete aktif.",
         time_830: "08h30",
         time_1230: "12h30",
-        info_text: "Moun k ap peye a ap gen pou l konfime pa QR oswa lyen. San konfimasyon, rapèl la ap rete \"ap tann\" epi li p ap parèt nan tab \"Pou m peye\" li a.",
+        info_text:
+          'Moun k ap peye a ap gen pou l konfime pa QR oswa lyen. San konfimasyon, rapèl la ap rete "ap tann" epi li p ap parèt nan tab "Pou m peye" li a.',
         btn_create: "Kreye rapèl la",
         success_title: "Rapèl kreye !",
         waiting_confirmation: "Ap tann konfimasyon",
-        share_instruction: "Pataje QR sa a oswa lyen sa a ak <strong>{{name}}</strong> pou l ka konfime rapèl la.",
+        share_instruction:
+          "Pataje QR sa a oswa lyen sa a ak <strong>{{name}}</strong> pou l ka konfime rapèl la.",
         copy_link: "Kopye lyen konfimasyon an",
         view_reminders: "Gade rapèl mwen yo",
-        timeout_info: "San konfimasyon moun k ap peye a nan 2 minit, rapèl la ap rete \"Ap tann\". W ap ka relanse l depi nan rapèl ou yo.",
+        timeout_info:
+          'San konfimasyon moun k ap peye a nan 2 minit, rapèl la ap rete "Ap tann". W ap ka relanse l depi nan rapèl ou yo.',
         friend_request_modal: {
           title: "Relasyon amikal obligatwa",
           desc: "Pou kreye yon rapèl pou <strong>{{name}}</strong>, ou dwe zanmi mityèl sou piYès anvan. Èske ou vle voye yon demann zanmi ?",
           btn_send: "Voye yon demann zanmi",
           btn_sent: "Demann voye ✓",
-          cancel: "Anile"
+          cancel: "Anile",
         },
-        friend_request_sent_alert: "Demann zanmi voye ! W ap ka kreye rapèl la kou l aksepte.",
+        friend_request_sent_alert:
+          "Demann zanmi voye ! W ap ka kreye rapèl la kou l aksepte.",
         friend_request_error: "Erè lè n ap voye demann lan.",
         create_error: "Erè lè n ap kreye l",
-        copy_success: "Lyen kopye !"
+        copy_success: "Lyen kopye !",
       },
       item: {
         request_from: "Demann de {{name}}",
@@ -2564,30 +2910,34 @@ export const translations = {
         relancer: "Relanse",
         annuler: "Anile",
         delete_confirm_title: "Siprime rapèl sa a ?",
-        delete_confirm_desc: "\"<strong>{{title}}</strong>\" ap siprime nèt. Tou de pati yo ap resevwa notifikasyon.",
+        delete_confirm_desc:
+          '"<strong>{{title}}</strong>" ap siprime nèt. Tou de pati yo ap resevwa notifikasyon.',
         delete_confirm_btn: "Konfime sipresyon",
         delete_cancel_btn: "Anile",
-        copy_link: "Kopye lyen an"
+        copy_link: "Kopye lyen an",
       },
       disclaimer: "Sa se angajman w pran.",
       errors: {
         delete_failed: "Erè lè n ap siprime",
         bulk_delete_failed: "Erè lè n ap siprime plizyè",
         pin_incorrect: "PIN la pa bon",
-        confirm_failed: "Erè lè n ap konfime"
+        confirm_failed: "Erè lè n ap konfime",
       },
       success: {
-        confirmed: "Rapèl konfime ! Li parèt kounye a nan tab \"Pou m peye\" ou a."
+        confirmed:
+          'Rapèl konfime ! Li parèt kounye a nan tab "Pou m peye" ou a.',
       },
       payment_reminder_prefix: "Rapèl peman : {{title}}",
       payment_reminder_due_prefix: "Rapèl peman — dat limit {{date}}",
-      pay_info: "Lè ou peye ak bouton sa a, rapèl la ap make kòm peye epi tou de pati yo ap resevwa notifikasyon.",
+      pay_info:
+        "Lè ou peye ak bouton sa a, rapèl la ap make kòm peye epi tou de pati yo ap resevwa notifikasyon.",
       paid_on: "Peye nan dat {{date}}",
       reminders_grid: "Griy rapèl",
       delete_this: "Siprime rapèl sa a",
       confirm_qr: "QR konfimasyon",
       expires_at: "Ap fini nan {{time}}",
-      delete_confirm_item_desc: "\"<strong>{{title}}</strong>\" ap siprime nèt. Tou de pati yo ap resevwa notifikasyon.",
+      delete_confirm_item_desc:
+        '"<strong>{{title}}</strong>" ap siprime nèt. Tou de pati yo ap resevwa notifikasyon.',
       modals: {
         delete_title: "Siprime rapèl sa yo ?",
         delete_desc: "Ou vle siprime rapèl peman sa yo ?",
@@ -2599,19 +2949,20 @@ export const translations = {
         due_date_label: "Echeyans",
         reminders_label: "Rapèl yo",
         reminders_count: "rapèl planifye",
-        confirm_info: "Lè w konfime, rapèl sa ap parèt nan tab \"Pou m peye\" ou a. Ou p ap ka siprime l si w pa peye l oswa si {{name}} anile l.",
+        confirm_info:
+          'Lè w konfime, rapèl sa ap parèt nan tab "Pou m peye" ou a. Ou p ap ka siprime l si w pa peye l oswa si {{name}} anile l.',
         pin_prompt: "Mete PIN ou pou w konfime",
         pin_placeholder: "••••",
-        confirm_btn: "Konfime rapèl la"
-      }
+        confirm_btn: "Konfime rapèl la",
+      },
     },
     history: {
       title: "Istwa",
       search_placeholder: "Chache yon tranzaksyon",
       actions: {
         view_reports: "Gade Rapò yo",
-        close: "Fèmen"
-      }
+        close: "Fèmen",
+      },
     },
     reports: {
       title: "Rapò & Relevè",
@@ -2623,20 +2974,20 @@ export const translations = {
         year: "Ane sa",
         this_month: "Mwa sa",
         six_months: "6 mwa",
-        this_year: "Ane sa"
+        this_year: "Ane sa",
       },
       summary: "Ou fè {{count}} tranzaksyon mwa sa.",
       categories: {
         title: "Depans yo",
         food: "Manje",
-        shopping: "Acha"
+        shopping: "Acha",
       },
       flow_title: "Mouvman pa semèn",
       export_section: "Pran relevè m",
       export_desc: "Telechaje istwa tranzaksyon w yo.",
       formats: {
         pdf: { title: "Relevè na PDF", sub: "Bon pou enprime" },
-        excel: { title: "Relevè na Excel", sub: "Pour tcheke l byen" }
+        excel: { title: "Relevè na Excel", sub: "Pour tcheke l byen" },
       },
       types: {
         p2p: "Vire P2P",
@@ -2646,20 +2997,20 @@ export const translations = {
         intl: "Entènasyonal",
         request: "Demann",
         scheduled: "Planifye",
-        card: "Kat"
+        card: "Kat",
       },
       export: {
         filename_prefix: "piyes-rapo-",
         pdf_title: "RAPÒ FINANSYÈ piYès",
         period_label: "Peryòd :",
-        generated_at: "Fèt le :"
+        generated_at: "Fèt le :",
       },
       sections: {
         overview: "=== GADE TOUT ===",
         top_payers: "=== TOP MOUN KI PEYE W ===",
         distribution_by_type: "=== SEPARASYON PA KALITE ===",
         savings_costs: "=== EKONOMI & DEPANS ===",
-        peak_hours: "=== LÈ KI GEN PLIS AKTIVITE ==="
+        peak_hours: "=== LÈ KI GEN PLIS AKTIVITE ===",
       },
       labels: {
         indicator: "Endikatè",
@@ -2696,19 +3047,25 @@ export const translations = {
         apply: "Aplike",
         overview_title: "Gade tout",
         net_balance_period: "Balans nèt peryòd la",
-        net_balance_help: "Diferans ant sa w resevwa ak sa w depanse nan peryòd la. Si l pozitif, sa vle di ou resevwa plis kòb pase sa w depanse.",
+        net_balance_help:
+          "Diferans ant sa w resevwa ak sa w depanse nan peryòd la. Si l pozitif, sa vle di ou resevwa plis kòb pase sa w depanse.",
         received: "Resevwa",
         vs_prev_period: "vs peryòd anvan",
         spent: "Depanse",
-        transactions_received_help: "Kantite peman ou resevwa nan peryòd la. Montan mwayen an montre valè nòmal yon peman.",
+        transactions_received_help:
+          "Kantite peman ou resevwa nan peryòd la. Montan mwayen an montre valè nòmal yon peman.",
         avg_currency: "G. mwayen",
-        transactions_sent_help: "Kantite peman ou fè nan peryòd la. Montan mwayen an montre sa w depanse nòmalman.",
-        total_transactions_help: "Tout operasyon ou fè (voye + resevwa) nan peryòd la.",
+        transactions_sent_help:
+          "Kantite peman ou fè nan peryòd la. Montan mwayen an montre sa w depanse nòmalman.",
+        total_transactions_help:
+          "Tout operasyon ou fè (voye + resevwa) nan peryòd la.",
         avg_amount: "Montan mwayen",
-        avg_amount_help: "Valè mwayen tout tranzaksyon ou yo (voye ak resevwa).",
+        avg_amount_help:
+          "Valè mwayen tout tranzaksyon ou yo (voye ak resevwa).",
         inflow: "Kòb k ap antre",
         top_payers_title: "Top moun ki peye w",
-        top_payers_help: "Moun oswa biznis ki voye plis kòb ba ou. Kliyan fidèl yo (⭐) fè 5 tranzaksyon oswa plis.",
+        top_payers_help:
+          "Moun oswa biznis ki voye plis kòb ba ou. Kliyan fidèl yo (⭐) fè 5 tranzaksyon oswa plis.",
         top: "Top",
         payers: "moun ki peye",
         transaction_singular: "tranzaksyon",
@@ -2717,21 +3074,26 @@ export const translations = {
         loyals: "Fidèl ⭐",
         no_payments_received: "Ou pa resevwa okenn peman nan peryòd sa",
         peak_hours_title: "Lè ki gen plis aktivite",
-        peak_hours_help: "Lè w resevwa plis kòb nan jounen an. Ba vyolèt la montre lè ki gen plis kòb k ap antre.",
+        peak_hours_help:
+          "Lè w resevwa plis kòb nan jounen an. Ba vyolèt la montre lè ki gen plis kòb k ap antre.",
         peak: "Pik :",
         peak_hours_footer: "Kliyan ou yo peye plis ant {{start}} ak {{end}}.",
         transaction_distribution: "Kijan tranzaksyon yo separe",
         distribution_by_type_title: "Separasyon pa kalite",
-        distribution_by_type_help: "Gade tranzaksyon ou yo pa kalite : vire kòb, depoze, retire, rechaj, elatriye.",
+        distribution_by_type_help:
+          "Gade tranzaksyon ou yo pa kalite : vire kòb, depoze, retire, rechaj, elatriye.",
         savings_costs_title: "Ekonomi & Depans",
         piyes_fees_paid_title: "Frè piYès peye",
-        piyes_fees_paid_help: "Total frè sèvis (3%) sou tranzaksyon ou voye yo.",
+        piyes_fees_paid_help:
+          "Total frè sèvis (3%) sou tranzaksyon ou voye yo.",
         on_sent_transactions: "Sou tranzaksyon ou voye (3%)",
         estimated_savings_cash_title: "Ekonomi estime vs kach",
-        estimated_savings_cash_help: "Estimasyon kòb ou ekonomize lè w sèvi ak piYès olye de kach.",
+        estimated_savings_cash_help:
+          "Estimasyon kòb ou ekonomize lè w sèvi ak piYès olye de kach.",
         cash_handling_errors: "Manyen kòb, erè, chanj*",
         estimated_savings_moncash_title: "Ekonomi vs MonCash",
-        estimated_savings_moncash_help: "Diferans estime ant frè piYès (3%) ak frè MonCash (apeprè 5%).",
+        estimated_savings_moncash_help:
+          "Diferans estime ant frè piYès (3%) ak frè MonCash (apeprè 5%).",
         moncash_fees_estimated: "Frè MonCash ~5% estime*",
         estimations_disclaimer: "* Estimasyon endikatif.",
         export_report: "Ekspòte rapò a",
@@ -2762,40 +3124,52 @@ export const translations = {
           for_period: "Pou {{month}} {{year}}",
           all: "Tout",
           sent: "Voye",
-          received: "Resevwa"
-        }
+          received: "Resevwa",
+        },
       },
       frequency: {
         unique: "Inik",
         regular: "Regilye",
-        loyal: "Fidèl"
-      }
+        loyal: "Fidèl",
+      },
     },
     promos: {
       title: "Bonus",
       banner: {
         title: "Genyen plis",
         desc: "Gade of espesyal nou yo.",
-        btn: "Kijan ?"
+        btn: "Kijan ?",
       },
       available: "Of kounye a",
       partner_offers_desc: "Pwofite of patnè nou yo",
       share_code: "Pataje kòd mwen an",
       items: {
-        refer: { title: "Parrainez un ami", desc: "Ganyen 500 G. pou chak zanmi ki enskri e ki aktive kont li.", badge: "Popilè" },
-        welcome: { title: "Bonus de Bienvenue", desc: "Resevwa 100 G. apre premye depo 1,000 G. oswa plis ou fè.", badge: "Nèf" },
-        cashback: { title: "Cashback Marché", desc: "2% kòb tounen sou tout acha ou fè nan Boutik Sèvis la.", badge: "Toutan" }
+        refer: {
+          title: "Parrainez un ami",
+          desc: "Ganyen 500 G. pou chak zanmi ki enskri e ki aktive kont li.",
+          badge: "Popilè",
+        },
+        welcome: {
+          title: "Bonus de Bienvenue",
+          desc: "Resevwa 100 G. apre premye depo 1,000 G. oswa plis ou fè.",
+          badge: "Nèf",
+        },
+        cashback: {
+          title: "Cashback Marché",
+          desc: "2% kòb tounen sou tout acha ou fè nan Boutik Sèvis la.",
+          badge: "Toutan",
+        },
       },
       loyalty: {
         title: "Pwen",
         points: "Pwen piYès mwen",
         next_tier: "Manke {{points}} pwen pou nivo Gold",
-        btn: "Gade kado yo"
+        btn: "Gade kado yo",
       },
       club: {
         title: "Plan & Ekonomi",
-        desc: "Klèb piYès / Sèvis pi vit"
-      }
+        desc: "Klèb piYès / Sèvis pi vit",
+      },
     },
     banks: {
       add_title: "Ajoute yon bank",
@@ -2819,11 +3193,13 @@ export const translations = {
       unlink_btn: "Efase bank lan",
       manage_banks: "Jere bank mwen yo",
       unlink_confirm_title: "Dekonekte bank sa a ?",
-      unlink_confirm_desc: "Ou p ap kapab fè transfè ak kont sa a ankò, men istwa a ap konsève.",
+      unlink_confirm_desc:
+        "Ou p ap kapab fè transfè ak kont sa a ankò, men istwa a ap konsève.",
       confirm_unlink: "Dekonekte kont lan",
       unlink_success: "Bank dekonekte avèk siksè",
       unlink_error: "Erè pandan dekoneksyon an",
-      no_external_history: "Pa gen okenn transfè entèbankè yo jwenn pou kont sa a."
+      no_external_history:
+        "Pa gen okenn transfè entèbankè yo jwenn pou kont sa a.",
     },
     interbank: {
       title: "Vire ant Bank",
@@ -2848,11 +3224,12 @@ export const translations = {
       picker_sub: "Chwazi yon kont pou transfè a.",
       btn_proceed: "Kontinye transfè a",
       success_title: "Transfè fèt !",
-      success_sub: "Kòb la deplase ak siksè ant kont ou yo."
+      success_sub: "Kòb la deplase ak siksè ant kont ou yo.",
     },
     identity_process: {
       main_title: "Pase na nivo siperyè",
-      sub_title: "Pou w ka debloke transfè yo epi sekirize kont ou, nou dwe verifye idantite w.",
+      sub_title:
+        "Pou w ka debloke transfè yo epi sekirize kont ou, nou dwe verifye idantite w.",
       persona_note: "Nou sèvi ak Persona pou nou garanti sekirite done w yo.",
       start_btn: "Kòmanse verifikasyon an",
       header_title: "Verifikasyon piYès",
@@ -2870,7 +3247,7 @@ export const translations = {
       finalizing: "N ap fini...",
       congrats: "Felisitasyon !",
       verified_msg: "Idantite w verifye ak siksè.",
-      back_home: "Retounen na akèy"
+      back_home: "Retounen na akèy",
     },
     recharge: {
       title: "Rechaj telefòn",
@@ -2883,7 +3260,8 @@ export const translations = {
       select_contact: "Chwazi yon kontak",
       custom_amount: "Lòt kantite",
       operator_detected: "Operatè detekte",
-      confirm_msg: "Ou pral rechaje {{number}} pou {{amount}} HTG ({{operator}}).",
+      confirm_msg:
+        "Ou pral rechaje {{number}} pou {{amount}} HTG ({{operator}}).",
       success_msg: "Rechaj la fèt avèk siksè !",
       failure_msg: "Rechaj la pa fèt. Tanpri reye ankò.",
       view_receipt: "Wè resi a",
@@ -2891,7 +3269,7 @@ export const translations = {
       payment_method_subtitle: "Chwazi fason w ap peye",
       done: "Fini",
       share: "Pataje resi a",
-      download: "Telechaje PDF"
+      download: "Telechaje PDF",
     },
     intl: {
       locale: "ht-HT",
@@ -2909,7 +3287,7 @@ export const translations = {
       methods: {
         bank: "Kont bank",
         cash: "Retire na biwo (Cash Pickup)",
-        mobile: "Bous mobil"
+        mobile: "Bous mobil",
       },
       info_label: "Detay resepsyon (IBAN, Telefòn...)",
       example_name: "Jean-Marc Valerius",
@@ -2927,19 +3305,23 @@ export const translations = {
       success_title: "Transfè pati !",
       success_sub: "Kòb ou a sou wout pou {{country}}.",
       search_country: "Chache yon peyi...",
-      notif_received: "Ou resevwa yon transfè entènasyonal {{amount}} de {{sender}}. Kòd retrè : {{code}}",
+      notif_received:
+        "Ou resevwa yon transfè entènasyonal {{amount}} de {{sender}}. Kòd retrè : {{code}}",
       code_label: "Kòd transfè",
       choose_provider: "Chwazi yon konpayi",
-      select_service_desc: "Chwazi sèvis ki pi bon pou ou pou vire lajan entènasyonal.",
+      select_service_desc:
+        "Chwazi sèvis ki pi bon pou ou pou vire lajan entènasyonal.",
       piyes_intl: "piYès Entènasyonal",
       recommended: "Rekòmande",
-      piyes_intl_desc: "Vire lajan menm kote na plis pase 50 peyi ak pi bon pri.",
+      piyes_intl_desc:
+        "Vire lajan menm kote na plis pase 50 peyi ak pi bon pri.",
       real_rate_desc: "Voye kòb lòt bò dlo ak vrè pri a.",
       coming_soon: "L ap vini talè",
       fast_reliable_desc: "Vire lajan rapid ak sekirite na tout mond lan.",
       online_person_desc: "Voye kòb sou entènèt oswa na biwo.",
       secure_transfers: "Vire Lajan ak Sekirite",
-      secure_transfers_desc: "Tout patnè nou yo sètifye e kòb ou pwoteje ak sekirite piYès.",
+      secure_transfers_desc:
+        "Tout patnè nou yo sètifye e kòb ou pwoteje ak sekirite piYès.",
       need_help: "Ou bezwen èd ?",
       learn_more: "Plis enfòmasyon sou vire lajan entènasyonal",
       countries: {
@@ -2948,8 +3330,8 @@ export const translations = {
         fr: "Frans",
         do: "Repiblik Dominikèn",
         br: "Brezil",
-        cl: "Chili"
-      }
+        cl: "Chili",
+      },
     },
     tools: {
       calculator: {
@@ -2958,31 +3340,45 @@ export const translations = {
         collect: "Enkaise montan sa",
         modal_title: "Lòt Zouti",
         modal_sub: "Sèvis finansyè ki na piYès.",
-        error: "Erè"
+        error: "Erè",
       },
       items: {
-        analysis: { title: "Analiz & Rapò", desc: "Gade kijan w depanse kòb ou ak bèl grafik.", badge: "Enpòtan" },
-        converter: { title: "Konvètisè Lajan", desc: "Kalkile konvèsyon HTG, USD ak EUR menm kote." },
-        statements: { title: "Pran Relevè", desc: "Fè dokiman PDF sètifye pou bezwen administratif ou." },
-        credit: { title: "Similatè Prè", desc: "Estime konbe w ka prete ak konbe w ap peye chak mwa.", badge: "Nèf" }
-      }
+        analysis: {
+          title: "Analiz & Rapò",
+          desc: "Gade kijan w depanse kòb ou ak bèl grafik.",
+          badge: "Enpòtan",
+        },
+        converter: {
+          title: "Konvètisè Lajan",
+          desc: "Kalkile konvèsyon HTG, USD ak EUR menm kote.",
+        },
+        statements: {
+          title: "Pran Relevè",
+          desc: "Fè dokiman PDF sètifye pou bezwen administratif ou.",
+        },
+        credit: {
+          title: "Similatè Prè",
+          desc: "Estime konbe w ka prete ak konbe w ap peye chak mwa.",
+          badge: "Nèf",
+        },
+      },
     },
     advanced: {
       title: "Zouti Avanse",
       sections: {
         accounts: "Kont mwen yo",
         health: "Sante Sistèm lan",
-        debug: "Mòd Debug"
+        debug: "Mòd Debug",
       },
       health: {
         status: "Eta",
         version: "Vèsyon",
-        uptime: "Tan l ap mache"
+        uptime: "Tan l ap mache",
       },
       debug: {
         label: "Dekripte ID",
-        placeholder: "ID pou dekripte"
-      }
+        placeholder: "ID pou dekripte",
+      },
     },
     onboarding: {
       skip: "Sote",
@@ -2991,24 +3387,28 @@ export const translations = {
       step1: {
         title: "Byenvini sou piYès",
         subtitle: "Konpanyon finansye w pou yon jesyon entèlijan",
-        description: "Pran kontwòl avni finansye w ak tout zouti nou yo ki fèt pou ede w ekonomize ak jere lajan w pi byen."
+        description:
+          "Pran kontwòl avni finansye w ak tout zouti nou yo ki fèt pou ede w ekonomize ak jere lajan w pi byen.",
       },
       step2: {
         title: "Bidjè Entèlijan",
         subtitle: "Kreye epi swiv bidjè w san efò",
-        description: "Fixe objektif finansye, swiv fason w depanse epi jwenn enfòmasyon an tan reyèl."
+        description:
+          "Fixe objektif finansye, swiv fason w depanse epi jwenn enfòmasyon an tan reyèl.",
       },
       step3: {
         title: "Transfè Instantane",
         subtitle: "Voye lajan nan yon bat je",
-        description: "Fè transfè an sekirite bay kontak piYès ou yo oswa nan lòt bank imedyatman."
+        description:
+          "Fè transfè an sekirite bay kontak piYès ou yo oswa nan lòt bank imedyatman.",
       },
       step4: {
         title: "Sekirize & Prive",
         subtitle: "Done w yo pwoteje",
-        description: "Dòmi ak kè poze paske enfòmasyon finansye w yo ankripte epi n ap siveye yo 24/24."
-      }
-    }
+        description:
+          "Dòmi ak kè poze paske enfòmasyon finansye w yo ankripte epi n ap siveye yo 24/24.",
+      },
+    },
   },
   en: {
     common: {
@@ -3064,7 +3464,7 @@ export const translations = {
         sep: "Sep.",
         oct: "Oct.",
         nov: "Nov.",
-        dec: "Dec."
+        dec: "Dec.",
       },
       months_full: {
         january: "January",
@@ -3078,8 +3478,8 @@ export const translations = {
         september: "September",
         october: "October",
         november: "November",
-        december: "December"
-      }
+        december: "December",
+      },
     },
     otp: {
       title: "Security Verification",
@@ -3091,27 +3491,29 @@ export const translations = {
       error_invalid: "The code you entered is incorrect.",
       success: "Device verified successfully.",
       trouble: "Having trouble?",
-      contact_info: "Contact our support at +509 0000-0000 or by email at support-otp@piyes.com for assistance.",
-      secure_connection: "Secure connection"
+      contact_info:
+        "Contact our support on WhatsApp at +509 4780-4142 or by email at marcrubenmacean@gmail.com for assistance.",
+      secure_connection: "Secure connection",
     },
     security_flow: {
       pin_intro_title: "Secure your money",
-      pin_intro_desc: "Create a 4-digit PIN to protect your transfers and sensitive data.",
+      pin_intro_desc:
+        "Create a 4-digit PIN to protect your transfers and sensitive data.",
       pin_setup_btn: "Create my PIN now",
       welcome_title: "Welcome to piYès !",
       welcome_desc: "Your account is now ready and secure. Let's explore.",
-      welcome_btn: "Go to Dashboard"
+      welcome_btn: "Go to Dashboard",
     },
     currency: {
       symbol: "G.",
       name: "Gourde",
-      name_plural: "Gourdes"
+      name_plural: "Gourdes",
     },
     nav: {
       home: "Home",
       services: "Marketplace",
       profile: "Profile",
-      keys: "Operations"
+      keys: "Operations",
     },
     auth: {
       login_greeting: "Hello! What's your email?",
@@ -3145,13 +3547,13 @@ export const translations = {
       signup_error: "Signup error",
       resend_code: "Resend code",
       reset_password_btn: "Reset password",
-      login_btn: "Login"
+      login_btn: "Login",
     },
     accounts: {
       piyes_current: "piYès Current Account",
       label_piyes: "PiYès!",
       label_moncash: "MonCash",
-      label_buh: "BUH"
+      label_buh: "BUH",
     },
     dashboard: {
       greeting: "Hello",
@@ -3172,7 +3574,7 @@ export const translations = {
       transfer_again: "Transfer again",
       promo_desc: "Discover your exclusive bonuses and offers",
       private_balance_not_available: "Private balance not available",
-      consult_via: "Consult via"
+      consult_via: "Consult via",
     },
     actions: {
       transfer: "Transfer",
@@ -3185,17 +3587,18 @@ export const translations = {
       contacts: "Contacts",
       promotions: "Promotions",
       qr_proximity: "Operations",
-      international: "International"
+      international: "International",
     },
     account_summary: {
       fees_transfer: "Transfer fees",
       fees_service: "Service fees",
       transfer_message: "The recipient will receive: {{amount}} {{currency}}",
-      withdraw_message: "You will receive: {{amount}} {{currency}} from your agent",
+      withdraw_message:
+        "You will receive: {{amount}} {{currency}} from your agent",
       deposit_message: "You will receive: {{amount}} {{currency}}",
       your_piyes_account: "Your piYès account",
       your_piyes_agent: "Your piYès agent",
-      piyes_bank: "piYès Bank"
+      piyes_bank: "piYès Bank",
     },
     contacts: {
       title: "Contacts",
@@ -3234,83 +3637,99 @@ export const translations = {
         send: "Send",
         share_confirm: "Do you want to share this contact?",
         shared_success: "Contact shared!",
-        remove_friend_confirm: "Do you want to remove this contact from your friends?",
+        remove_friend_confirm:
+          "Do you want to remove this contact from your friends?",
         my_interactions_with: "My interactions with {{name}}",
         delete_contact: "Delete contact",
         delete_confirm_title: "Delete contact?",
-        delete_confirm_desc: "Are you sure you want to delete {{name}} from your contacts?",
+        delete_confirm_desc:
+          "Are you sure you want to delete {{name}} from your contacts?",
         delete_yes: "Yes, delete",
         delete_no: "Cancel",
-        active_schedule_error: "Cannot delete this contact: an active payment reminder exists between you.",
-        active_schedule_friend_error: "Cannot modify friendship: an active payment reminder exists between you.",
+        active_schedule_error:
+          "Cannot delete this contact: an active payment reminder exists between you.",
+        active_schedule_friend_error:
+          "Cannot modify friendship: an active payment reminder exists between you.",
         not_found: "Contact not found.",
         request: "Request",
-        reminder: "Reminder"
+        reminder: "Reminder",
       },
-    sync: "Sync",
-    syncing: "Syncing...",
-    no_results: "No contacts found",
-    new: "New",
-    add_info_label: "Tag, email, phone or other key",
-    non_user_warning: "This contact is not yet a piYès user. Payment actions are disabled until they sign up.",
-    non_network_contact: "Non-piYès network contact",
-    actions_after_signup: "Actions available after piYès signup",
-    view_full_profile: "View full profile",
-    import_phone: "Import from phone",
-    import_success: "Import of {{count}} contacts successful!",
-    import_not_supported: "Contact import is not supported on this browser.",
-    add_error: "Error adding contact.",
-    checking: "Checking...",
-    user_found: "piYès user found",
-    user_not_found_warning: "This key does not match any piYès user — the contact will be saved anyway",
-    non_user_confirm_title: "Non-network contact",
-    non_user_confirm_desc: "This key does not match any piYès user. Do you still want to save this contact?",
-    entered_info: "Entered information",
-    key_not_found_db: "Key not found in piYès database",
-    save_anyway: "Yes, save anyway",
-    saving: "Saving...",
-    cancel_check: "Cancel, check info",
-    sync_success: "Contacts synced successfully!",
-    new_recipient: "New recipient"
-  },
-  privacy_settings: {
-    title: "Contacts & Transfers Privacy",
-    sub: "Manage who can find you and interact with you",
-    requests_section: "Money Requests",
-    transfers_section: "Transfers",
-    visibility_section: "Profile Visibility",
-    others_section: "Other Settings",
-    block_everyone: "Block requests from everyone",
-    allow_everyone: "I allow requests from everyone",
-    block_transfers_everyone: "Block transfers from everyone",
-    allow_transfers_everyone: "I allow transfers from everyone",
-    contacts_only: "My contacts only",
-    specific_contacts: "Specific contacts",
-    visibility_everyone: "Everyone",
-    visibility_contacts: "Contacts only",
-    visibility_mutual: "Friends only (Mutual)",
-    visibility_private: "Private (Invisible)",
-    anonymous_transfers: "Allow anonymous transfers",
-    hide_tag: "Hide my tag in receipts",
-    friends_only_requests: "Requests from friends only",
-    confirm_block_title: "Confirm Block",
-    confirm_block_msg: "If you block {{type}} from {{tag}}, this person will no longer be able to interact with you this way. Confirm?",
-    help_requests: "Prevents anyone from sending you a direct payment request.",
-    help_transfers: "Prevents anyone from sending you money (except via QR or link if authorized).",
-    help_visibility_contacts: "People who don't have your number or tag won't see your profile in the directory.",
-    help_visibility_mutual: "Only your mutual friends can see your tag and profile.",
-    help_visibility_private: "You don't appear in any list. You can only be reached if someone knows your exact tag.",
-    help_anonymous: "Allows receiving money via QR or link without prior identification.",
-    help_hide_tag: "Your @ tag will not be visible on the transaction receipts you send.",
-    help_friends_only: "Stricter than 'contacts': requires both of you to be in each other's lists.",
-    saving: "Saving...",
-    got_it: "I understand",
-    block_requests_title: "Block Requests",
-    block_transfers_title: "Block Transfers",
-    search_block_placeholder: "Search for a tag or contact...",
-    block_tag_exact: "Block tag \"{{tag}}\"",
-    block_tag_hint: "Block a user by their exact tag"
-  },
+      sync: "Sync",
+      syncing: "Syncing...",
+      no_results: "No contacts found",
+      new: "New",
+      add_info_label: "Tag, email, phone or other key",
+      non_user_warning:
+        "This contact is not yet a piYès user. Payment actions are disabled until they sign up.",
+      non_network_contact: "Non-piYès network contact",
+      actions_after_signup: "Actions available after piYès signup",
+      view_full_profile: "View full profile",
+      import_phone: "Import from phone",
+      import_success: "Import of {{count}} contacts successful!",
+      import_not_supported: "Contact import is not supported on this browser.",
+      add_error: "Error adding contact.",
+      checking: "Checking...",
+      user_found: "piYès user found",
+      user_not_found_warning:
+        "This key does not match any piYès user — the contact will be saved anyway",
+      non_user_confirm_title: "Non-network contact",
+      non_user_confirm_desc:
+        "This key does not match any piYès user. Do you still want to save this contact?",
+      entered_info: "Entered information",
+      key_not_found_db: "Key not found in piYès database",
+      save_anyway: "Yes, save anyway",
+      saving: "Saving...",
+      cancel_check: "Cancel, check info",
+      sync_success: "Contacts synced successfully!",
+      new_recipient: "New recipient",
+    },
+    privacy_settings: {
+      title: "Contacts & Transfers Privacy",
+      sub: "Manage who can find you and interact with you",
+      requests_section: "Money Requests",
+      transfers_section: "Transfers",
+      visibility_section: "Profile Visibility",
+      others_section: "Other Settings",
+      block_everyone: "Block requests from everyone",
+      allow_everyone: "I allow requests from everyone",
+      block_transfers_everyone: "Block transfers from everyone",
+      allow_transfers_everyone: "I allow transfers from everyone",
+      contacts_only: "My contacts only",
+      specific_contacts: "Specific contacts",
+      visibility_everyone: "Everyone",
+      visibility_contacts: "Contacts only",
+      visibility_mutual: "Friends only (Mutual)",
+      visibility_private: "Private (Invisible)",
+      anonymous_transfers: "Allow anonymous transfers",
+      hide_tag: "Hide my tag in receipts",
+      friends_only_requests: "Requests from friends only",
+      confirm_block_title: "Confirm Block",
+      confirm_block_msg:
+        "If you block {{type}} from {{tag}}, this person will no longer be able to interact with you this way. Confirm?",
+      help_requests:
+        "Prevents anyone from sending you a direct payment request.",
+      help_transfers:
+        "Prevents anyone from sending you money (except via QR or link if authorized).",
+      help_visibility_contacts:
+        "People who don't have your number or tag won't see your profile in the directory.",
+      help_visibility_mutual:
+        "Only your mutual friends can see your tag and profile.",
+      help_visibility_private:
+        "You don't appear in any list. You can only be reached if someone knows your exact tag.",
+      help_anonymous:
+        "Allows receiving money via QR or link without prior identification.",
+      help_hide_tag:
+        "Your @ tag will not be visible on the transaction receipts you send.",
+      help_friends_only:
+        "Stricter than 'contacts': requires both of you to be in each other's lists.",
+      saving: "Saving...",
+      got_it: "I understand",
+      block_requests_title: "Block Requests",
+      block_transfers_title: "Block Transfers",
+      search_block_placeholder: "Search for a tag or contact...",
+      block_tag_exact: 'Block tag "{{tag}}"',
+      block_tag_hint: "Block a user by their exact tag",
+    },
     settings: {
       title: "Profile & Settings",
       account_section: "Account",
@@ -3322,12 +3741,13 @@ export const translations = {
       themes: {
         default: "Default",
         dark: "Dark",
-        bleu_cendre: "Bleu Cendre"
+        bleu_cendre: "Bleu Cendre",
       },
       font_size: "Font Size",
       logout: "Logout",
       logout_confirm_title: "Log out?",
-      logout_confirm_desc: "You will need to log back in to access your account.",
+      logout_confirm_desc:
+        "You will need to log back in to access your account.",
       hub_section: "SECURITY HUB",
       session_history: "Login history",
       session_history_sub: "Active devices and sessions",
@@ -3335,9 +3755,11 @@ export const translations = {
       delete_account: "Delete my account",
       delete_account_sub: "Irreversible action",
       delete_confirm_title: "Delete your account?",
-      delete_confirm_desc: "All your data will be permanently deleted. This action is irreversible.",
+      delete_confirm_desc:
+        "All your data will be permanently deleted. This action is irreversible.",
       logout_all_confirm_title: "Log out of all sessions?",
-      logout_all_confirm_desc: "You will need to log back in on all your devices.",
+      logout_all_confirm_desc:
+        "You will need to log back in on all your devices.",
       session_delete_confirm_title: "Delete this session?",
       session_delete_confirm_desc: "The device will be logged out immediately.",
       language_modal_title: "Choose Language",
@@ -3346,21 +3768,39 @@ export const translations = {
         small: "Small",
         default: "Default",
         large: "Large",
-        extra_large: "Extra Large"
+        extra_large: "Extra Large",
       },
       items: {
         profile: { label: "Manage profile", sub: "Personal info and avatar" },
-        security: { label: "Security & MFA", sub: "Password and strong authentication" },
-        pin: { label: "piYès PIN Code", sub: "Secure your access and transfers" },
-        notifications: { label: "Notifications", sub: "Transaction alerts and news" },
-        verify_receipt: { label: "Verify a receipt", sub: "Check a transaction's authenticity" },
-        refresh_assets: { label: "Refresh Assets", sub: "Update logos and flags" },
-        appointments: { label: "Appointments", sub: "Manage sessions with our agents" },
+        security: {
+          label: "Security & MFA",
+          sub: "Password and strong authentication",
+        },
+        pin: {
+          label: "piYès PIN Code",
+          sub: "Secure your access and transfers",
+        },
+        notifications: {
+          label: "Notifications",
+          sub: "Transaction alerts and news",
+        },
+        verify_receipt: {
+          label: "Verify a receipt",
+          sub: "Check a transaction's authenticity",
+        },
+        refresh_assets: {
+          label: "Refresh Assets",
+          sub: "Update logos and flags",
+        },
+        appointments: {
+          label: "Appointments",
+          sub: "Manage sessions with our agents",
+        },
         help: { label: "Help Center", sub: "Answers to frequent questions" },
         contact: { label: "Contact Support", sub: "24/7 direct assistance" },
         about: { label: "About piYès", sub: "Version 1.2.0 • Build 2025" },
-        terms: { label: "General Terms", sub: "Read our terms and conditions" }
-      }
+        terms: { label: "General Terms", sub: "Read our terms and conditions" },
+      },
     },
     pin: {
       title_setup: "Create your PIN",
@@ -3381,11 +3821,12 @@ export const translations = {
       setup_success: "Your PIN has been saved.",
       change_success: "PIN successfully changed.",
       remove_confirm: "Do you really want to remove PIN protection?",
-      warning_removal: "This will reduce your account security."
+      warning_removal: "This will reduce your account security.",
     },
     plans: {
       title: "Plans & Savings",
-      subtitle: "Choose the plan that saves you more, while enjoying fast services without hidden fees.",
+      subtitle:
+        "Choose the plan that saves you more, while enjoying fast services without hidden fees.",
       tagline_basic: "Start for free. No commitment.",
       tagline_low: "Ideal for those who transfer regularly.",
       tagline_mid: "For active users and daily pros.",
@@ -3394,7 +3835,8 @@ export const translations = {
       toast_subscribe_sent: "Subscription request for {{name}} plan sent!",
       exclusive_offers: "Exclusive offers",
       popular_badge: "Popular",
-      change_anytime: "You can change your plan at any time. Benefits are activated instantly after payment confirmation.",
+      change_anytime:
+        "You can change your plan at any time. Benefits are activated instantly after payment confirmation.",
       secure_payment: "100% Secure Payment",
       estimated_value: "Estimated value: {{amount}} G / month",
       month: "/ month",
@@ -3402,11 +3844,36 @@ export const translations = {
       learn_more: "Learn more",
       active_badge: "Current Plan",
       perks: {
-        basic: ["Free transfers up to 500 G", "Standard security", "Full app access", "Community help"],
-        low: ["All Basic perks", "Free transfers up to 2,000 G", "3% Withdrawals", "Priority Support", "Partner deals"],
-        mid: ["All Low perks", "Free transfers up to 5,000 G", "2% Withdrawals", "Advanced Security (OTP + PIN)", "Auto PDF Receipts", "Voice Support"],
-        high: ["Unlimited free transfers", "1% Withdrawals", "Dedicated Account Manager", "Early access to features", "Exclusive monthly bonuses", "Advanced stats"]
-      }
+        basic: [
+          "Free transfers up to 500 G",
+          "Standard security",
+          "Full app access",
+          "Community help",
+        ],
+        low: [
+          "All Basic perks",
+          "Free transfers up to 2,000 G",
+          "3% Withdrawals",
+          "Priority Support",
+          "Partner deals",
+        ],
+        mid: [
+          "All Low perks",
+          "Free transfers up to 5,000 G",
+          "2% Withdrawals",
+          "Advanced Security (OTP + PIN)",
+          "Auto PDF Receipts",
+          "Voice Support",
+        ],
+        high: [
+          "Unlimited free transfers",
+          "1% Withdrawals",
+          "Dedicated Account Manager",
+          "Early access to features",
+          "Exclusive monthly bonuses",
+          "Advanced stats",
+        ],
+      },
     },
     cards: {
       title: "My Cards",
@@ -3423,7 +3890,7 @@ export const translations = {
         cvc: "CVC",
         debit_virtual: "Debit / Virtual",
         physical: "physical",
-        virtual: "virtual"
+        virtual: "virtual",
       },
       actions: {
         view: "View info",
@@ -3432,15 +3899,15 @@ export const translations = {
         delete: "Delete",
         add_money: "Add $",
         transfer: "Transfer",
-        config: "Config"
+        config: "Config",
       },
       details: {
         title: "Card details",
         number: "Number",
         holder: "Holder",
         expiry: "Expiry",
-        type: "Type"
-      }
+        type: "Type",
+      },
     },
     pix: {
       title: "Operations",
@@ -3448,7 +3915,7 @@ export const translations = {
       ai_placeholder: "E.g.: ###, send me 150 gourdes",
       ai_step_reformulate: {
         title: "piYès Interpretation",
-        hint: "Here is the interpreted message. You can modify it if needed."
+        hint: "Here is the interpreted message. You can modify it if needed.",
       },
       ai_step_confirm: {
         title: "Verify Action",
@@ -3459,7 +3926,7 @@ export const translations = {
         btn_continue: "Continue to {{target}}",
         btn_edit: "Edit",
         target_transfer: "transfer",
-        target_request: "request"
+        target_request: "request",
       },
       key_not_verified: "Not verified",
       no_keys: "No keys registered.",
@@ -3467,22 +3934,22 @@ export const translations = {
         title: "Leave without sending?",
         sub: "Your message will be deleted if you leave this page now.",
         btn_leave: "Discard text",
-        btn_stay: "Stay and send"
+        btn_stay: "Stay and send",
       },
       delete_modal: {
         title: "Delete this key?",
         sub: "This action is irreversible. You will no longer be able to receive funds via this key.",
-        btn_delete: "Delete permanently"
+        btn_delete: "Delete permanently",
       },
       types: {
         email: "email",
         phone: "phone",
         tag: "tag",
-        random: "Random"
+        random: "Random",
       },
       labels: {
         email: "Email Address",
-        phone: "Phone Number"
+        phone: "Phone Number",
       },
       message_placeholder: "Message to send (optional)",
       actions: {
@@ -3493,14 +3960,14 @@ export const translations = {
         receive: "Receive",
         deposit: "Deposit",
         voice: "Voice transfer",
-        proximity: "Nearby Devices"
+        proximity: "Nearby Devices",
       },
       keys_section: "My registered keys",
       add_key: "Add",
       modal: {
         title: "New key",
         placeholder: "Enter your key...",
-        btn_confirm: "Confirm"
+        btn_confirm: "Confirm",
       },
       paste_modal: {
         title: "Payment Link",
@@ -3508,7 +3975,7 @@ export const translations = {
         placeholder: "https://piyes.ht/pay?...",
         btn_analyze: "Analyze link",
         error_invalid: "Invalid or unrecognized link.",
-        hint_url: "The link must start with https://piyes.ht/pay?"
+        hint_url: "The link must start with https://piyes.ht/pay?",
       },
       voice_modal: {
         title: "Tell who and how much",
@@ -3517,27 +3984,43 @@ export const translations = {
         processing: "Analyzing...",
         btn_start: "Start",
         btn_stop: "Stop",
-        feedback_sent: "Voice message sent for analysis!"
+        feedback_sent: "Voice message sent for analysis!",
       },
       schedule_modal: {
         title: "Scheduling options",
         once: "Once",
         recurring: "Recurring",
-        automatic: "Automatic"
-      }
+        automatic: "Automatic",
+      },
     },
     notif_settings: {
       title: "Notification Settings",
       channels: "Reception channels",
       categories: "Alert categories",
-      disclaimer: "Note: Notifications for major banking transactions and critical security cannot be fully disabled for your protection.",
+      disclaimer:
+        "Note: Notifications for major banking transactions and critical security cannot be fully disabled for your protection.",
       items: {
-        push: { label: "Push Notifications", sub: "Real-time alerts on the app" },
-        email: { label: "Email Notifications", sub: "Receipts and summaries by mail" },
-        sms: { label: "SMS Notifications", sub: "Security codes and critical alerts" },
-        security: { label: "Account Security", sub: "Suspicious logins and changes" },
-        promo: { label: "News & Offers", sub: "What's new at piYès and partners" }
-      }
+        push: {
+          label: "Push Notifications",
+          sub: "Real-time alerts on the app",
+        },
+        email: {
+          label: "Email Notifications",
+          sub: "Receipts and summaries by mail",
+        },
+        sms: {
+          label: "SMS Notifications",
+          sub: "Security codes and critical alerts",
+        },
+        security: {
+          label: "Account Security",
+          sub: "Suspicious logins and changes",
+        },
+        promo: {
+          label: "News & Offers",
+          sub: "What's new at piYès and partners",
+        },
+      },
     },
     profile_hub: {
       title: "Identity Hub",
@@ -3547,19 +4030,20 @@ export const translations = {
       verify_box: {
         title: "Verify my identity",
         sub: "Unlock all piYès features.",
-        process: "Persona Process: ID Capture + Selfie. Automatic validation in under 2 minutes.",
-        btn: "Verify now"
+        process:
+          "Persona Process: ID Capture + Selfie. Automatic validation in under 2 minutes.",
+        btn: "Verify now",
       },
       verified_box: {
         title: "Persona Verification",
         sub: "Already done • KYC validated on 12/01/2025",
-        badge: "Certified"
+        badge: "Certified",
       },
       sections: {
         personal: "Personal Information",
         identity: "Identity & Citizenship",
         prefs: "Account Preferences",
-        security: "Security Hub"
+        security: "Security Hub",
       },
       fields: {
         name: "Full name",
@@ -3574,11 +4058,11 @@ export const translations = {
         language: "Interface language",
         language_default: "English",
         timezone: "Timezone",
-        timezone_default: "GMT-5 (Haiti)"
+        timezone_default: "GMT-5 (Haiti)",
       },
       security_items: {
         history: { label: "Login history", sub: "Active devices and sessions" },
-        logout_all: "Logout from all sessions"
+        logout_all: "Logout from all sessions",
       },
       save_btn: "Save my identity",
       logout_confirm: "Logout from this account?",
@@ -3598,26 +4082,27 @@ export const translations = {
         name_required: "Name is required",
         tag_required: "Tag is required",
         verify_email_first: "Please verify your new email first",
-        verify_phone_first: "Please verify your new phone first"
+        verify_phone_first: "Please verify your new phone first",
       },
       success: {
         email_verified: "Email verified ✓",
-        phone_verified: "Phone verified ✓"
+        phone_verified: "Phone verified ✓",
       },
       info: {
         no_email_modified: "No email was modified",
-        no_phone_modified: "No number was modified"
-      }
+        no_phone_modified: "No number was modified",
+      },
     },
     verification: {
       title: "Receipt Verification",
-      instructions: "Enter the transaction ID or scan the QR code to verify authenticity.",
+      instructions:
+        "Enter the transaction ID or scan the QR code to verify authenticity.",
       placeholder: "E.g.: PIY-HT-...",
       btn_verify: "Verify now",
       btn_retry: "New verification",
       authentic_receipt: "Authentic Receipt",
       status_label: "Status: ",
-      invalid_id: "Invalid ID"
+      invalid_id: "Invalid ID",
     },
     help_center: {
       title: "Help Center",
@@ -3626,7 +4111,7 @@ export const translations = {
         pix: "Pix & Transfers",
         card: "My piYès Card",
         security: "Security",
-        account: "My Account"
+        account: "My Account",
       },
       faqs: {
         title: "Frequently Asked Questions",
@@ -3647,43 +4132,51 @@ export const translations = {
         q8: "Will I be able to make international transfers?",
         a8: "Yes, you will be able to send or receive money from abroad. Before confirming, you will see the daily exchange rate.",
         q9: "How will I be able to receive money?",
-        a9: "You will be able to generate a QR code or a payment link to quickly receive money from a relative or a client."
+        a9: "You will be able to generate a QR code or a payment link to quickly receive money from a relative or a client.",
       },
-      btn_contact: "Contact an advisor"
+      btn_contact: "Contact an advisor",
     },
     support: {
       title: "piYès Support",
       need_help: "Need help?",
       sub: "Our team is available to answer your questions and collect your feedback during the testing phase.",
       chat: { label: "Start a chat", sub: "Average response in a few minutes" },
-      call: { label: "Call support", sub: "+50947804142: Available only via WhatsApp during weekday business hours" },
+      call: {
+        label: "Call support",
+        sub: "+50947804142: Available only via WhatsApp during weekday business hours",
+      },
       email: { label: "Send an email", sub: "m.marcruben@yahoo.fr" },
       availability: "Support available 7 days a week during the test period",
       assistant_title: "piYès Assistant",
       intelligent_support: "Intelligent Support (MVP)",
-      welcome_msg: "Hello! I am the piYès assistant. How can I help you regarding **{{context}}**?",
-      input_placeholder: "Ask your question..."
+      welcome_msg:
+        "Hello! I am the piYès assistant. How can I help you regarding **{{context}}**?",
+      input_placeholder: "Ask your question...",
     },
     legal_pages: {
-        about: {
-          title: "About piYès",
-          content: "piYès is an electronic wallet in its testing phase (MVP), designed to simplify access to financial services in Haiti and for Haitians abroad. Our mission is to make transfers, deposits, and payments simpler, very low-cost or even free, and accessible.",
-          build: "Version: 1.0.0 (MVP 2026)",
-          made_in: "Made with ❤️ for Haiti.",
-          last_update: "Last update: April 2026."
-        },
-        terms: {
-          title: "Terms and Conditions",
-          content: "Using piYès in this MVP version implies acceptance of our test terms and conditions. The service is provided experimentally and may evolve quickly.",
-          list: "1. Service usage (MVP)\n2. Limited responsibility\n3. Fees and limits\n4. Account closure",
-          last_update: "Last update: April 2026."
-        },
-        privacy: {
-          title: "Privacy",
-          content: "Your privacy is a priority. You are not required to share personal data: your real name or phone number are not necessary in this phase. Usage data collected during the test phase will only be used to improve the application. They will never be shared with third parties without your consent.",
-          persona_note: "We plan to integrate secure identity verification in future versions."
-        }
-     },
+      about: {
+        title: "About piYès",
+        content:
+          "piYès is an electronic wallet in its testing phase (MVP), designed to simplify access to financial services in Haiti and for Haitians abroad. Our mission is to make transfers, deposits, and payments simpler, very low-cost or even free, and accessible.",
+        build: "Version: 1.0.0 (MVP 2026)",
+        made_in: "Made with ❤️ for Haiti.",
+        last_update: "Last update: April 2026.",
+      },
+      terms: {
+        title: "Terms and Conditions",
+        content:
+          "Using piYès in this MVP version implies acceptance of our test terms and conditions. The service is provided experimentally and may evolve quickly.",
+        list: "1. Service usage (MVP)\n2. Limited responsibility\n3. Fees and limits\n4. Account closure",
+        last_update: "Last update: April 2026.",
+      },
+      privacy: {
+        title: "Privacy",
+        content:
+          "Your privacy is a priority. You are not required to share personal data: your real name or phone number are not necessary in this phase. Usage data collected during the test phase will only be used to improve the application. They will never be shared with third parties without your consent.",
+        persona_note:
+          "We plan to integrate secure identity verification in future versions.",
+      },
+    },
     boutique: {
       title: "Store",
       search_placeholder: "Search for an ad...",
@@ -3691,33 +4184,33 @@ export const translations = {
         home: "Home",
         my_ads: "My ads",
         messages: "Messages",
-        notifications: "Notifications"
+        notifications: "Notifications",
       },
       filters: {
         all: "All",
         offers: "Offers",
         pros: "Pros",
         products: "Products",
-        reset: "Reset"
+        reset: "Reset",
       },
       categories: {
         market: "Market",
         national: "National",
         enterprise: "Businesses",
         sme: "Shops",
-        freelance: "Freelance"
+        freelance: "Freelance",
       },
       sections: {
         trending: "To discover",
         latest: "Latest ads",
-        my_ads_title: "Manage my ads"
+        my_ads_title: "Manage my ads",
       },
       ad_card: {
         published_on: "Published on {{date}}",
         views: "{{count}} views",
         messages: "{{count}} messages",
         offer_badge: "Offer",
-        promo_badge: "Promo"
+        promo_badge: "Promo",
       },
       create: {
         btn: "Post",
@@ -3729,7 +4222,7 @@ export const translations = {
         field_desc: "Description",
         field_piyes_pay: "piYès Payment",
         field_piyes_pay_sub: "Receive money instantly on your account.",
-        submit: "Publish my ad"
+        submit: "Publish my ad",
       },
       dashboard: {
         title: "Dashboard",
@@ -3738,7 +4231,7 @@ export const translations = {
         payments: "piYès Payments",
         stats: "Statistics",
         views: "Total views",
-        sales: "Sales made"
+        sales: "Sales made",
       },
       search: {
         advanced: "Advanced Search",
@@ -3753,7 +4246,7 @@ export const translations = {
         compare: "Compare",
         comparison_tool: "Comparison Tool",
         add_to_compare: "Add to compare",
-        clear_comparison: "Clear comparison"
+        clear_comparison: "Clear comparison",
       },
       reviews: {
         title: "Reviews and comments",
@@ -3763,23 +4256,23 @@ export const translations = {
         comment_placeholder: "Share your experience...",
         submit_review: "Publish review",
         no_reviews: "No reviews yet.",
-        only_buyers: "Only verified buyers can leave a review."
-      }
+        only_buyers: "Only verified buyers can leave a review.",
+      },
     },
     ad_detail: {
       published_on: "Published on {{date}}",
       specs: {
         storage: "Storage",
         color: "Color",
-        year: "Year"
+        year: "Year",
       },
       member_since: "Member since {{year}}",
       certified_seller: "Certified piYès User",
       footer: {
         contact: "Contact",
         pay: "Pay with piYès",
-        call: "Call"
-      }
+        call: "Call",
+      },
     },
     notifications: {
       title: "Notifications",
@@ -3788,14 +4281,35 @@ export const translations = {
       clear_all: "Clear all",
       empty: "You have no notifications for now.",
       types: {
-        FRIEND_REQUEST: { title: "Friend Request", body: "{{name}} sent you a friend request." },
-        FRIEND_ACCEPTED: { title: "Request Accepted", body: "{{name}} accepted your friend request." },
-        transfer_received: { title: "Transfer Received", body: "You received {{amount}} HTG from {{name}}" },
-        scheduled_created: { title: "Reminder Created", body: "A {{amount}} reminder has been created for {{name}}. Pending confirmation." },
-        scheduled_confirmed: { title: "Reminder Saved", body: "You confirmed a {{amount}} payment for {{name}} Due date" },
-        scheduled_cancelled: { title: "Reminder Deleted", body: "You deleted the {{amount}} reminder for {{name}}" },
-        scheduled_request: { title: "Payment Request", body: "{{name}} is asking for {{amount}} before {{date}}. Confirm via the QR/link received." }
-      }
+        FRIEND_REQUEST: {
+          title: "Friend Request",
+          body: "{{name}} sent you a friend request.",
+        },
+        FRIEND_ACCEPTED: {
+          title: "Request Accepted",
+          body: "{{name}} accepted your friend request.",
+        },
+        transfer_received: {
+          title: "Transfer Received",
+          body: "You received {{amount}} HTG from {{name}}",
+        },
+        scheduled_created: {
+          title: "Reminder Created",
+          body: "A {{amount}} reminder has been created for {{name}}. Pending confirmation.",
+        },
+        scheduled_confirmed: {
+          title: "Reminder Saved",
+          body: "You confirmed a {{amount}} payment for {{name}} Due date",
+        },
+        scheduled_cancelled: {
+          title: "Reminder Deleted",
+          body: "You deleted the {{amount}} reminder for {{name}}",
+        },
+        scheduled_request: {
+          title: "Payment Request",
+          body: "{{name}} is asking for {{amount}} before {{date}}. Confirm via the QR/link received.",
+        },
+      },
     },
     security: {
       title: "Security",
@@ -3811,11 +4325,12 @@ export const translations = {
       totp_setup: "Setup TOTP",
       totp_verify: "Verify code",
       totp_placeholder: "Enter 6-digit code",
-      warning: "For maximum security, we recommend enabling both MFA and TOTP authentication.",
+      warning:
+        "For maximum security, we recommend enabling both MFA and TOTP authentication.",
       pin_label: "PIN Code",
       pin_active: "Active",
       totp_qr_instruction: "Scan this QR Code or enter the key manually",
-      current_session: "Current"
+      current_session: "Current",
     },
     receipt: {
       title: "Receipt",
@@ -3837,8 +4352,8 @@ export const translations = {
         transfer: "Transfer",
         deposit: "Deposit",
         withdraw: "Withdraw",
-        recharge: "Recharge"
-      }
+        recharge: "Recharge",
+      },
     },
     transfer: {
       title: "Transfer",
@@ -3866,7 +4381,8 @@ export const translations = {
       prefilled_qr: "Prefilled payment request (QR code)",
       from_scheduler: "Payment from reminder",
       scheduler_payment: "Payment reminder",
-      qr_expired_error: "This QR Code has expired. Please ask the recipient to generate a new one.",
+      qr_expired_error:
+        "This QR Code has expired. Please ask the recipient to generate a new one.",
       description_link: "Payment link",
       description_qr: "QR Code payment",
       description_scheduler: "Scheduled payment",
@@ -3876,7 +4392,7 @@ export const translations = {
       key_phone: "Phone",
       key_random: "Random",
       key_recipient: "Recipient",
-      verifying_recipient: "Verifying recipient..."
+      verifying_recipient: "Verifying recipient...",
     },
     deposit: {
       title: "Deposit",
@@ -3885,23 +4401,26 @@ export const translations = {
       current_balance: "Current balance: {{amount}} {{currency}}",
       success_title: "Deposit successful!",
       success_sub: "Your balance has been updated.",
-      failure_msg: "Deposit of {{amount}} {{currency}} NOT performed. {{reason}}",
+      failure_msg:
+        "Deposit of {{amount}} {{currency}} NOT performed. {{reason}}",
       btn_confirm: "Confirm deposit",
       where_q: "Where do you want to deposit?",
       search_agent_placeholder: "Search for an agent or ATM...",
       open: "Open",
-      closed: "Closed"
+      closed: "Closed",
     },
     withdraw: {
       title: "Withdraw",
       amount_q: "Amount to withdraw ({{currency}})",
       exit_confirm_title: "Cancel withdrawal?",
-      exit_confirm_desc: "If you leave this page, your withdrawal request will be cancelled.",
+      exit_confirm_desc:
+        "If you leave this page, your withdrawal request will be cancelled.",
       confirm_exit: "Yes, cancel",
       warning_msg: "Withdrawal is done via our piYès certified agents.",
       success_title: "Withdrawal successful!",
       success_sub: "Your funds are ready for pickup.",
-      failure_msg: "Withdrawal of {{amount}} {{currency}} NOT performed. {{reason}}",
+      failure_msg:
+        "Withdrawal of {{amount}} {{currency}} NOT performed. {{reason}}",
       btn_confirm: "Confirm withdrawal",
       code_expired: "The withdrawal code has expired.",
       code_title: "Withdrawal code",
@@ -3910,11 +4429,13 @@ export const translations = {
       status_open: "Open",
       status_closed: "Closed",
       present_code: "Present this code",
-      present_instruction: "Show this code to agent <strong>{{name}}</strong> to finalize your withdrawal of <strong>{{amount}} G</strong>.",
+      present_instruction:
+        "Show this code to agent <strong>{{name}}</strong> to finalize your withdrawal of <strong>{{amount}} G</strong>.",
       alphanumeric_code: "Alphanumeric Code",
-      security_tip: "Never share this code with anyone other than the piYès certified agent.",
+      security_tip:
+        "Never share this code with anyone other than the piYès certified agent.",
       received_money: "I received the money",
-      cancel_btn: "Cancel withdrawal"
+      cancel_btn: "Cancel withdrawal",
     },
     request: {
       title: "Receive a payment",
@@ -3936,7 +4457,8 @@ export const translations = {
       qr_expired: "QR Code expired",
       generate_new: "Create another",
       expires_in: "Expires in",
-      scheduler_friends_only: "Scheduled requests are for your friends only (mutual contacts).",
+      scheduler_friends_only:
+        "Scheduled requests are for your friends only (mutual contacts).",
       btn_send_amount: "Send this amount",
     },
     scheduler: {
@@ -3949,28 +4471,30 @@ export const translations = {
         amount_label: "Amount ({{required}})",
         date_label: "Due date ({{required}})",
         info: "This request will be saved in your schedules.",
-        btn_create: "Create scheduled request"
+        btn_create: "Create scheduled request",
       },
       tabs: {
         to_pay: "To pay",
-        sent: "Sent requests"
+        sent: "Sent requests",
       },
       stats: {
         to_receive: "Total to receive",
         to_pay: "Total to pay",
-        confirmed: "Confirmed"
+        confirmed: "Confirmed",
       },
       list: {
         search_placeholder: "Search by title or contact...",
         empty: "No scheduled payments",
-        empty_incoming_desc: "You haven't created any scheduled payment requests yet.",
-        empty_outgoing_desc: "No scheduled payments have been addressed to you at the moment.",
+        empty_incoming_desc:
+          "You haven't created any scheduled payment requests yet.",
+        empty_outgoing_desc:
+          "No scheduled payments have been addressed to you at the moment.",
         create_first: "Create your first schedule",
         status: {
           pending: "Pending",
           confirmed: "Confirmed",
           paid: "Paid",
-          cancelled: "Cancelled"
+          cancelled: "Cancelled",
         },
         expanded: {
           due_date: "Due date",
@@ -3978,11 +4502,11 @@ export const translations = {
           reminder_val: "Auto (1d before)",
           btn_pay: "Pay now",
           btn_remind: "Remind",
-          btn_modify: "Modify"
+          btn_modify: "Modify",
         },
         selected_count: "{{count}} selected",
         total: "Total:",
-        delete_btn: "Delete"
+        delete_btn: "Delete",
       },
       create: {
         title: "New reminder",
@@ -3994,34 +4518,40 @@ export const translations = {
         required: "*",
         payer_placeholder: "Name, tag, email or phone...",
         mutual_friend: "Mutual contact — reminder authorized",
-        not_mutual_friend: "Not mutual friends yet — a friend request will be needed",
+        not_mutual_friend:
+          "Not mutual friends yet — a friend request will be needed",
         amount_label: "Amount",
         due_date_label: "Due date",
         reminders_label: "Scheduled reminders",
         active: "active",
         actives: "active",
-        grid_instruction: "Click on a day or time to activate/deactivate. At least one reminder must remain active.",
+        grid_instruction:
+          "Click on a day or time to activate/deactivate. At least one reminder must remain active.",
         time_830: "08:30 AM",
         time_1230: "12:30 PM",
-        info_text: "The payer will have to confirm via QR or link. Without confirmation, the reminder remains \"pending\" and does not appear in their \"To pay\" tab.",
+        info_text:
+          'The payer will have to confirm via QR or link. Without confirmation, the reminder remains "pending" and does not appear in their "To pay" tab.',
         btn_create: "Create reminder",
         success_title: "Reminder created!",
         waiting_confirmation: "Waiting for confirmation",
-        share_instruction: "Share this QR or link with <strong>{{name}}</strong> for them to confirm the reminder.",
+        share_instruction:
+          "Share this QR or link with <strong>{{name}}</strong> for them to confirm the reminder.",
         copy_link: "Copy confirmation link",
         view_reminders: "See my reminders",
-        timeout_info: "Without confirmation from the payer within 2 minutes, the reminder will remain \"Pending\". You can remind them again from your reminders.",
+        timeout_info:
+          'Without confirmation from the payer within 2 minutes, the reminder will remain "Pending". You can remind them again from your reminders.',
         friend_request_modal: {
           title: "Friendship required",
           desc: "To create a reminder for <strong>{{name}}</strong>, you must first be mutual friends on piYès. Would you like to send a friend request?",
           btn_send: "Send friend request",
           btn_sent: "Request sent ✓",
-          cancel: "Cancel"
+          cancel: "Cancel",
         },
-        friend_request_sent_alert: "Friend request sent! Creating the reminder will be possible once accepted.",
+        friend_request_sent_alert:
+          "Friend request sent! Creating the reminder will be possible once accepted.",
         friend_request_error: "Error sending request.",
         create_error: "Error during creation",
-        copy_success: "Link copied!"
+        copy_success: "Link copied!",
       },
       item: {
         request_from: "Request from {{name}}",
@@ -4034,10 +4564,11 @@ export const translations = {
         relancer: "Remind",
         annuler: "Cancel",
         delete_confirm_title: "Delete this reminder?",
-        delete_confirm_desc: "\"<strong>{{title}}</strong>\" will be permanently deleted. Both parties will be notified.",
+        delete_confirm_desc:
+          '"<strong>{{title}}</strong>" will be permanently deleted. Both parties will be notified.',
         delete_confirm_btn: "Confirm deletion",
         delete_cancel_btn: "Cancel",
-        copy_link: "Copy link"
+        copy_link: "Copy link",
       },
       disclaimer: "Your schedules are payment commitments.",
       auto_return: "Returning home in {{seconds}}s...",
@@ -4045,20 +4576,22 @@ export const translations = {
         delete_failed: "Error while deleting",
         bulk_delete_failed: "Error while deleting multiple",
         pin_incorrect: "Incorrect PIN",
-        confirm_failed: "Error while confirming"
+        confirm_failed: "Error while confirming",
       },
       success: {
-        confirmed: "Reminder confirmed! It now appears in your \"To pay\" tab."
+        confirmed: 'Reminder confirmed! It now appears in your "To pay" tab.',
       },
       payment_reminder_prefix: "Payment reminder: {{title}}",
       payment_reminder_due_prefix: "Payment reminder — due date {{date}}",
-      pay_info: "By paying with this button, the reminder will be marked as settled and both parties will be notified.",
+      pay_info:
+        "By paying with this button, the reminder will be marked as settled and both parties will be notified.",
       paid_on: "Paid on {{date}}",
       reminders_grid: "Reminders grid",
       delete_this: "Delete this reminder",
       confirm_qr: "Confirmation QR",
       expires_at: "Expires at {{time}}",
-      delete_confirm_item_desc: "\"<strong>{{title}}</strong>\" will be permanently deleted. Both parties will be notified.",
+      delete_confirm_item_desc:
+        '"<strong>{{title}}</strong>" will be permanently deleted. Both parties will be notified.',
       modals: {
         delete_title: "Delete these reminders?",
         delete_desc: "Do you want to delete these payment reminders?",
@@ -4070,11 +4603,12 @@ export const translations = {
         due_date_label: "Due date",
         reminders_label: "Reminders",
         reminders_count: "scheduled reminders",
-        confirm_info: "Once confirmed, this reminder will appear in your \"To pay\" tab. You won't be able to delete it unless you pay it or {{name}} cancels it.",
+        confirm_info:
+          'Once confirmed, this reminder will appear in your "To pay" tab. You won\'t be able to delete it unless you pay it or {{name}} cancels it.',
         pin_prompt: "Enter your PIN to confirm",
         pin_placeholder: "••••",
-        confirm_btn: "Confirm reminder"
-      }
+        confirm_btn: "Confirm reminder",
+      },
     },
     recharge: {
       title: "Mobile Recharge",
@@ -4087,7 +4621,8 @@ export const translations = {
       select_contact: "Choose a contact",
       custom_amount: "Custom amount",
       operator_detected: "Operator detected",
-      confirm_msg: "You are about to recharge {{number}} with {{amount}} HTG ({{operator}}).",
+      confirm_msg:
+        "You are about to recharge {{number}} with {{amount}} HTG ({{operator}}).",
       success_msg: "Recharge successful!",
       failure_msg: "Recharge failed. Please try again.",
       view_receipt: "View receipt",
@@ -4095,7 +4630,7 @@ export const translations = {
       payment_method_subtitle: "Select payment method",
       done: "Done",
       share: "Share receipt",
-      download: "Download PDF"
+      download: "Download PDF",
     },
     banks: {
       add_title: "Add a bank",
@@ -4119,20 +4654,21 @@ export const translations = {
       unlink_btn: "Delete bank",
       manage_banks: "Manage my banks",
       unlink_confirm_title: "Unlink this bank?",
-      unlink_confirm_desc: "You will no longer be able to make transfers with this account, but history will be preserved.",
+      unlink_confirm_desc:
+        "You will no longer be able to make transfers with this account, but history will be preserved.",
       confirm_unlink: "Unlink account",
       unlink_success: "Bank unlinked successfully",
       unlink_error: "Error unlinking bank",
-      no_external_history: "No interbank transfers found for this account."
+      no_external_history: "No interbank transfers found for this account.",
     },
     history: {
       title: "History",
       search_placeholder: "Search for a transaction",
       actions: {
         view_reports: "View Reports",
-        close: "Close"
+        close: "Close",
       },
-      verified_intl: "Verified Intl"
+      verified_intl: "Verified Intl",
     },
     reports: {
       title: "Reports & Statements",
@@ -4144,20 +4680,20 @@ export const translations = {
         year: "This year",
         this_month: "This month",
         six_months: "6 months",
-        this_year: "This year"
+        this_year: "This year",
       },
       summary: "You have made {{count}} transactions this month.",
       categories: {
         title: "Expenses",
         food: "Food",
-        shopping: "Shopping"
+        shopping: "Shopping",
       },
       flow_title: "Weekly flow",
       export_section: "Export my statement",
       export_desc: "Download your transaction history.",
       formats: {
         pdf: { title: "Statement in PDF", sub: "Good for printing" },
-        excel: { title: "Statement in Excel", sub: "For deep checking" }
+        excel: { title: "Statement in Excel", sub: "For deep checking" },
       },
       types: {
         p2p: "P2P Transfer",
@@ -4167,20 +4703,20 @@ export const translations = {
         intl: "International",
         request: "Request",
         scheduled: "Scheduled",
-        card: "Card"
+        card: "Card",
       },
       export: {
         filename_prefix: "piyes-report-",
         pdf_title: "piYès FINANCIAL REPORT",
         period_label: "Period:",
-        generated_at: "Generated on:"
+        generated_at: "Generated on:",
       },
       sections: {
         overview: "=== OVERVIEW ===",
         top_payers: "=== TOP PAYERS ===",
         distribution_by_type: "=== DISTRIBUTION BY TYPE ===",
         savings_costs: "=== SAVINGS & COSTS ===",
-        peak_hours: "=== PEAK HOURS ==="
+        peak_hours: "=== PEAK HOURS ===",
       },
       labels: {
         indicator: "Indicator",
@@ -4217,19 +4753,25 @@ export const translations = {
         apply: "Apply",
         overview_title: "Overview",
         net_balance_period: "Net balance for the period",
-        net_balance_help: "Difference between what you received and what you spent in the period. A positive balance means you received more than you spent.",
+        net_balance_help:
+          "Difference between what you received and what you spent in the period. A positive balance means you received more than you spent.",
         received: "Received",
         vs_prev_period: "vs prev. period",
         spent: "Spent",
-        transactions_received_help: "Total number of payments received in the period. The average amount shows the typical value of a payment.",
+        transactions_received_help:
+          "Total number of payments received in the period. The average amount shows the typical value of a payment.",
         avg_currency: "Avg G.",
-        transactions_sent_help: "Total number of payments made in the period. The average amount shows what you typically spend.",
-        total_transactions_help: "Sum of all operations (sent + received) in the period.",
+        transactions_sent_help:
+          "Total number of payments made in the period. The average amount shows what you typically spend.",
+        total_transactions_help:
+          "Sum of all operations (sent + received) in the period.",
         avg_amount: "Average amount",
-        avg_amount_help: "Average value of all your transactions (sent and received).",
+        avg_amount_help:
+          "Average value of all your transactions (sent and received).",
         inflow: "Inflow",
         top_payers_title: "Top payers",
-        top_payers_help: "People or businesses that sent you the most money. Loyal clients (⭐) made 5 or more transactions.",
+        top_payers_help:
+          "People or businesses that sent you the most money. Loyal clients (⭐) made 5 or more transactions.",
         top: "Top",
         payers: "payers",
         transaction_singular: "transaction",
@@ -4238,21 +4780,27 @@ export const translations = {
         loyals: "Loyals ⭐",
         no_payments_received: "No payments received in this period",
         peak_hours_title: "Peak hours",
-        peak_hours_help: "Distribution of your receipts by hour of the day. The purple bar shows when most money comes in.",
+        peak_hours_help:
+          "Distribution of your receipts by hour of the day. The purple bar shows when most money comes in.",
         peak: "Peak:",
-        peak_hours_footer: "Your clients pay most between {{start}} and {{end}}.",
+        peak_hours_footer:
+          "Your clients pay most between {{start}} and {{end}}.",
         transaction_distribution: "Transaction distribution",
         distribution_by_type_title: "Distribution by type",
-        distribution_by_type_help: "View your transactions by type: transfers, deposits, withdrawals, recharges, etc.",
+        distribution_by_type_help:
+          "View your transactions by type: transfers, deposits, withdrawals, recharges, etc.",
         savings_costs_title: "Savings & Costs",
         piyes_fees_paid_title: "piYès fees paid",
-        piyes_fees_paid_help: "Total service fees (3%) on your sent transactions.",
+        piyes_fees_paid_help:
+          "Total service fees (3%) on your sent transactions.",
         on_sent_transactions: "On sent transactions (3%)",
         estimated_savings_cash_title: "Estimated savings vs cash",
-        estimated_savings_cash_help: "Estimated money saved by using piYès instead of cash.",
+        estimated_savings_cash_help:
+          "Estimated money saved by using piYès instead of cash.",
         cash_handling_errors: "Cash handling, errors, change*",
         estimated_savings_moncash_title: "Savings vs MonCash",
-        estimated_savings_moncash_help: "Estimated difference between piYès fees (3%) and MonCash fees (approx. 5%).",
+        estimated_savings_moncash_help:
+          "Estimated difference between piYès fees (3%) and MonCash fees (approx. 5%).",
         moncash_fees_estimated: "MonCash fees ~5% estimated*",
         estimations_disclaimer: "* Indicative estimations.",
         export_report: "Export report",
@@ -4283,14 +4831,14 @@ export const translations = {
           for_period: "For {{month}} {{year}}",
           all: "All",
           sent: "Sent",
-          received: "Received"
-        }
+          received: "Received",
+        },
       },
       frequency: {
         unique: "Unique",
         regular: "Regular",
-        loyal: "Loyal"
-      }
+        loyal: "Loyal",
+      },
     },
     promos: {
       title: "Promotions & Loyalty",
@@ -4300,10 +4848,22 @@ export const translations = {
       partner_offers_desc: "Take advantage of our partner offers",
       share_code: "Share my code",
       items: {
-        welcome: { title: "Welcome Bonus", desc: "Receive G 500 after your first deposit of G 2000 or more.", badge: "Active" },
-        refer_earn: { title: "Referral", desc: "Earn G 1000 when 5 people download the app thanks to you*", badge: "New" },
-        loyalty: { title: "piYès Points", desc: "Collect points on every transaction and exchange them for credit.", badge: "Soon" }
-      }
+        welcome: {
+          title: "Welcome Bonus",
+          desc: "Receive G 500 after your first deposit of G 2000 or more.",
+          badge: "Active",
+        },
+        refer_earn: {
+          title: "Referral",
+          desc: "Earn G 1000 when 5 people download the app thanks to you*",
+          badge: "New",
+        },
+        loyalty: {
+          title: "piYès Points",
+          desc: "Collect points on every transaction and exchange them for credit.",
+          badge: "Soon",
+        },
+      },
     },
     intl: {
       locale: "en-US",
@@ -4321,7 +4881,7 @@ export const translations = {
       methods: {
         bank: "Bank account",
         cash: "Cash Pickup (Agency)",
-        mobile: "Mobile wallet"
+        mobile: "Mobile wallet",
       },
       info_label: "Reception details (IBAN, Phone...)",
       example_name: "Jean-Marc Valerius",
@@ -4339,19 +4899,23 @@ export const translations = {
       success_title: "Transfer sent!",
       success_sub: "Your money is on its way to {{country}}.",
       search_country: "Search for a country...",
-      notif_received: "You received an international transfer of {{amount}} from {{sender}}. Withdrawal code: {{code}}",
+      notif_received:
+        "You received an international transfer of {{amount}} from {{sender}}. Withdrawal code: {{code}}",
       code_label: "Transfer code",
       choose_provider: "Choose a provider",
-      select_service_desc: "Select the service that suits you best for your international transfer.",
+      select_service_desc:
+        "Select the service that suits you best for your international transfer.",
       piyes_intl: "piYès International",
       recommended: "Recommended",
-      piyes_intl_desc: "Instant transfer to over 50 countries with the best rates.",
+      piyes_intl_desc:
+        "Instant transfer to over 50 countries with the best rates.",
       real_rate_desc: "Send money abroad at the real exchange rate.",
       coming_soon: "Coming soon",
       fast_reliable_desc: "Fast and reliable money transfers worldwide.",
       online_person_desc: "Send money online or in person.",
       secure_transfers: "Secure Transfers",
-      secure_transfers_desc: "All our partners are certified and your funds are protected by our piYès security guarantee.",
+      secure_transfers_desc:
+        "All our partners are certified and your funds are protected by our piYès security guarantee.",
       need_help: "Need help?",
       learn_more: "Learn more about international transfers",
       countries: {
@@ -4360,8 +4924,8 @@ export const translations = {
         fr: "France",
         do: "Dominican Rep.",
         br: "Brazil",
-        cl: "Chile"
-      }
+        cl: "Chile",
+      },
     },
     tools: {
       calculator: {
@@ -4370,31 +4934,45 @@ export const translations = {
         collect: "Collect this amount",
         modal_title: "Other Tools",
         modal_sub: "Integrated financial services for piYès.",
-        error: "Error"
+        error: "Error",
       },
       items: {
-        analysis: { title: "Analysis & Reports", desc: "Visualize your spending habits with detailed charts.", badge: "Essential" },
-        converter: { title: "Currency Converter", desc: "Instantly calculate HTG, USD, and EUR conversions." },
-        statements: { title: "Statement Export", desc: "Generate certified PDF documents for your administrative needs." },
-        credit: { title: "Loan Simulator", desc: "Estimate your borrowing capacity and monthly repayments.", badge: "New" }
-      }
+        analysis: {
+          title: "Analysis & Reports",
+          desc: "Visualize your spending habits with detailed charts.",
+          badge: "Essential",
+        },
+        converter: {
+          title: "Currency Converter",
+          desc: "Instantly calculate HTG, USD, and EUR conversions.",
+        },
+        statements: {
+          title: "Statement Export",
+          desc: "Generate certified PDF documents for your administrative needs.",
+        },
+        credit: {
+          title: "Loan Simulator",
+          desc: "Estimate your borrowing capacity and monthly repayments.",
+          badge: "New",
+        },
+      },
     },
     advanced: {
       title: "Advanced Tools",
       sections: {
         accounts: "My Accounts",
         health: "System Health",
-        debug: "Debug Mode"
+        debug: "Debug Mode",
       },
       health: {
         status: "Status",
         version: "Version",
-        uptime: "Uptime"
+        uptime: "Uptime",
       },
       debug: {
         label: "ID Decryption",
-        placeholder: "ID to decrypt"
-      }
+        placeholder: "ID to decrypt",
+      },
     },
     onboarding: {
       skip: "Skip",
@@ -4403,23 +4981,27 @@ export const translations = {
       step1: {
         title: "Welcome to piYès",
         subtitle: "Your financial companion for smart management",
-        description: "Take control of your financial future with our suite of tools designed to help you save and manage your money."
+        description:
+          "Take control of your financial future with our suite of tools designed to help you save and manage your money.",
       },
       step2: {
         title: "Smart Budgeting",
         subtitle: "Create and track budgets effortlessly",
-        description: "Set financial goals, track your spending habits, and get real-time insights."
+        description:
+          "Set financial goals, track your spending habits, and get real-time insights.",
       },
       step3: {
         title: "Instant Transfers",
         subtitle: "Send money in a blink",
-        description: "Make secure transfers to your piYès contacts or other banks instantly."
+        description:
+          "Make secure transfers to your piYès contacts or other banks instantly.",
       },
       step4: {
         title: "Secure & Private",
         subtitle: "Your data is protected",
-        description: "Rest easy knowing your financial information is encrypted and monitored 24/7."
-      }
-    }
-  }
+        description:
+          "Rest easy knowing your financial information is encrypted and monitored 24/7.",
+      },
+    },
+  },
 };

@@ -97,8 +97,20 @@ const ForgotPassword = () => {
     setError("");
     try {
       // Utiliser l'identifier normalisé pour le reset
-      await api.resetPassword(normalizedId, otp.join(""), newPassword);
-      setStep(4);
+      const response = await api.resetPassword(
+        normalizedId,
+        otp.join(""),
+        newPassword,
+      );
+
+      // ✅ AUTO-LOGIN : Si la réponse contient user et token
+      if (response.user && response.token) {
+        localStorage.setItem("piyes-auth-token", response.token);
+        localStorage.setItem("piyes-user", JSON.stringify(response.user));
+        navigate("/"); // Redirige vers dashboard
+      } else {
+        setStep(4); // Fallback : afficher succès et bouton login
+      }
     } catch (err: any) {
       setError(err.message || "Erreur lors de la réinitialisation");
     } finally {

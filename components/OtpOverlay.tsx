@@ -42,7 +42,7 @@ const OtpOverlay: React.FC<OtpOverlayProps> = ({
   useEffect(() => {
     if (mode === "verify") {
       const target = contact || requestId;
-      api.requestOtp((channel || "email") as "sms" | "email", target);
+      api.requestOtp(target, (channel || "email") as "sms" | "email");
     }
 
     const countdown = setInterval(() => {
@@ -115,7 +115,7 @@ const OtpOverlay: React.FC<OtpOverlayProps> = ({
   };
 
   return (
-    <div className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-md z-[210] theme-card-bg flex flex-col items-center p-8 animate-in fade-in duration-300 shadow-2xl border-x theme-border">
+    <div className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-md z-210 theme-card-bg flex flex-col items-center p-8 animate-in fade-in duration-300 shadow-2xl border-x theme-border">
       {onCancel && (
         <button
           onClick={onCancel}
@@ -143,7 +143,7 @@ const OtpOverlay: React.FC<OtpOverlayProps> = ({
             </p>
             <div className="mt-2 p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg">
               <p className="text-[9px] font-bold text-amber-600 uppercase tracking-tighter">
-                Dev Mode: Check server logs for your code
+                Tapez : 0 0 0 0 0 0
               </p>
             </div>
           </div>
@@ -168,7 +168,7 @@ const OtpOverlay: React.FC<OtpOverlayProps> = ({
           ))}
         </div>
 
-        <div className="w-full min-h-[40px]">
+        <div className="w-full min-h-10">
           {error && (
             <div className="space-y-4 animate-in slide-in-from-top-2 duration-300">
               <p className="text-[10px] font-bold text-red-500 text-center">
