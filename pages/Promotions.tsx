@@ -74,7 +74,7 @@ const Promotions: React.FC = () => {
       />
 
 
-      {/* ✅ Contenu scrollable */}
+      {/*  Contenu scrollable */}
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="mt-12 px-6">
           <button
