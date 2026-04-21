@@ -31,6 +31,7 @@ import Modal from "../components/Modal";
 import Button from "../components/Button";
 import LanguageSelector from "../components/LanguageSelector";
 import ThemeSelector from "../components/ThemeSelector";
+import SegmentedControl from "../components/SegmentedControl";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const toTitleCase = (str: string): string =>
@@ -94,12 +95,12 @@ const InputField: React.FC<InputFieldProps> = ({
         </div>
         <div
             className={`flex items-center gap-3 theme-bubble-bg p-4 rounded-2xl border transition-all duration-300 ${value
-                    ? isValid === false
-                        ? "border-red-500/50 bg-red-50/5 dark:bg-red-900/10 focus-within:border-red-500"
-                        : "border-transparent focus-within:border-(--primary-color) focus-within:bg-transparent"
-                    : isValid === false && showValidationErrors
-                        ? "border-red-500/50 bg-red-50/5 dark:bg-red-900/10 focus-within:border-red-500"
-                        : "border-transparent focus-within:border-(--primary-color) focus-within:bg-transparent"
+                ? isValid === false
+                    ? "border-red-500/50 bg-red-50/5 dark:bg-red-900/10 focus-within:border-red-500"
+                    : "border-transparent focus-within:border-(--primary-color) focus-within:bg-transparent"
+                : isValid === false && showValidationErrors
+                    ? "border-red-500/50 bg-red-50/5 dark:bg-red-900/10 focus-within:border-red-500"
+                    : "border-transparent focus-within:border-(--primary-color) focus-within:bg-transparent"
                 }`}
         >
             <div className="theme-primary-text opacity-50 shrink-0">{icon}</div>
@@ -146,8 +147,8 @@ const AccountTypeToggle: React.FC<{
                 type="button"
                 onClick={() => onChange(opt.id)}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-[14px] text-xs font-black transition-all duration-300 ${value === opt.id
-                        ? "theme-primary-bg text-white shadow-lg scale-[1.02]"
-                        : "theme-text-secondary hover:theme-text-main"
+                    ? "theme-primary-bg text-white shadow-lg scale-[1.02]"
+                    : "theme-text-secondary hover:theme-text-main"
                     }`}
             >
                 {opt.icon} {opt.label}
@@ -463,7 +464,23 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
 
                 {/* Toggle compte */}
                 <div className="mb-8">
-                    <AccountTypeToggle value={accountType} onChange={setAccountType} />
+                    <SegmentedControl
+                        options={[
+                            {
+                                id: "individual",
+                                label: "Individuel",
+                                icon: <UserRound size={16} />,
+                            },
+                            {
+                                id: "business",
+                                label: "Entreprise",
+                                icon: <Building2 size={16} />,
+                            },
+                        ]}
+                        value={accountType}
+                        onChange={(val) => setAccountType(val as "individual" | "business")}
+                        className="mb-8"
+                    />
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
