@@ -513,60 +513,78 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
                     {/* ── INDIVIDUEL ──────────────────────────────────────────────── */}
                     {accountType === "individual" && (
                         <>
-                            <div className="grid grid-cols-2 gap-3">
-                                <InputField
-                                    name="firstName"
-                                    label="Prénom"
-                                    icon={<User size={18} />}
-                                    type="text"
-                                    placeholder="Jean"
-                                    isValid={indVal.firstName}
-                                    value={indForm.firstName}
-                                    onChange={handleIndChange}
-                                    showValidationErrors={showValidationErrors}
-                                    required
-                                />
-                                <InputField
-                                    name="lastName"
-                                    label="Nom"
-                                    icon={<User size={18} />}
-                                    type="text"
-                                    placeholder="Dupont"
-                                    isValid={indVal.lastName}
-                                    value={indForm.lastName}
-                                    onChange={handleIndChange}
-                                    showValidationErrors={showValidationErrors}
-                                    required
-                                />
-                            </div>
                             <InputField
-                                name="email"
-                                label={t("auth.signup_email_label")}
-                                icon={<Mail size={18} />}
-                                type="email"
-                                placeholder="jean@exemple.com"
-                                isValid={indVal.email}
-                                value={indForm.email}
+                                name="firstName"
+                                label="Prénom"
+                                icon={<User size={18} />}
+                                type="text"
+                                placeholder="Jean"
+                                isValid={indVal.firstName}
+                                value={indForm.firstName}
                                 onChange={handleIndChange}
                                 showValidationErrors={showValidationErrors}
+                                required
                             />
                             <InputField
-                                name="phone"
-                                label={t("auth.signup_phone_label")}
-                                icon={<Smartphone size={18} />}
-                                type="tel"
-                                placeholder="+509 XXXX XXXX"
-                                isValid={indVal.phone}
-                                value={indForm.phone}
+                                name="lastName"
+                                label="Nom"
+                                icon={<User size={18} />}
+                                type="text"
+                                placeholder="Dupont"
+                                isValid={indVal.lastName}
+                                value={indForm.lastName}
                                 onChange={handleIndChange}
                                 showValidationErrors={showValidationErrors}
+                                required
                             />
-                            {!indVal.identityOk &&
-                                (indForm.email.length > 0 || indForm.phone.length > 0) && (
+
+                            {/* Téléphone et Email côte à côte avec "OU" */}
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    {/* Téléphone - occupe l'espace disponible */}
+                                    <div className="flex-1">
+                                        <InputField
+                                            name="phone"
+                                            label={t("auth.signup_phone_label")}
+                                            icon={<Smartphone size={18} />}
+                                            type="tel"
+                                            placeholder="+509 XXXX XXXX"
+                                            isValid={indVal.phone}
+                                            value={indForm.phone}
+                                            onChange={handleIndChange}
+                                            showValidationErrors={showValidationErrors}
+                                        />
+                                    </div>
+
+                                    {/* "OU" - simple texte, centré verticalement */}
+                                    <span className="text-[10px] font-black theme-text-secondary uppercase tracking-widest pt-0">
+                                        {t("common.or")}
+                                    </span>
+
+                                    {/* Email - occupe l'espace disponible */}
+                                    <div className="flex-1">
+                                        <InputField
+                                            name="email"
+                                            label={t("auth.signup_email_label")}
+                                            icon={<Mail size={18} />}
+                                            type="email"
+                                            placeholder="jean@exemple.com"
+                                            isValid={indVal.email}
+                                            value={indForm.email}
+                                            onChange={handleIndChange}
+                                            showValidationErrors={showValidationErrors}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Message de validation */}
+                                {!indVal.identityOk && (indForm.email.length > 0 || indForm.phone.length > 0) && (
                                     <p className="text-[10px] font-bold text-amber-500 px-1">
                                         Au moins un email ou téléphone valide requis.
                                     </p>
                                 )}
+                            </div>
+
                             <InputField
                                 name="password"
                                 label={t("auth.signup_pass_label")}
@@ -612,32 +630,30 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
                                 showValidationErrors={showValidationErrors}
                                 required
                             />
-                            <div className="grid grid-cols-2 gap-3">
-                                <InputField
-                                    name="firstName"
-                                    label="Prénom du représentant"
-                                    icon={<User size={18} />}
-                                    type="text"
-                                    placeholder="Jean"
-                                    isValid={bizVal.firstName}
-                                    value={bizForm.firstName}
-                                    onChange={handleBizChange}
-                                    showValidationErrors={showValidationErrors}
-                                    required
-                                />
-                                <InputField
-                                    name="lastName"
-                                    label="Nom du représentant"
-                                    icon={<User size={18} />}
-                                    type="text"
-                                    placeholder="Dupont"
-                                    isValid={bizVal.lastName}
-                                    value={bizForm.lastName}
-                                    onChange={handleBizChange}
-                                    showValidationErrors={showValidationErrors}
-                                    required
-                                />
-                            </div>
+                            <InputField
+                                name="firstName"
+                                label="Prénom du représentant"
+                                icon={<User size={18} />}
+                                type="text"
+                                placeholder="Jean"
+                                isValid={bizVal.firstName}
+                                value={bizForm.firstName}
+                                onChange={handleBizChange}
+                                showValidationErrors={showValidationErrors}
+                                required
+                            />
+                            <InputField
+                                name="lastName"
+                                label="Nom du représentant"
+                                icon={<User size={18} />}
+                                type="text"
+                                placeholder="Dupont"
+                                isValid={bizVal.lastName}
+                                value={bizForm.lastName}
+                                onChange={handleBizChange}
+                                showValidationErrors={showValidationErrors}
+                                required
+                            />
 
                             <div className="grid grid-cols-2 gap-3">
                                 <InputField
@@ -736,30 +752,40 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
 
                     {/* Terms */}
                     <div className="py-4">
-                        <label className="flex items-start gap-4 cursor-pointer group">
-                            <div className="relative shrink-0 mt-0.5">
+                        <label className="flex items-center gap-3 cursor-pointer group">
+                            <div className="relative shrink-0">
                                 <input
                                     type="checkbox"
                                     checked={agreedToTerms}
                                     onChange={(e) => setAgreedToTerms(e.target.checked)}
                                     className="peer sr-only"
                                 />
-                                <div
-                                    className={`w-6 h-6 theme-bubble-bg border-2 theme-border rounded-lg transition-all flex items-center justify-center shadow-sm ${agreedToTerms ? "bg-(--primary-color) border-transparent" : "group-hover:border-(--primary-color)"}`}
+                                <motion.div
+                                    whileTap={{ scale: 0.9 }}
+                                    className={`w-6 h-6 rounded-lg border-2 transition-all duration-300 flex items-center justify-center shadow-sm ${agreedToTerms
+                                        ? "bg-(--primary-color) border-transparent"
+                                        : "theme-bubble-bg theme-border group-hover:border-(--primary-color)"
+                                        }`}
                                 >
                                     {agreedToTerms && (
-                                        <CheckCircle2
-                                            size={16}
-                                            className="text-white"
-                                            fill="currentColor"
-                                        />
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ type: "spring", stiffness: 500, damping: 20 }}
+                                        >
+                                            <CheckCircle2
+                                                size={16}
+                                                className="text-white"
+                                                fill="currentColor"
+                                            />
+                                        </motion.div>
                                     )}
-                                </div>
+                                </motion.div>
                             </div>
                             <div className="text-xs theme-text-secondary leading-relaxed select-none">
                                 {t("auth.signup_terms_prefix")}{" "}
                                 <span
-                                    className="theme-primary-text font-bold underline"
+                                    className="theme-primary-text font-bold underline cursor-pointer hover:opacity-80 transition-opacity"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         setLegalModal("terms");
@@ -769,7 +795,7 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
                                 </span>{" "}
                                 {t("auth.signup_terms_and")}{" "}
                                 <span
-                                    className="theme-primary-text font-bold underline"
+                                    className="theme-primary-text font-bold underline cursor-pointer hover:opacity-80 transition-opacity"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         setLegalModal("privacy");

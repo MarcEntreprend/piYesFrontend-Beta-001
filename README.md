@@ -6,16 +6,19 @@
 
 **Prerequisites:** Node.js
 
-1. Install dependencies:
-   `npm install`
-2. Run the app:
-   `npm run dev`
+```bash
+npm install # Install dependencies
+npm run dev # Run the app
+```
 
 ---
 
 ## Android studio :
 
 cd C:\Users\mmarc\Documents\Programming\myProjects\piYes_projects\piyes-wallet-frontend
+
+```bash
 npm run build
 npx cap sync android
 npx cap open android
+```

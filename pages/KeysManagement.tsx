@@ -598,7 +598,7 @@ const KeysManagement: React.FC = () => {
                 </button>
                 <button
                   onClick={handleFinalConfirm}
-                  className="flex-[2] py-3 theme-primary-bg text-white rounded-xl font-bold text-xs shadow-lg active:scale-95 transition-all"
+                  className="flex-2 py-3 theme-primary-bg text-white rounded-xl font-bold text-xs shadow-lg active:scale-95 transition-all"
                 >
                   {t("common.confirm")}
                 </button>
@@ -1364,4 +1364,4 @@ const KeysManagement: React.FC = () => {
   );
 };
 
-export default KeysManagement;
+export default KeysManagement;  
