@@ -8,7 +8,6 @@ import { cn } from "../src/lib/utils";
 type ButtonVariant = "primary" | "secondary" | "danger" | "utility" | "text";
 type ButtonSize = "sm" | "md" | "lg";
 
-//  ÉTAPE 1 : Exclure onDrag de l'interface
 interface ButtonProps extends Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   "onDrag"
@@ -55,7 +54,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       lg: "px-8 py-4 text-base rounded-3xl min-h-[56px]",
     };
 
-    //  ÉTAPE 2 : Extraire onDrag des props (si jamais il est passé)
     const { onDrag, ...restProps } = props as any;
 
     return (
@@ -70,23 +68,19 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           fullWidth ? "w-full" : "w-fit",
           className,
         )}
-        {...restProps} //  ÉTAPE 3 : Utiliser restProps sans onDrag
+        {...restProps}
       >
-        {isLoading && (
-          <Loader2
-            className="animate-spin shrink-0"
-            size={size === "sm" ? 14 : 18}
-          />
-        )}
+        {/* Icônes normales (cachées pendant le loading) */}
         {!isLoading && leftIcon && <span className="shrink-0">{leftIcon}</span>}
         <span className={cn(isLoading && "opacity-0")}>{children}</span>
         {!isLoading && rightIcon && (
           <span className="shrink-0">{rightIcon}</span>
         )}
 
+        {/* UN SEUL SPINNER - centré en absolu */}
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <Loader2 className="animate-spin" size={size === "sm" ? 14 : 18} />
+            <Loader2 className="animate-spin" size={size === "sm" ? 14 : size === "md" ? 18 : 22} />
           </div>
         )}
       </motion.button>
