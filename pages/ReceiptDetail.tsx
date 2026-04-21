@@ -8,6 +8,7 @@ import { receiptService } from '../services/receiptService';
 import { useTranslation } from '../App';
 import Modal from '../components/Modal';
 import PageHeader from '../components/PageHeader';
+import Button from "../components/Button";
 
 const ReceiptDetail: React.FC = () => {
   const { id } = useParams();
@@ -43,7 +44,7 @@ const ReceiptDetail: React.FC = () => {
     try {
       // Générer l'image du reçu via HTML propre (sans oklch)
       const imgBlob = await generateReceiptImageBlob();
-      
+
       if (navigator.share && imgBlob) {
         // Partage natif avec fichier image — demande PDF ou image au user
         const file = new File([imgBlob], `recu-piyes-${receipt.id}.png`, { type: 'image/png' });
@@ -207,7 +208,7 @@ const ReceiptDetail: React.FC = () => {
       const iframe = document.createElement('iframe');
       iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:400px;height:auto;border:none;visibility:hidden;';
       document.body.appendChild(iframe);
-      
+
       iframe.contentDocument!.open();
       iframe.contentDocument!.write(html);
       iframe.contentDocument!.close();
@@ -349,19 +350,19 @@ const ReceiptDetail: React.FC = () => {
 
   return (
     <div className="theme-card-bg min-h-screen pb-20">
-     <PageHeader
-      title={t('receipt.title')}
-      onBack={() => navigate(-1)}
-      rightElement={
-        <button 
-          onClick={handleShare} 
-          className="p-2 theme-primary-text active:scale-90 transition-transform"
-        >
-          <Share2 size={24} />
-        </button>
-      }
-      className="sticky top-0 theme-card-bg z-10 border-b theme-border hover:bg-gray-50/50 dark:hover:bg-white/5 transition-all cursor-pointer group"
-    />
+      <PageHeader
+        title={t('receipt.title')}
+        onBack={() => navigate(-1)}
+        rightElement={
+          <button
+            onClick={handleShare}
+            className="p-2 theme-primary-text active:scale-90 transition-transform"
+          >
+            <Share2 size={24} />
+          </button>
+        }
+        className="sticky top-0 theme-card-bg z-10 border-b theme-border hover:bg-gray-50/50 dark:hover:bg-white/5 transition-all cursor-pointer group"
+      />
 
 
       <div className="px-6 py-4">
@@ -373,7 +374,7 @@ const ReceiptDetail: React.FC = () => {
                 <span className="text-3xl font-black tracking-tighter text-(--primary-color)">piYès</span>
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{typeLabel}</p>
               </div>
-              
+
               <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
                 <p className="text-4xl font-black text-gray-900 mb-1">
                   {receipt.amount.toLocaleString('fr-HT')} G <span className="text-sm align-top text-gray-400">*</span>
@@ -470,7 +471,7 @@ const ReceiptDetail: React.FC = () => {
               <p className="text-base font-black text-(--primary-color)">piYès</p>
               <p className="text-[11px] font-bold text-gray-500">Merci d’avoir utilisé piYès !</p>
             </div>
-            
+
             <div className="space-y-2">
               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Besoin d’aide ? Contactez-nous :</p>
               <div className="space-y-1 text-xs font-bold text-gray-600">
@@ -488,14 +489,17 @@ const ReceiptDetail: React.FC = () => {
       </div>
 
       <div className="px-6 pt-4">
-        <button 
+        <Button
+          variant="utility"
+          fullWidth
           onClick={() => setShowDownloadModal(true)}
           disabled={exporting}
-          className="w-full theme-bubble-bg theme-primary-text py-5 rounded-[20px] font-black flex items-center justify-center gap-3 active:scale-95 transition-all border theme-border uppercase tracking-widest text-xs"
+          isLoading={exporting}
+          leftIcon={!exporting ? <Download size={18} /> : undefined}
+          className="py-5 rounded-[20px] uppercase tracking-widest text-xs"
         >
-          {exporting ? <Loader2 className="animate-spin" size={18} /> : <Download size={18} />}
           {t('receipt.download')}
-        </button>
+        </Button>
       </div>
 
       <Modal isOpen={showDownloadModal} onClose={() => setShowDownloadModal(false)}>
@@ -508,7 +512,7 @@ const ReceiptDetail: React.FC = () => {
           </div>
           <p className="theme-text-secondary text-sm">Choisissez le format de fichier souhaité pour votre reçu.</p>
           <div className="grid grid-cols-1 gap-4">
-            <button 
+            <button
               onClick={() => exportReceipt('pdf')}
               className="w-full theme-bubble-bg p-5 rounded-2xl flex items-center gap-4 border theme-border active:scale-[0.98] transition-all"
             >
@@ -520,7 +524,7 @@ const ReceiptDetail: React.FC = () => {
                 <p className="text-xs theme-text-secondary">Idéal pour l'impression et l'archivage</p>
               </div>
             </button>
-            <button 
+            <button
               onClick={() => exportReceipt('image')}
               className="w-full theme-bubble-bg p-5 rounded-2xl flex items-center gap-4 border theme-border active:scale-[0.98] transition-all"
             >
