@@ -164,16 +164,16 @@ const ForgotPassword = () => {
   return (
     <div className="min-h-screen theme-bg flex flex-col">
       <header className="p-4 flex items-center gap-4 theme-bg border-b theme-border">
-        <Button
-          variant="utility"
-          size="sm"
+        <button
           onClick={() => {
             if (step > 1) setStep(step - 1);
             else navigate(-1);
           }}
-          leftIcon={<ArrowLeft className="w-6 h-6" />}
-          className="p-2"
-        />
+          className="p-2 theme-text-secondary hover:theme-bubble-bg rounded-full active:scale-90 transition-all"
+          aria-label="Retour"
+        >
+          <ArrowLeft size={24} />
+        </button>
         <h1 className="text-xl font-bold theme-text-main">
           {t("auth.forgot_password")}
         </h1>
@@ -275,11 +275,10 @@ const ForgotPassword = () => {
                     value={digit}
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
-                    className={`w-12 h-14 text-center text-2xl font-bold rounded-xl border-2 transition-all outline-none ${
-                      digit
+                    className={`w-12 h-14 text-center text-2xl font-bold rounded-xl border-2 transition-all outline-none ${digit
                         ? "theme-primary-bg text-white border-transparent"
                         : "theme-bg theme-border focus:border-(--primary-color) theme-text-main"
-                    }`}
+                      }`}
                     required
                     autoFocus={index === 0}
                   />

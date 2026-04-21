@@ -461,7 +461,7 @@ const App: React.FC = () => {
     setSecurityQueue({
       type: "pin_intro",
       resolve: () => {
-        setSecurityQueue({ type: "welcome", resolve: () => {} });
+        setSecurityQueue({ type: "welcome", resolve: () => { } });
       },
     });
   };
@@ -536,25 +536,27 @@ const App: React.FC = () => {
 
       if (code === "WRONG_PASSWORD" || msg.includes("Mot de passe")) {
         showToast(
-          'Mot de passe incorrect. Essayez "J´ai oublié mon mot de passe".',
+          t("auth.login_error_wrong_password"),
           "error",
         );
+        // Émettre un événement pour highlight le bouton "Mot de passe oublié"
+        window.dispatchEvent(new CustomEvent("piyes:highlight_forgot_password"));
       } else if (
         code === "INVALID_CREDENTIALS" ||
         msg.includes("Identifiants")
       ) {
         showToast(
-          "Aucun compte trouvé avec ces informations. Vérifiez votre email ou numéro de téléphone.",
+          t("auth.login_error_invalid_credentials"),
           "error",
         );
       } else if (code === "ACCOUNT_DISABLED" || msg.includes("désactivé")) {
-        showToast("Compte désactivé. Contactez le support.", "error");
+        showToast(t("auth.login_error_account_disabled"), "error");
       } else if (
         e?.status === 0 ||
         msg.includes("fetch") ||
         msg.includes("network")
       ) {
-        showToast("Connexion internet instable. Réessayez.", "error");
+        showToast(t("auth.login_error_network"), "error");
       } else {
         showToast(msg || t("auth.login_error"), "error");
       }

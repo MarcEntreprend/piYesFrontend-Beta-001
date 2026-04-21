@@ -1,6 +1,6 @@
 // pages/Login.tsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import {
     Smartphone,
@@ -14,6 +14,9 @@ import LanguageSelector from "../components/LanguageSelector";
 import ThemeSelector from "../components/ThemeSelector";
 import Modal from "../components/Modal";
 import Button from "../components/Button";
+import { cn } from "../src/lib/utils";
+import { motion } from "motion/react";
+
 
 interface LoginProps {
     onLogin: (credentials: any) => void;
@@ -28,7 +31,22 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     const [error, setError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [comingSoonModal, setComingSoonModal] = useState(false);
+    const [highlightForgot, setHighlightForgot] = useState(false);
     const navigate = useNavigate();
+
+
+
+    useEffect(() => {
+        const handleHighlight = () => {
+            setHighlightForgot(true);
+            setTimeout(() => setHighlightForgot(false), 2000);
+        };
+
+        window.addEventListener("piyes:highlight_forgot_password", handleHighlight);
+        return () => {
+            window.removeEventListener("piyes:highlight_forgot_password", handleHighlight);
+        };
+    }, []);
 
     const validateIdentifier = (val: string) => {
         if (!val) return false;
@@ -182,22 +200,30 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                                     {t("auth.signup_pass_hint")}
                                 </p>
                             </div>
-                            <Button
-                                type="button"
-                                variant="text"
-                                size="sm"
-                                onClick={handleForgotPassword}
-                                className="uppercase tracking-widest"
+                            <motion.div
+                                animate={highlightForgot ? { scale: [1, 1.05, 1] } : {}}
+                                transition={{ duration: 0.6, repeat: highlightForgot ? 6 : 0 }}
                             >
-                                {t("auth.forgot_password")}
-                            </Button>
+                                <Button
+                                    type="button"
+                                    variant={highlightForgot ? "primary" : "text"}
+                                    size="sm"
+                                    onClick={handleForgotPassword}
+                                    className={cn(
+                                        "uppercase tracking-widest transition-all duration-300",
+                                        highlightForgot && "shadow-lg"
+                                    )}
+                                >
+                                    {t("auth.forgot_password")}
+                                </Button>
+                            </motion.div>
                         </div>
                     )}
 
                     <div className="flex items-center justify-between text-xs theme-text-secondary font-bold uppercase tracking-widest">
                         <span className="flex items-center gap-2">
                             <ShieldCheck size={16} className="text-green-500" />
-                            {t("auth.secure_access")}
+                            {/* {t("auth.secure_access")} */}
                         </span>
                     </div>
                 </form>

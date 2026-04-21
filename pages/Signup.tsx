@@ -820,7 +820,7 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
             <footer className="p-8 flex flex-col items-center gap-2 opacity-30 mt-auto">
                 <ShieldCheck size={24} className="theme-text-main" />
                 <p className="text-[9px] font-black theme-text-main uppercase tracking-widest">
-                    Agréé par la Banque Centrale d'Haïti
+
                 </p>
             </footer>
 
