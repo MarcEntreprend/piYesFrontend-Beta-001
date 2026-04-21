@@ -117,8 +117,8 @@ const InputField: React.FC<InputFieldProps> = ({
                 <div className="relative flex-1 px-1 pt-5 pb-2">
                     <label
                         className={`absolute left-1 transition-all duration-300 pointer-events-none font-bold ${isFloated
-                            ? "top-1 text-[10px] uppercase tracking-widest text-[var(--theme-text-secondary)] opacity-70"
-                            : "top-1/2 -translate-y-1/2 text-[var(--theme-text-secondary)] text-sm"
+                            ? "top-1 text-[10px] uppercase tracking-widest text-(--theme-text-secondary) opacity-70"
+                            : "top-1/2 -translate-y-1/2 text-(--theme-text-secondary) text-sm"
                             }`}
                         style={isFocused && isValid !== false ? { color: "var(--primary-color)", opacity: 1 } : undefined}
                     >

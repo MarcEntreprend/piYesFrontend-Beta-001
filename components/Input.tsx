@@ -29,7 +29,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     ref
   ) => {
     const [isFocused, setIsFocused] = useState(false);
-    
+
     // Check if input has value to keep label floated
     const hasValue = value !== undefined ? String(value).length > 0 : false;
     const isFloated = isFocused || hasValue || props.placeholder;
@@ -44,9 +44,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           )}
         >
           {leftIcon && (
-            <motion.div 
+            <motion.div
               animate={{ scale: isFocused ? 1.1 : 1 }}
-              className="pl-4 pr-2 text-[var(--theme-text-secondary)] shrink-0 transition-colors"
+              className="pl-4 pr-2 text-(--theme-text-secondary) shrink-0 transition-colors"
               style={{ color: isFocused ? "var(--primary-color)" : undefined }}
             >
               {leftIcon}
@@ -58,8 +58,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               className={cn(
                 "absolute left-4 transition-all duration-300 pointer-events-none font-bold",
                 isFloated
-                  ? "top-1 text-[10px] uppercase tracking-widest text-[var(--theme-text-secondary)] opacity-70"
-                  : "top-1/2 -translate-y-1/2 text-[var(--theme-text-secondary)] text-base"
+                  ? "top-1 text-[10px] uppercase tracking-widest text-(--theme-text-secondary) opacity-70"
+                  : "top-1/2 -translate-y-1/2 text-(--theme-text-secondary) text-base"
               )}
               style={isFocused && !error ? { color: "var(--primary-color)", opacity: 1 } : undefined}
             >
@@ -93,9 +93,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             </div>
           )}
         </div>
-        
+
         {error && (
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-red-500 text-[10px] font-bold uppercase tracking-widest px-2"

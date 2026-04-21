@@ -1,3 +1,6 @@
+// components\PageTransition.tsx
+
+
 import React from "react";
 import { motion } from "motion/react";
 
@@ -7,10 +10,10 @@ interface PageTransitionProps {
   direction?: "left" | "right" | "up" | "none";
 }
 
-const PageTransition: React.FC<PageTransitionProps> = ({ 
-  children, 
-  className = "", 
-  direction = "left" 
+const PageTransition: React.FC<PageTransitionProps> = ({
+  children,
+  className = "",
+  direction = "left"
 }) => {
   const variants = {
     initial: {

@@ -10,10 +10,10 @@ interface ModalProps {
   type?: 'bottom-sheet' | 'centered';
 }
 
-const Modal: React.FC<ModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  children, 
+const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  children,
   dismissOnBackdropClick = true,
   type = 'bottom-sheet'
 }) => {
@@ -47,21 +47,19 @@ const Modal: React.FC<ModalProps> = ({
   const isBottomSheet = type === 'bottom-sheet';
 
   return (
-    <div 
-      className={`fixed inset-0 z-[150] flex justify-center bg-black/60 backdrop-blur-sm ${
-        isClosing ? 'animate-fade-out' : 'animate-in fade-in duration-300'
-      } ${isBottomSheet ? 'items-end' : 'items-center p-6'}`}
+    <div
+      className={`fixed inset-0 z-150 flex justify-center bg-black/60 backdrop-blur-sm ${isClosing ? 'animate-fade-out' : 'animate-in fade-in duration-300'
+        } ${isBottomSheet ? 'items-end' : 'items-center p-6'}`}
       onClick={() => dismissOnBackdropClick && onClose()}
       aria-modal="true"
       role="dialog"
     >
-      <div 
+      <div
         onClick={(e) => e.stopPropagation()}
-        className={`w-full max-w-md theme-card-bg shadow-2xl overflow-hidden flex flex-col transition-all ${
-          isBottomSheet 
-            ? `rounded-t-[48px] max-h-[95vh] ${isClosing ? 'animate-bottom-sheet-out' : 'animate-in slide-in-from-bottom duration-400'}` 
+        className={`w-full max-w-md theme-card-bg shadow-2xl overflow-hidden flex flex-col transition-all ${isBottomSheet
+            ? `rounded-t-[48px] max-h-[95vh] ${isClosing ? 'animate-bottom-sheet-out' : 'animate-in slide-in-from-bottom duration-400'}`
             : `rounded-[48px] ${isClosing ? 'animate-fade-out scale-95' : 'animate-in zoom-in duration-400'}`
-        }`}
+          }`}
       >
         {isBottomSheet && (
           <div className="w-12 h-1 bg-gray-200 dark:bg-gray-800 rounded-full mx-auto mt-4 mb-2 shrink-0"></div>

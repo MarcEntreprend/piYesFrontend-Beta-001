@@ -45,7 +45,7 @@ const Modal: React.FC<ModalProps> = ({
     return (
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-150 flex items-center justify-center p-6">
             <motion.div
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
               initial={{ opacity: 0 }}
@@ -77,7 +77,7 @@ const Modal: React.FC<ModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[150] flex items-end justify-center">
+        <div className="fixed inset-0 z-150 flex items-end justify-center">
           {/* Backdrop */}
           <motion.div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
