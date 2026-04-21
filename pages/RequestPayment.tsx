@@ -1,16 +1,13 @@
 // pages/RequestPayment.tsx
 
 import React, { useState, useEffect, useMemo } from "react";
-/* Use react-router core for hooks */
 import { useNavigate, useLocation } from "react-router";
 import {
-  ArrowLeft,
   QrCode,
   X,
   Check,
   Copy,
   CalendarClock,
-  ChevronRight,
   Info,
   AlertCircle,
   HelpCircle,
@@ -18,21 +15,11 @@ import {
   Clock,
 } from "lucide-react";
 import { api } from "../services/apiService";
-import {
-  User,
-  Key,
-  Contact,
-  getInitials,
-  Friendship,
-  FriendshipStatus,
-} from "../shared/types";
-import { ScheduledPayment } from "./ScheduledPayments";
+import { User, Key, Contact, Friendship } from "../shared/types";
 import { useTranslation, useGlobalSync } from "../App";
-import Modal from "../components/Modal";
 import Button from "../components/Button";
 import AccountSummary from "../components/AccountSummary";
 import AiSupportChat from "../components/AiSupportChat";
-import { ContactItem, ContactSection } from "@/components/ContactComponents";
 import { ContactSearch } from "@/components/ContactSearch";
 import OperationResult from "../components/OperationResult";
 import { useToast } from "../App";
@@ -42,13 +29,10 @@ interface RequestPaymentProps {
   user: User;
 }
 
-import SearchInput from "../components/SearchInput";
-
 const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
   const { t } = useTranslation();
   const { syncData } = useGlobalSync() || { syncData: null };
   const navigate = useNavigate();
-  /* Manual searchParams implementation */
   const { search } = useLocation();
   const searchParams = useMemo(() => new URLSearchParams(search), [search]);
   const [keys, setKeys] = useState<Key[]>([]);
@@ -60,54 +44,20 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
   const [amount, setAmount] = useState(searchParams.get("amount") || "");
   const [step, setStep] = useState(1);
   const [generatedQR, setGeneratedQR] = useState<string | null>(null);
-  const [timeLeft, setTimeLeft] = useState(120); // 2 minutes
+  const [timeLeft, setTimeLeft] = useState(120);
   const [isExpired, setIsExpired] = useState(false);
-  const [showSchedulerModal, setShowSchedulerModal] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { showToast } = useToast();
 
-  // Suivi paiement reçu (polling post-génération QR)
   const [receivedTx, setReceivedTx] = useState<{
     txId: string;
     amount: number;
     senderName: string;
   } | null>(null);
-  const [pollingStartBalance, setPollingStartBalance] = useState<number | null>(
-    null,
-  );
-
+  const [pollingStartBalance, setPollingStartBalance] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
-
-  // Scheduler Form State
-  const [schedTitle, setSchedTitle] = useState("");
-  const [schedName, setSchedName] = useState(payerName);
-  const [schedAmount, setSchedAmount] = useState(amount);
-  const [schedDate, setSchedDate] = useState("");
-
-  const isMutualContact = useMemo(() => {
-    if (!schedName) return false;
-    const search = schedName.toLowerCase().replace("@", "");
-
-    // Find contact by name or tag
-    const contact = contacts.find(
-      (c) =>
-        c.name.toLowerCase() === search ||
-        c.tag.toLowerCase().replace("@", "") === search,
-    );
-
-    if (!contact || !contact.contactUserId) return false;
-
-    // Check friendship status in syncData
-    const friendship = syncData?.friendships?.find(
-      (f) =>
-        (f.requesterId === contact.contactUserId ||
-          f.receiverId === contact.contactUserId) &&
-        f.status === "friends",
-    );
-
-    return !!friendship;
-  }, [contacts, schedName, syncData]);
 
   useEffect(() => {
     fetchData();
@@ -117,7 +67,7 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
     setLoading(true);
     try {
       const [contactsData, syncData] = await Promise.all([
-        api.getContactsFresh(), // Forcer refresh au chargement de la page
+        api.getContactsFresh(),
         api.syncFresh(),
       ]);
       setContacts(contactsData);
@@ -127,11 +77,6 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
     }
     setLoading(false);
   };
-
-  useEffect(() => {
-    if (payerName) setSchedName(payerName);
-    if (amount) setSchedAmount(amount);
-  }, [payerName, amount]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -149,8 +94,6 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
     return () => clearInterval(timer);
   }, [step, timeLeft]);
 
-  //  useEffect de polling
-  // Polling toutes les 3s pour détecter un paiement reçu pendant l'affichage du QR
   useEffect(() => {
     if (step !== 2 || isExpired || pollingStartBalance === null) return;
 
@@ -159,11 +102,9 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
         const sync = await api.syncFresh();
         const newBalance = sync.user.balance;
 
-        // Solde augmenté → paiement reçu
         if (newBalance > pollingStartBalance) {
           clearInterval(interval);
 
-          // Récupérer la dernière transaction pour le nom de l'expéditeur
           const history = await api.getHistory({ limit: 1 });
           const lastTx = history[0];
           const senderName = lastTx?.counterpartyName || payerName || "";
@@ -175,7 +116,7 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
           });
         }
       } catch {
-        /* ignore erreurs polling */
+        /* ignore */
       }
     }, 3000);
 
@@ -215,7 +156,6 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
     setTimeLeft(120);
     setIsExpired(false);
 
-    // Snapshot du solde courant → détecter la réception par comparaison
     try {
       const sync = await api.syncFresh();
       setPollingStartBalance(sync.user.balance);
@@ -224,33 +164,6 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
     }
 
     setStep(2);
-  };
-
-  const handleCreateScheduled = () => {
-    if (!schedName || !schedAmount || !schedDate) return;
-
-    const newSched: ScheduledPayment = {
-      id: Math.random().toString(36).substring(2, 9),
-      title:
-        schedTitle ||
-        `Demande à @${schedName.replace(/\s+/g, "").toLowerCase()}`,
-      counterparty: schedName,
-      amount: parseFloat(schedAmount),
-      dueDate: schedDate,
-      status: "pending",
-      type: "incoming",
-    };
-
-    const existing = JSON.parse(
-      localStorage.getItem("piyes-scheduled-payments") || "[]",
-    );
-    localStorage.setItem(
-      "piyes-scheduled-payments",
-      JSON.stringify([newSched, ...existing]),
-    );
-
-    setShowSchedulerModal(false);
-    navigate("/scheduler?tab=incoming");
   };
 
   const handleCopyLink = () => {
@@ -282,12 +195,12 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
     alert(t("request.copy_link"));
   };
 
-  const handleSelectUser = (user: any) => {
-    setPayerName(user.tag || user.phone || user.email || user.name || "");
+  const handleSelectUser = (contact: Partial<Contact>) => {
+    const displayName = contact.name || contact.tag || contact.phone || contact.email || "";
+    setPayerName(displayName);
+    setSearchQuery("");
   };
 
-  // Rendu conditionnel
-  // Bascule automatique vers OperationResult si paiement reçu pendant le QR
   if (receivedTx) {
     return (
       <OperationResult
@@ -307,15 +220,11 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
         title={t("request.title")}
         onBack={() => (step === 1 ? navigate(-1) : setStep(1))}
         rightElement={
-          <div
-            className="w-10 h-10 rounded-full theme-bubble-bg flex items-center justify-center 
-                    theme-text-secondary active:scale-90 transition-transform opacity-80 
-                    hover:opacity-100"
-          >
+          <div className="w-10 h-10 rounded-full theme-bubble-bg flex items-center justify-center theme-text-secondary active:scale-90 transition-transform opacity-80 hover:opacity-100">
             <HelpCircle size={20} onClick={() => setShowSupport(true)} />
           </div>
         }
-        className="sticky top-0 theme-card-bg z-10 hover:bg-gray-50/50 dark:hover:bg-white/5 transition-all cursor-pointer group"
+        className="sticky top-0 theme-card-bg z-10"
       />
 
       <div className="flex-1 p-6 space-y-8 animate-in fade-in overflow-y-auto no-scrollbar">
@@ -346,12 +255,31 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
               <label className="text-xs font-bold theme-text-secondary uppercase tracking-widest px-1">
                 {t("request.payer_label", { optional: t("common.optional") })}
               </label>
-              <SearchInput
+              <ContactSearch
                 contacts={contacts}
                 onSelect={handleSelectUser}
-                onContactChange={fetchData}
+                placeholder={t("transfer.search_placeholder")}
+                query={searchQuery}
+                setQuery={setSearchQuery}
                 currentUser={user}
               />
+
+              {payerName && !searchQuery && (
+                <div className="flex items-center gap-2 mt-2 px-1">
+                  <span className="text-xs theme-text-secondary">
+                    {t("transfer.selected_recipient")}:
+                  </span>
+                  <span className="bg-purple-100 dark:bg-purple-900/30 px-3 py-1 rounded-full text-xs font-bold theme-primary-text">
+                    {payerName}
+                  </span>
+                  <button
+                    onClick={() => setPayerName("")}
+                    className="p-1 theme-text-secondary hover:theme-primary-text"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-1 gap-3 pt-4">
@@ -375,7 +303,12 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
               <Button
                 variant="utility"
                 fullWidth
-                onClick={() => setShowSchedulerModal(true)}
+                onClick={() => {
+                  const params = new URLSearchParams();
+                  if (amount) params.append("amount", amount);
+                  if (payerName) params.append("payerName", payerName);
+                  navigate(`/scheduler/create?${params.toString()}`);
+                }}
                 leftIcon={<CalendarClock size={20} />}
               >
                 {t("request.btn_schedule")}
@@ -399,20 +332,13 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
                 {t("request.success_title")}
               </h2>
               <p className="text-3xl font-black theme-primary-text">
-                {parseFloat(amount).toLocaleString("fr-HT")}{" "}
-                {t("currency.symbol")}
+                {parseFloat(amount).toLocaleString("fr-HT")} {t("currency.symbol")}
               </p>
             </div>
 
             <div className="bg-white p-6 rounded-4xl shadow-2xl border theme-border mx-auto max-w-70 relative">
-              <div
-                className={`transition-all duration-300 ${isExpired ? "blur-md opacity-20 grayscale" : ""}`}
-              >
-                <img
-                  src={generatedQR!}
-                  alt="Request QR"
-                  className="w-full h-full"
-                />
+              <div className={`transition-all duration-300 ${isExpired ? "blur-md opacity-20 grayscale" : ""}`}>
+                <img src={generatedQR!} alt="Request QR" className="w-full h-full" />
               </div>
               {isExpired && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center space-y-3">
@@ -422,10 +348,7 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
                   <p className="text-sm font-black text-red-600 uppercase tracking-tighter">
                     {t("request.qr_expired")}
                   </p>
-                  <button
-                    onClick={handleGenerateQR}
-                    className="text-[10px] font-bold theme-primary-text underline"
-                  >
+                  <button onClick={handleGenerateQR} className="text-[10px] font-bold theme-primary-text underline">
                     {t("request.generate_new")}
                   </button>
                 </div>
@@ -437,8 +360,7 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
                 <div className="flex items-center gap-2 theme-text-secondary">
                   <Clock size={14} />
                   <span className="text-xs font-bold">
-                    {t("request.expires_in")} {Math.floor(timeLeft / 60)}:
-                    {(timeLeft % 60).toString().padStart(2, "0")}
+                    {t("request.expires_in")} {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
                   </span>
                 </div>
                 <div className="w-48 h-1 bg-gray-100 rounded-full overflow-hidden">
@@ -451,18 +373,10 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
             )}
 
             <div className="space-y-4">
-              <Button
-                variant="utility"
-                fullWidth
-                onClick={handleCopyLink}
-                leftIcon={<Copy size={18} />}
-              >
+              <Button variant="utility" fullWidth onClick={handleCopyLink} leftIcon={<Copy size={18} />}>
                 {t("request.copy_link")}
               </Button>
-              <button
-                onClick={() => setStep(1)}
-                className="w-full text-center theme-text-secondary text-xs font-bold"
-              >
+              <button onClick={() => setStep(1)} className="w-full text-center theme-text-secondary text-xs font-bold">
                 {t("request.modify")}
               </button>
             </div>
@@ -475,126 +389,7 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
           </div>
         )}
       </div>
-
-      {/* Scheduler Modal */}
-      <Modal
-        isOpen={showSchedulerModal}
-        onClose={() => setShowSchedulerModal(false)}
-      >
-        <div className="p-8 space-y-8">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <CalendarClock className="theme-primary-text" size={24} />
-              <h2 className="text-2xl font-bold theme-text-main">
-                {t("scheduler.title")}
-              </h2>
-            </div>
-            <button
-              onClick={() => setShowSchedulerModal(false)}
-              className="p-2 theme-bubble-bg rounded-full theme-text-secondary active:scale-90"
-            >
-              <X size={20} />
-            </button>
-          </div>
-
-          <div className="space-y-5">
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
-                {t("scheduler.form.title_label", {
-                  optional: t("common.optional"),
-                })}
-              </label>
-              <input
-                type="text"
-                placeholder={t("scheduler.form.title_placeholder", {
-                  name: payerName || "...",
-                })}
-                value={schedTitle}
-                onChange={(e) => setSchedTitle(e.target.value)}
-                className="w-full theme-bubble-bg p-4 rounded-2xl outline-none theme-text-main border theme-border font-bold"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
-                {t("scheduler.form.contact_label", {
-                  required: t("common.required"),
-                })}
-              </label>
-              <SearchInput
-                contacts={contacts}
-                onSelect={(user) =>
-                  setSchedName(
-                    user.tag || user.phone || user.email || user.name || "",
-                  )
-                }
-                onContactChange={fetchData}
-                currentUser={user}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
-                  {t("scheduler.form.amount_label", {
-                    required: t("common.required"),
-                  })}
-                </label>
-                <input
-                  type="number"
-                  value={schedAmount}
-                  onChange={(e) => setSchedAmount(e.target.value)}
-                  className="w-full theme-bubble-bg p-4 rounded-2xl outline-none theme-text-main border theme-border font-black"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
-                  {t("scheduler.form.date_label", {
-                    required: t("common.required"),
-                  })}
-                </label>
-                <input
-                  type="date"
-                  value={schedDate}
-                  onChange={(e) => setSchedDate(e.target.value)}
-                  className="w-full theme-bubble-bg p-4 rounded-2xl outline-none theme-text-main border theme-border font-bold text-sm"
-                />
-              </div>
-            </div>
-
-            <div className="p-4 theme-bubble-bg rounded-2xl border theme-border flex gap-3 items-start">
-              <AlertCircle
-                size={18}
-                className={
-                  isMutualContact
-                    ? "theme-primary-text shrink-0 mt-0.5"
-                    : "text-amber-500 shrink-0 mt-0.5"
-                }
-              />
-              <p
-                className={`text-[9px] font-medium leading-relaxed ${isMutualContact ? "theme-primary-text" : "text-amber-600"}`}
-              >
-                {isMutualContact
-                  ? t("scheduler.form.info")
-                  : t("request.scheduler_friends_only")}
-              </p>
-            </div>
-
-            <Button
-              fullWidth
-              disabled={
-                !schedName || !schedAmount || !schedDate || !isMutualContact
-              }
-              onClick={handleCreateScheduled}
-            >
-              {t("scheduler.form.btn_create")}
-            </Button>
-          </div>
-        </div>
-      </Modal>
-      <AiSupportChat
-        isOpen={showSupport}
-        onClose={() => setShowSupport(false)}
-        context={t("actions.deposit")}
-      />
+      <AiSupportChat isOpen={showSupport} onClose={() => setShowSupport(false)} context={t("actions.deposit")} />
     </div>
   );
 };

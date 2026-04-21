@@ -1,4 +1,4 @@
-// components/ContactSearch.tsx
+// components/ContactSearch.tsx 
 
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "@/App";
@@ -97,10 +97,10 @@ export const ContactSearch: React.FC<ContactSearchProps> = ({
           {results.map((contact) => {
             const isContactSelf = isOwnKey(
               contact.tag ||
-                contact.phone ||
-                contact.email ||
-                contact.randomKey ||
-                "",
+              contact.phone ||
+              contact.email ||
+              contact.randomKey ||
+              "",
               currentUser,
             );
             return (
