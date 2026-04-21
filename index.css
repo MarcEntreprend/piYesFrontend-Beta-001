@@ -1,38 +1,38 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --animate-spin-slow: spin 3s linear infinite;
 }
 
 :root {
-  --primary-color: #830AD1;
-  --primary-dark: #6D08AF;
+  --primary-color: #4318FF;
+  --primary-dark: #3210C0;
   
   /* Default (Light) Theme */
-  --theme-bg: #FFFFFF;
-  --theme-card-bg: #F8F9FA;
+  --theme-bg: #F4F7FE; /* Premium fintech light background */
+  --theme-card-bg: #FFFFFF;
   --theme-text-main: #1A1A1A;
   --theme-text-secondary: #666666;
-  --theme-primary-text: #830AD1;
-  --theme-primary-bg: #830AD1;
-  --theme-bubble-bg: #F0E6F7;
+  --theme-primary-text: #4318FF;
+  --theme-primary-bg: #4318FF;
+  --theme-bubble-bg: #EAE6FF;
   --theme-border: #E5E7EB;
-  --nav-active: #830AD1;
-  --nav-inactive: #666666;
+  --nav-active: #4318FF;
+  --nav-inactive: #A3AED0;
 }
 
 [data-theme="dark"] {
-  --theme-bg: #000000;
-  --theme-card-bg: #121212;
+  --theme-bg: #0B1437; /* Premium fintech dark background */
+  --theme-card-bg: #111C44;
   --theme-text-main: #FFFFFF;
-  --theme-text-secondary: #A0A0A0;
-  --theme-primary-text: #A855F7;
-  --theme-primary-bg: #830AD1;
-  --theme-bubble-bg: #1A1A1A;
-  --theme-border: #262626;
-  --nav-active: #A855F7;
-  --nav-inactive: #A0A0A0;
+  --theme-text-secondary: #A3AED0;
+  --theme-primary-text: #7551FF;
+  --theme-primary-bg: #4318FF;
+  --theme-bubble-bg: #1A2454;
+  --theme-border: #2B3674;
+  --nav-active: #7551FF;
+  --nav-inactive: #A3AED0;
 }
 
 [data-theme="bleu_cendre"] {
@@ -58,3 +58,30 @@
 .theme-primary-bg { background-color: var(--theme-primary-bg); }
 .theme-bubble-bg { background-color: var(--theme-bubble-bg); }
 .theme-border { border-color: var(--theme-border); }
+
+/* Premium Glassmorphism with Fallback */
+.glass-panel {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+}
+
+@supports (backdrop-filter: blur(12px)) {
+  .glass-panel {
+    background-color: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+}
+
+[data-theme="dark"] .glass-panel {
+  background-color: rgba(17, 28, 68, 0.95); /* matching --theme-card-bg */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.2);
+}
+
+@supports (backdrop-filter: blur(12px)) {
+  [data-theme="dark"] .glass-panel {
+    background-color: rgba(17, 28, 68, 0.65);
+  }
+}

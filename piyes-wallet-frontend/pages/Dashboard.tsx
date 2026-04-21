@@ -663,7 +663,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
             />
           )}
         </div>
-        <span className="text-[10px] font-bold theme-text-secondary uppercase tracking-[0.2em] mt-2 glass-panel px-3 py-0.5 rounded-full">
+        <span className="text-[10px] font-black theme-text-secondary uppercase tracking-[0.2em] mt-2 bg-white/10 backdrop-blur-md px-3 py-0.5 rounded-full">
           {isRefreshing
             ? t("common.loading")
             : pullY >= PULL_THRESHOLD
@@ -738,7 +738,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                     ? "bg-white text-gray-900 border-transparent shadow-2xl scale-[1.02]"
                     : selectedAccountId === "all"
                       ? "theme-bubble-bg theme-text-main border-transparent"
-                      : "glass-panel text-white placeholder-white/60 border-transparent"
+                      : "bg-white/10 text-white placeholder-white/60 border-transparent"
                 }`}
               />
               {isSearchFocused && (
@@ -772,7 +772,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 <Bell size={22} />
               </button>
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border-2 border-white dark:border-gray-900 shadow-sm animate-pulse">
+                <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white dark:border-gray-900 shadow-sm animate-pulse">
                   {unreadCount}
                 </span>
               )}

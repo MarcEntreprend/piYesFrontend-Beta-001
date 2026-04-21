@@ -690,7 +690,7 @@ const App: React.FC = () => {
                         <Shield size={48} strokeWidth={1.5} />
                       </div>
                       <div className="text-center space-y-3">
-                        <h3 className="text-2xl font-bold theme-text-main tracking-tight">
+                        <h3 className="text-2xl font-black theme-text-main tracking-tight">
                           {t("security_flow.pin_intro_title")}
                         </h3>
                         <p className="text-sm theme-text-secondary leading-relaxed">
@@ -704,7 +704,7 @@ const App: React.FC = () => {
                             resolve: securityQueue.resolve,
                           })
                         }
-                        className="w-full theme-primary-bg text-white py-4 rounded-xl font-bold shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all tracking-wider"
+                        className="w-full theme-primary-bg text-white py-5 rounded-3xl font-black shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all uppercase tracking-widest"
                       >
                         {t("security_flow.pin_setup_btn")}{" "}
                         <ChevronRight size={20} />
@@ -757,7 +757,7 @@ const App: React.FC = () => {
                         <PartyPopper size={48} />
                       </div>
                       <div className="space-y-2">
-                        <h3 className="text-2xl font-bold theme-text-main">
+                        <h3 className="text-2xl font-black theme-text-main">
                           {t("security_flow.welcome_title")}
                         </h3>
                         <p className="text-sm theme-text-secondary">
@@ -766,7 +766,7 @@ const App: React.FC = () => {
                       </div>
                       <button
                         onClick={() => setSecurityQueue(null)}
-                        className="w-full theme-primary-bg text-white py-4 rounded-xl font-bold shadow-lg"
+                        className="w-full theme-primary-bg text-white py-4 rounded-2xl font-bold shadow-lg"
                       >
                         {t("security_flow.welcome_btn")}
                       </button>
@@ -800,7 +800,7 @@ const App: React.FC = () => {
                       </p>
                       <button
                         onClick={() => setToast(null)}
-                        className="theme-text-secondary active:scale-90"
+                        className="text-white/40 dark:text-black/40 active:scale-90"
                       >
                         <X size={16} />
                       </button>
@@ -815,7 +815,7 @@ const App: React.FC = () => {
                   {!isOnline && (
                     <div className="w-full bg-red-600 text-white py-1.5 px-4 flex items-center justify-center gap-2 animate-in slide-in-from-top duration-500 z-160 shrink-0">
                       <WifiOff size={14} className="animate-pulse" />
-                      <span className="text-[10px] font-bold uppercase tracking-widest">
+                      <span className="text-[10px] font-black uppercase tracking-widest">
                         {t("common.no_internet")}
                       </span>
                     </div>
@@ -823,7 +823,7 @@ const App: React.FC = () => {
                   {showBackOnlineBar && (
                     <div className="w-full bg-green-500 text-white py-1.5 px-4 flex items-center justify-center gap-2 animate-out slide-out-to-top duration-500 delay-2000 fill-mode-forwards z-160 shrink-0">
                       <Wifi size={14} />
-                      <span className="text-[10px] font-bold uppercase tracking-widest">
+                      <span className="text-[10px] font-black uppercase tracking-widest">
                         {t("common.back_online")}
                       </span>
                     </div>
