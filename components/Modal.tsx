@@ -94,7 +94,7 @@ const Modal: React.FC<ModalProps> = ({
             onClick={(e) => e.stopPropagation()}
             aria-modal="true"
             role="dialog"
-            // ✅ OUVERTURE : effet ressort
+            //  OUVERTURE : effet ressort
             initial={{ height: 0 }}
             animate={{ height: targetHeight }}
             transition={{
@@ -103,21 +103,20 @@ const Modal: React.FC<ModalProps> = ({
               damping: 24,
               mass: 1,
             }}
-            // ✅ FERMETURE : MÊME vitesse, MÊME courbe (avec chaîne acceptée)
+            //  FERMETURE : MÊME vitesse, MÊME courbe (avec chaîne acceptée)
             exit={{
               height: [targetHeight, `calc(${targetHeight} + 30px)`, '0px'],
               transition: {
                 duration: 0.6,
                 times: [0, 0.3, 1],
-                ease: 'easeInOut', // ✅ Chaîne acceptée par Framer Motion
+                ease: 'easeInOut', //  Chaîne acceptée par Framer Motion
               }
             }}
           >
             <div className="w-12 h-1 bg-gray-200 dark:bg-gray-800 rounded-full mx-auto mt-4 mb-2 shrink-0"></div>
             <div
               ref={contentRef}
-              className="overflow-y-auto no-scrollbar px-1"
-              style={{ maxHeight: '85vh' }}
+              className="flex-1 overflow-y-auto no-scrollbar px-1 pb-6"
             >
               {children}
             </div>

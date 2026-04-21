@@ -43,6 +43,8 @@ import { useTranslation } from "../App";
 import Modal from "../components/Modal";
 import AiSupportChat from "../components/AiSupportChat";
 import PageHeader from "../components/PageHeader";
+import SegmentedControl from "../components/SegmentedControl";
+type KeyType = "email" | "phone" | "tag" | "random";
 
 const KeysManagement: React.FC = () => {
   const { t } = useTranslation();
@@ -86,7 +88,7 @@ const KeysManagement: React.FC = () => {
   const [pastedLink, setPastedLink] = useState("");
   const [isAnalyzingLink, setIsAnalyzingLink] = useState(false);
 
-  const [newKeyType, setNewKeyType] = useState("email");
+  const [newKeyType, setNewKeyType] = useState<KeyType>("email");
 
   // Isolated states for each tab
   const [emailValue, setEmailValue] = useState("");
@@ -954,7 +956,7 @@ const KeysManagement: React.FC = () => {
           resetNewKeyStates();
         }}
       >
-        <div className="p-8 space-y-6">
+        <div className="p-8 space-y-6 max-h-[80vh] overflow-y-auto no-scrollbar">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-bold theme-text-main">
               {t("pix.modal.title")}
@@ -970,19 +972,19 @@ const KeysManagement: React.FC = () => {
             </button>
           </div>
           <div className="space-y-6">
-            <div className="flex gap-2 p-1 theme-bubble-bg rounded-2xl border theme-border overflow-x-auto no-scrollbar">
-              {["email", "phone", "tag", "random"].map((type) => (
-                <button
-                  key={type}
-                  onClick={() => setNewKeyType(type)}
-                  className={`flex-1 min-w-[80px] py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${newKeyType === type ? "theme-primary-bg text-white shadow-md" : "theme-text-secondary"}`}
-                >
-                  {type === "random"
-                    ? t("pix.types.random")
-                    : t(`pix.types.${type}` as any)}
-                </button>
-              ))}
-            </div>
+
+            {/* Sélecteur de type de clé */}
+            <SegmentedControl
+              options={[
+                { id: "email", label: t("pix.types.email") },
+                { id: "phone", label: t("pix.types.phone") },
+                { id: "tag", label: t("pix.types.tag") },
+                { id: "random", label: t("pix.types.random") },
+              ]}
+              value={newKeyType}
+              onChange={(val) => setNewKeyType(val as KeyType)}
+              className="rounded-2xl"
+            />
 
             <div className="space-y-4">
               {newKeyType === "email" && (
