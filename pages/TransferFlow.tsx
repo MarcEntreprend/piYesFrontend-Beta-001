@@ -401,7 +401,7 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
         className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-all cursor-pointer group"
       />
       {/* Indicateur d'étapes - 3 étapes */}
-      <StepIndicator totalSteps={3} currentStep={step} />
+      <StepIndicator totalSteps={4} currentStep={step} />
 
       <div className="flex-1 px-0 flex flex-col overflow-y-auto no-scrollbar pb-6 pt-6">
         {step === 1 ? (
