@@ -37,7 +37,7 @@ const BottomNav: React.FC = () => {
 
   React.useEffect(() => {
     if (isExpanded) {
-      // ✅ Délai plus court pour correspondre au spring (stiffness 350, damping 35)
+      //  Délai plus court pour correspondre au spring (stiffness 350, damping 35)
       const timer = setTimeout(() => setShowSideItems(true), 50);
       return () => clearTimeout(timer);
     } else {
@@ -191,7 +191,7 @@ const BottomNav: React.FC = () => {
           )}
         </div>
 
-        {/* ✅ Bouton central - Dashboard - POSITION ABSOLUE, parfaitement centré */}
+        {/*  Bouton central - Dashboard - POSITION ABSOLUE, parfaitement centré */}
         {centerItem && (
           <button
             onClick={() => handleNavClick(centerItem.route, centerItem.id)}

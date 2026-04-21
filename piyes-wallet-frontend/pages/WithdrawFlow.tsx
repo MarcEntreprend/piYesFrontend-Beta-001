@@ -189,7 +189,7 @@ const WithdrawFlow: React.FC<WithdrawFlowProps> = ({ user, onUpdateUser }) => {
 
       <StepIndicator currentStep={step === "amount" ? 1 : 2} totalSteps={4} />
 
-      {/* ✅ Conteneur scrollable - permet au header de rester sticky */}
+      {/*  Conteneur scrollable - permet au header de rester sticky */}
       <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar">
         <div className="px-6 flex flex-col pb-6 pt-6 flex-1">
           {step === "amount" && (

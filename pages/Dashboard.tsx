@@ -321,7 +321,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
       setSearchTerm("");
     };
 
-    // ✅ Nouvel événement : switcher vers le compte piYès
+    //  Nouvel événement : switcher vers le compte piYès
     const handleSwitchToPiyes = () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
       const piyesAccount = accounts.find((a) => a.provider === "piyes");
@@ -479,7 +479,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         else
           setSelectedAccountId(
             accountIds[
-              (currentIndex - 1 + accountIds.length) % accountIds.length
+            (currentIndex - 1 + accountIds.length) % accountIds.length
             ],
           );
       }
@@ -733,13 +733,12 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
                 placeholder={t("dashboard.search_placeholder")}
-                className={`w-full py-2.5 pl-10 pr-10 rounded-full text-sm outline-none border transition-all duration-300 ${
-                  isSearchFocused
+                className={`w-full py-2.5 pl-10 pr-10 rounded-full text-sm outline-none border transition-all duration-300 ${isSearchFocused
                     ? "bg-white text-gray-900 border-transparent shadow-2xl scale-[1.02]"
                     : selectedAccountId === "all"
                       ? "theme-bubble-bg theme-text-main border-transparent"
                       : "glass-panel text-white placeholder-white/60 border-transparent"
-                }`}
+                  }`}
               />
               {isSearchFocused && (
                 <button
