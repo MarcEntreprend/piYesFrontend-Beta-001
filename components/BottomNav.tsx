@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from "react-router";
 import { NAV_ITEMS } from "../constants";
 import { useTranslation } from "../App";
 import { useNotifications } from "../hooks/useNotifications";
+import { useMarketplaceBadges } from "../hooks/useMarketplaceBadges";
 import { motion, AnimatePresence } from "motion/react";
 
 const MAIN_ROUTES = [
@@ -28,6 +29,7 @@ const BottomNav: React.FC = () => {
   const location = useLocation();
   const { t } = useTranslation();
   const { unreadCount } = useNotifications();
+  const marketplaceBadge = useMarketplaceBadges();
 
   const isExpanded = MAIN_ROUTES.includes(location.pathname);
 
@@ -86,7 +88,7 @@ const BottomNav: React.FC = () => {
         style={{ height: "72px" }} //  Hauteur fixe
         className="relative theme-card-bg bg-opacity-80 dark:bg-opacity-80 backdrop-blur-xl border theme-border rounded-4xl py-3 flex justify-between items-center shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] pointer-events-auto overflow-hidden"
       >
-        {/* Zone gauche */}
+        {/* Zone gauche - Marketplace */}
         <div className="flex items-center justify-start gap-2">
           {showSideItems && (
             <AnimatePresence>
@@ -125,9 +127,11 @@ const BottomNav: React.FC = () => {
                     >
                       {t("nav.services")}
                     </span>
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[7px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white dark:border-gray-900 shadow-sm animate-pulse">
-                      3
-                    </span>
+                    {marketplaceBadge > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[7px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white dark:border-gray-900 shadow-sm animate-pulse">
+                        {marketplaceBadge > 9 ? "9+" : marketplaceBadge}
+                      </span>
+                    )}
                     {isActive && (
                       <div className="absolute -bottom-1 w-1 h-1 bg-(--nav-active) rounded-full"></div>
                     )}
@@ -138,7 +142,7 @@ const BottomNav: React.FC = () => {
           )}
         </div>
 
-        {/* Zone droite */}
+        {/* Zone droite - Opérations */}
         <div className="flex items-center justify-end gap-2">
           {showSideItems && (
             <AnimatePresence>
@@ -187,7 +191,7 @@ const BottomNav: React.FC = () => {
           )}
         </div>
 
-        {/* ✅ Bouton central - POSITION ABSOLUE, parfaitement centré */}
+        {/* ✅ Bouton central - Dashboard - POSITION ABSOLUE, parfaitement centré */}
         {centerItem && (
           <button
             onClick={() => handleNavClick(centerItem.route, centerItem.id)}
@@ -223,7 +227,7 @@ const BottomNav: React.FC = () => {
               {t("nav.home")}
             </span>
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[7px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white dark:border-gray-900 shadow-sm animate-pulse">
+              <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[7px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white dark:border-gray-900 shadow-sm animate-pulse">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}

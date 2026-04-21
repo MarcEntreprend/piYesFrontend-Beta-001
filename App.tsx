@@ -21,6 +21,7 @@ import { api } from "./services/apiService";
 import { cacheService } from "./services/cacheService";
 import { User } from "./shared/types";
 import { translations, Language } from "./translations";
+import { NotificationProvider } from "./contexts/NotificationContext";
 import {
   Info,
   X,
@@ -636,409 +637,426 @@ const App: React.FC = () => {
     <LanguageContext.Provider value={{ language, setLanguage, t }}>
       <ThemeContext.Provider value={{ theme, setTheme }}>
         <ToastContext.Provider value={{ showToast }}>
-          <SecurityContext.Provider
-            value={{
-              isDeviceVerified,
-              hasPin,
-              triggerSensitiveAction,
-              setSecurityStatus: handleSecurityStatus,
-              showPostSignupSecurity,
-              handleForgotPin,
-            }}
-          >
-            <SyncContext.Provider
-              value={{ syncData, syncLoading, isRefreshing, refresh }}
+          <NotificationProvider>
+            <SecurityContext.Provider
+              value={{
+                isDeviceVerified,
+                hasPin,
+                triggerSensitiveAction,
+                setSecurityStatus: handleSecurityStatus,
+                showPostSignupSecurity,
+                handleForgotPin,
+              }}
             >
-              {user && isLocked && (
-                <PinOverlay
-                  mode="unlock"
-                  onSuccess={() => setIsLocked(false)}
-                  onFailure={handlePinFailure}
-                  onForgot={handleForgotPin}
-                />
-              )}
+              <SyncContext.Provider
+                value={{ syncData, syncLoading, isRefreshing, refresh }}
+              >
+                {user && isLocked && (
+                  <PinOverlay
+                    mode="unlock"
+                    onSuccess={() => setIsLocked(false)}
+                    onFailure={handlePinFailure}
+                    onForgot={handleForgotPin}
+                  />
+                )}
 
-              {/* SECURITY OVERLAYS MANAGER */}
-              {securityQueue?.type === "otp" && (
-                <OtpOverlay
-                  requestId={
-                    securityQueue.data?.requestId ||
-                    securityQueue.data?.email ||
-                    user?.email ||
-                    "manual"
-                  }
-                  mode={securityQueue.data?.mode || "verify"}
-                  onSuccess={(data) => {
-                    const resolve = securityQueue.resolve;
-                    setSecurityQueue(null);
-                    if (resolve) resolve(data);
-                  }}
-                  onCancel={() => setSecurityQueue(null)}
-                />
-              )}
+                {/* SECURITY OVERLAYS MANAGER */}
+                {securityQueue?.type === "otp" && (
+                  <OtpOverlay
+                    requestId={
+                      securityQueue.data?.requestId ||
+                      securityQueue.data?.email ||
+                      user?.email ||
+                      "manual"
+                    }
+                    mode={securityQueue.data?.mode || "verify"}
+                    onSuccess={(data) => {
+                      const resolve = securityQueue.resolve;
+                      setSecurityQueue(null);
+                      if (resolve) resolve(data);
+                    }}
+                    onCancel={() => setSecurityQueue(null)}
+                  />
+                )}
 
-              {securityQueue?.type === "pin_intro" && (
-                <Modal
-                  isOpen={true}
-                  onClose={() => setSecurityQueue(null)}
-                  type="bottom-sheet"
-                >
-                  <div className="p-10 space-y-8 animate-in slide-in-from-bottom duration-500">
-                    <div className="w-20 h-20 theme-bubble-bg rounded-4xl flex items-center justify-center mx-auto theme-primary-text shadow-inner">
-                      <Shield size={48} strokeWidth={1.5} />
+                {securityQueue?.type === "pin_intro" && (
+                  <Modal
+                    isOpen={true}
+                    onClose={() => setSecurityQueue(null)}
+                    type="bottom-sheet"
+                  >
+                    <div className="p-10 space-y-8 animate-in slide-in-from-bottom duration-500">
+                      <div className="w-20 h-20 theme-bubble-bg rounded-4xl flex items-center justify-center mx-auto theme-primary-text shadow-inner">
+                        <Shield size={48} strokeWidth={1.5} />
+                      </div>
+                      <div className="text-center space-y-3">
+                        <h3 className="text-2xl font-black theme-text-main tracking-tight">
+                          {t("security_flow.pin_intro_title")}
+                        </h3>
+                        <p className="text-sm theme-text-secondary leading-relaxed">
+                          {t("security_flow.pin_intro_desc")}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() =>
+                          setSecurityQueue({
+                            type: "pin_setup",
+                            resolve: securityQueue.resolve,
+                          })
+                        }
+                        className="w-full theme-primary-bg text-white py-5 rounded-3xl font-black shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all uppercase tracking-widest"
+                      >
+                        {t("security_flow.pin_setup_btn")}{" "}
+                        <ChevronRight size={20} />
+                      </button>
                     </div>
-                    <div className="text-center space-y-3">
-                      <h3 className="text-2xl font-black theme-text-main tracking-tight">
-                        {t("security_flow.pin_intro_title")}
-                      </h3>
-                      <p className="text-sm theme-text-secondary leading-relaxed">
-                        {t("security_flow.pin_intro_desc")}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() =>
-                        setSecurityQueue({
-                          type: "pin_setup",
-                          resolve: securityQueue.resolve,
-                        })
+                  </Modal>
+                )}
+
+                {securityQueue?.type === "pin_setup" && (
+                  <PinOverlay
+                    mode="setup"
+                    onSuccess={async (p) => {
+                      try {
+                        await api.setupPin(p);
+                        setHasPin(true);
+                        localStorage.setItem("piyes-app-pin", "true");
+                        setSecurityQueue(null);
+                        if (securityQueue.resolve) securityQueue.resolve(p);
+                      } catch (err) {
+                        showToast(
+                          "Erreur lors de la configuration du PIN",
+                          "error",
+                        );
                       }
-                      className="w-full theme-primary-bg text-white py-5 rounded-3xl font-black shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all uppercase tracking-widest"
-                    >
-                      {t("security_flow.pin_setup_btn")}{" "}
-                      <ChevronRight size={20} />
-                    </button>
-                  </div>
-                </Modal>
-              )}
+                    }}
+                    onCancel={() => setSecurityQueue(null)}
+                  />
+                )}
 
-              {securityQueue?.type === "pin_setup" && (
-                <PinOverlay
-                  mode="setup"
-                  onSuccess={async (p) => {
-                    try {
-                      await api.setupPin(p);
-                      setHasPin(true);
-                      localStorage.setItem("piyes-app-pin", "true");
+                {securityQueue?.type === "pin_verify" && (
+                  <PinOverlay
+                    mode="verify"
+                    onSuccess={(p) => {
                       setSecurityQueue(null);
                       if (securityQueue.resolve) securityQueue.resolve(p);
-                    } catch (err) {
-                      showToast(
-                        "Erreur lors de la configuration du PIN",
-                        "error",
-                      );
-                    }
-                  }}
-                  onCancel={() => setSecurityQueue(null)}
-                />
-              )}
+                    }}
+                    onCancel={() => setSecurityQueue(null)}
+                    onForgot={handleForgotPin}
+                  />
+                )}
 
-              {securityQueue?.type === "pin_verify" && (
-                <PinOverlay
-                  mode="verify"
-                  onSuccess={(p) => {
-                    setSecurityQueue(null);
-                    if (securityQueue.resolve) securityQueue.resolve(p);
-                  }}
-                  onCancel={() => setSecurityQueue(null)}
-                  onForgot={handleForgotPin}
-                />
-              )}
-
-              {securityQueue?.type === "welcome" && (
-                <Modal
-                  isOpen={true}
-                  onClose={() => setSecurityQueue(null)}
-                  type="centered"
-                >
-                  <div className="p-10 space-y-8 text-center animate-in zoom-in duration-500">
-                    <div className="w-24 h-24 bg-green-500 text-white rounded-[40px] flex items-center justify-center mx-auto shadow-2xl animate-bounce">
-                      <PartyPopper size={48} />
+                {securityQueue?.type === "welcome" && (
+                  <Modal
+                    isOpen={true}
+                    onClose={() => setSecurityQueue(null)}
+                    type="centered"
+                  >
+                    <div className="p-10 space-y-8 text-center animate-in zoom-in duration-500">
+                      <div className="w-24 h-24 bg-green-500 text-white rounded-[40px] flex items-center justify-center mx-auto shadow-2xl animate-bounce">
+                        <PartyPopper size={48} />
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-2xl font-black theme-text-main">
+                          {t("security_flow.welcome_title")}
+                        </h3>
+                        <p className="text-sm theme-text-secondary">
+                          {t("security_flow.welcome_desc")}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setSecurityQueue(null)}
+                        className="w-full theme-primary-bg text-white py-4 rounded-2xl font-bold shadow-lg"
+                      >
+                        {t("security_flow.welcome_btn")}
+                      </button>
                     </div>
-                    <div className="space-y-2">
-                      <h3 className="text-2xl font-black theme-text-main">
-                        {t("security_flow.welcome_title")}
-                      </h3>
-                      <p className="text-sm theme-text-secondary">
-                        {t("security_flow.welcome_desc")}
+                  </Modal>
+                )}
+
+                {/* Toast Notification Component */}
+                {toast && (
+                  <div className="fixed top-14 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-200 animate-in slide-in-from-top duration-300">
+                    <div className="bg-black/80 dark:bg-white/90 backdrop-blur-xl p-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-white/10 dark:border-black/5">
+                      <div
+                        className={
+                          toast.type === "error"
+                            ? "text-red-500"
+                            : toast.type === "success"
+                              ? "text-green-500"
+                              : "text-[#830AD1]"
+                        }
+                      >
+                        {toast.type === "error" ? (
+                          <AlertCircle size={20} />
+                        ) : toast.type === "success" ? (
+                          <CheckCircle size={20} />
+                        ) : (
+                          <Info size={20} />
+                        )}
+                      </div>
+                      <p className="flex-1 text-xs font-bold text-white dark:text-black leading-tight">
+                        {toast.message}
                       </p>
+                      <button
+                        onClick={() => setToast(null)}
+                        className="text-white/40 dark:text-black/40 active:scale-90"
+                      >
+                        <X size={16} />
+                      </button>
                     </div>
-                    <button
-                      onClick={() => setSecurityQueue(null)}
-                      className="w-full theme-primary-bg text-white py-4 rounded-2xl font-bold shadow-lg"
-                    >
-                      {t("security_flow.welcome_btn")}
-                    </button>
                   </div>
-                </Modal>
-              )}
+                )}
 
-              {/* Toast Notification Component */}
-              {toast && (
-                <div className="fixed top-14 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-200 animate-in slide-in-from-top duration-300">
-                  <div className="bg-black/80 dark:bg-white/90 backdrop-blur-xl p-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-white/10 dark:border-black/5">
-                    <div
-                      className={
-                        toast.type === "error"
-                          ? "text-red-500"
-                          : toast.type === "success"
-                            ? "text-green-500"
-                            : "text-[#830AD1]"
-                      }
-                    >
-                      {toast.type === "error" ? (
-                        <AlertCircle size={20} />
-                      ) : toast.type === "success" ? (
-                        <CheckCircle size={20} />
+                {/* Main App Content */}
+                <ScrollToTop />
+                <div className="flex flex-col min-h-screen theme-bg max-w-md mx-auto relative shadow-2xl">
+                  {/* --- PERSISTENT NETWORK STATUS BAR --- */}
+                  {!isOnline && (
+                    <div className="w-full bg-red-600 text-white py-1.5 px-4 flex items-center justify-center gap-2 animate-in slide-in-from-top duration-500 z-160 shrink-0">
+                      <WifiOff size={14} className="animate-pulse" />
+                      <span className="text-[10px] font-black uppercase tracking-widest">
+                        {t("common.no_internet")}
+                      </span>
+                    </div>
+                  )}
+                  {showBackOnlineBar && (
+                    <div className="w-full bg-green-500 text-white py-1.5 px-4 flex items-center justify-center gap-2 animate-out slide-out-to-top duration-500 delay-2000 fill-mode-forwards z-160 shrink-0">
+                      <Wifi size={14} />
+                      <span className="text-[10px] font-black uppercase tracking-widest">
+                        {t("common.back_online")}
+                      </span>
+                    </div>
+                  )}
+
+                  <main className="flex-1 relative">
+                    <Routes>
+                      {!user ? (
+                        <>
+                          <Route
+                            path="/login"
+                            element={<Login onLogin={handleLogin} />}
+                          />
+                          <Route
+                            path="/forgot-password"
+                            element={<ForgotPassword />}
+                          />
+                          <Route
+                            path="/signup"
+                            element={<Signup onSignup={handleSignup} />}
+                          />
+                          <Route
+                            path="*"
+                            element={<Navigate to="/login" replace />}
+                          />
+                        </>
                       ) : (
-                        <Info size={20} />
+                        <>
+                          <Route
+                            path="/"
+                            element={
+                              <Dashboard user={user} onLogout={handleLogout} />
+                            }
+                          />
+                          <Route
+                            path="/services"
+                            element={<ServicesMarket />}
+                          />
+                          <Route
+                            path="/marketplace/dashboard"
+                            element={<MarketplaceDashboard />}
+                          />
+                          <Route
+                            path="/marketplace/search"
+                            element={<MarketplaceSearch />}
+                          />
+                          <Route path="/ad/:id" element={<AdDetail />} />
+                          <Route path="/chat/:id" element={<ChatDetail />} />
+                          <Route path="/messages" element={<MessagingHub />} />
+                          <Route path="/keys" element={<KeysManagement />} />
+                          <Route path="/cards" element={<CardsHub />} />
+                          <Route
+                            path="/request-payment"
+                            element={<RequestPayment user={user} />}
+                          />
+                          <Route
+                            path="/scheduler/create"
+                            element={<SchedulerCreate />}
+                          />
+                          <Route
+                            path="/settings"
+                            element={
+                              <Settings
+                                user={user}
+                                currentTheme={theme}
+                                currentFontSize={fontSize}
+                                onThemeChange={setTheme}
+                                onFontSizeChange={setFontSize}
+                                onLogout={handleLogout}
+                              />
+                            }
+                          />
+                          <Route
+                            path="/security"
+                            element={
+                              <Security user={user} onLogout={handleLogout} />
+                            }
+                          />
+                          <Route
+                            path="/verification"
+                            element={<Verification />}
+                          />
+                          <Route path="/advanced" element={<Advanced />} />
+                          <Route
+                            path="/privacy-settings"
+                            element={<PrivacySettings />}
+                          />
+                          <Route path="/history" element={<History />} />
+                          <Route
+                            path="/bank-history/:accountId"
+                            element={<BankHistory />}
+                          />
+                          <Route path="/report" element={<Report />} />
+                          <Route
+                            path="/verify-identity"
+                            element={
+                              <IdentityVerification
+                                user={user}
+                                onVerified={handleUpdateUser}
+                              />
+                            }
+                          />
+                          <Route
+                            path="/transfer"
+                            element={
+                              <TransferFlow
+                                user={user}
+                                onUpdateUser={handleUpdateUser}
+                              />
+                            }
+                          />
+                          <Route
+                            path="/international-transfer"
+                            element={<InternationalProviders />}
+                          />
+                          <Route
+                            path="/piyes-international"
+                            element={
+                              <InternationalTransfer
+                                user={user}
+                                onUpdateUser={handleUpdateUser}
+                              />
+                            }
+                          />
+                          <Route
+                            path="/deposit"
+                            element={
+                              <DepositFlow
+                                user={user}
+                                onUpdateUser={handleUpdateUser}
+                              />
+                            }
+                          />
+                          <Route
+                            path="/withdraw"
+                            element={
+                              <WithdrawFlow
+                                user={user}
+                                onUpdateUser={handleUpdateUser}
+                              />
+                            }
+                          />
+                          <Route
+                            path="/inter-bank-transfer"
+                            element={
+                              <InterBankTransfer
+                                user={user}
+                                onUpdateUser={handleUpdateUser}
+                              />
+                            }
+                          />
+                          <Route
+                            path="/recharge"
+                            element={<MobileRecharge />}
+                          />
+                          <Route
+                            path="/contacts"
+                            element={<Contacts user={user} />}
+                          />
+                          <Route
+                            path="/contact-detail/:contactId"
+                            element={<ContactDetail user={user} />}
+                          />
+                          <Route
+                            path="/transfer-interactions"
+                            element={<TransferInteractions />}
+                          />
+                          <Route
+                            path="/receipt/:id"
+                            element={<ReceiptDetail />}
+                          />
+                          <Route path="/tools" element={<FinancialTools />} />
+                          <Route
+                            path="/scheduler"
+                            element={<ScheduledPayments />}
+                          />
+                          <Route path="/promotions" element={<Promotions />} />
+                          <Route path="/plans" element={<Plans />} />
+                          <Route
+                            path="/profile"
+                            element={
+                              <Profile
+                                user={user}
+                                onUpdate={handleUpdateUser}
+                                onLogout={handleLogout}
+                              />
+                            }
+                          />
+                          <Route
+                            path="/identity-hub"
+                            element={
+                              <IdentityHub
+                                user={user}
+                                onUpdate={handleUpdateUser}
+                              />
+                            }
+                          />
+                          <Route
+                            path="/notifications"
+                            element={<Notifications />}
+                          />
+                          <Route
+                            path="/notifications/settings"
+                            element={<NotificationsSettings />}
+                          />
+                          <Route path="/help" element={<HelpCenter />} />
+                          <Route path="/support" element={<Support />} />
+                          <Route path="/feedback" element={<Feedback />} />
+                          <Route
+                            path="/about"
+                            element={<Legal type="about" />}
+                          />
+                          <Route
+                            path="/terms"
+                            element={<Legal type="terms" />}
+                          />
+                          <Route
+                            path="/privacy"
+                            element={<Legal type="privacy" />}
+                          />
+                          <Route
+                            path="*"
+                            element={<Navigate to="/" replace />}
+                          />
+                        </>
                       )}
-                    </div>
-                    <p className="flex-1 text-xs font-bold text-white dark:text-black leading-tight">
-                      {toast.message}
-                    </p>
-                    <button
-                      onClick={() => setToast(null)}
-                      className="text-white/40 dark:text-black/40 active:scale-90"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
+                    </Routes>
+                  </main>
+                  {user && !isLocked && <BottomNav />}
                 </div>
-              )}
-
-              {/* Main App Content */}
-              <ScrollToTop />
-              <div className="flex flex-col min-h-screen theme-bg max-w-md mx-auto relative shadow-2xl">
-                {/* --- PERSISTENT NETWORK STATUS BAR --- */}
-                {!isOnline && (
-                  <div className="w-full bg-red-600 text-white py-1.5 px-4 flex items-center justify-center gap-2 animate-in slide-in-from-top duration-500 z-160 shrink-0">
-                    <WifiOff size={14} className="animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">
-                      {t("common.no_internet")}
-                    </span>
-                  </div>
-                )}
-                {showBackOnlineBar && (
-                  <div className="w-full bg-green-500 text-white py-1.5 px-4 flex items-center justify-center gap-2 animate-out slide-out-to-top duration-500 delay-2000 fill-mode-forwards z-160 shrink-0">
-                    <Wifi size={14} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">
-                      {t("common.back_online")}
-                    </span>
-                  </div>
-                )}
-
-                <main className="flex-1 relative">
-                  <Routes>
-                    {!user ? (
-                      <>
-                        <Route
-                          path="/login"
-                          element={<Login onLogin={handleLogin} />}
-                        />
-                        <Route
-                          path="/forgot-password"
-                          element={<ForgotPassword />}
-                        />
-                        <Route
-                          path="/signup"
-                          element={<Signup onSignup={handleSignup} />}
-                        />
-                        <Route
-                          path="*"
-                          element={<Navigate to="/login" replace />}
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <Route
-                          path="/"
-                          element={
-                            <Dashboard user={user} onLogout={handleLogout} />
-                          }
-                        />
-                        <Route path="/services" element={<ServicesMarket />} />
-                        <Route
-                          path="/marketplace/dashboard"
-                          element={<MarketplaceDashboard />}
-                        />
-                        <Route
-                          path="/marketplace/search"
-                          element={<MarketplaceSearch />}
-                        />
-                        <Route path="/ad/:id" element={<AdDetail />} />
-                        <Route path="/chat/:id" element={<ChatDetail />} />
-                        <Route path="/messages" element={<MessagingHub />} />
-                        <Route path="/keys" element={<KeysManagement />} />
-                        <Route path="/cards" element={<CardsHub />} />
-                        <Route
-                          path="/request-payment"
-                          element={<RequestPayment user={user} />}
-                        />
-                        <Route
-                          path="/scheduler/create"
-                          element={<SchedulerCreate />}
-                        />
-                        <Route
-                          path="/settings"
-                          element={
-                            <Settings
-                              user={user}
-                              currentTheme={theme}
-                              currentFontSize={fontSize}
-                              onThemeChange={setTheme}
-                              onFontSizeChange={setFontSize}
-                              onLogout={handleLogout}
-                            />
-                          }
-                        />
-                        <Route
-                          path="/security"
-                          element={
-                            <Security user={user} onLogout={handleLogout} />
-                          }
-                        />
-                        <Route
-                          path="/verification"
-                          element={<Verification />}
-                        />
-                        <Route path="/advanced" element={<Advanced />} />
-                        <Route
-                          path="/privacy-settings"
-                          element={<PrivacySettings />}
-                        />
-                        <Route path="/history" element={<History />} />
-                        <Route
-                          path="/bank-history/:accountId"
-                          element={<BankHistory />}
-                        />
-                        <Route path="/report" element={<Report />} />
-                        <Route
-                          path="/verify-identity"
-                          element={
-                            <IdentityVerification
-                              user={user}
-                              onVerified={handleUpdateUser}
-                            />
-                          }
-                        />
-                        <Route
-                          path="/transfer"
-                          element={
-                            <TransferFlow
-                              user={user}
-                              onUpdateUser={handleUpdateUser}
-                            />
-                          }
-                        />
-                        <Route
-                          path="/international-transfer"
-                          element={<InternationalProviders />}
-                        />
-                        <Route
-                          path="/piyes-international"
-                          element={
-                            <InternationalTransfer
-                              user={user}
-                              onUpdateUser={handleUpdateUser}
-                            />
-                          }
-                        />
-                        <Route
-                          path="/deposit"
-                          element={
-                            <DepositFlow
-                              user={user}
-                              onUpdateUser={handleUpdateUser}
-                            />
-                          }
-                        />
-                        <Route
-                          path="/withdraw"
-                          element={
-                            <WithdrawFlow
-                              user={user}
-                              onUpdateUser={handleUpdateUser}
-                            />
-                          }
-                        />
-                        <Route
-                          path="/inter-bank-transfer"
-                          element={
-                            <InterBankTransfer
-                              user={user}
-                              onUpdateUser={handleUpdateUser}
-                            />
-                          }
-                        />
-                        <Route path="/recharge" element={<MobileRecharge />} />
-                        <Route
-                          path="/contacts"
-                          element={<Contacts user={user} />}
-                        />
-                        <Route
-                          path="/contact-detail/:contactId"
-                          element={<ContactDetail user={user} />}
-                        />
-                        <Route
-                          path="/transfer-interactions"
-                          element={<TransferInteractions />}
-                        />
-                        <Route
-                          path="/receipt/:id"
-                          element={<ReceiptDetail />}
-                        />
-                        <Route path="/tools" element={<FinancialTools />} />
-                        <Route
-                          path="/scheduler"
-                          element={<ScheduledPayments />}
-                        />
-                        <Route path="/promotions" element={<Promotions />} />
-                        <Route path="/plans" element={<Plans />} />
-                        <Route
-                          path="/profile"
-                          element={
-                            <Profile
-                              user={user}
-                              onUpdate={handleUpdateUser}
-                              onLogout={handleLogout}
-                            />
-                          }
-                        />
-                        <Route
-                          path="/identity-hub"
-                          element={
-                            <IdentityHub
-                              user={user}
-                              onUpdate={handleUpdateUser}
-                            />
-                          }
-                        />
-                        <Route
-                          path="/notifications"
-                          element={<Notifications />}
-                        />
-                        <Route
-                          path="/notifications/settings"
-                          element={<NotificationsSettings />}
-                        />
-                        <Route path="/help" element={<HelpCenter />} />
-                        <Route path="/support" element={<Support />} />
-                        <Route path="/feedback" element={<Feedback />} />
-                        <Route path="/about" element={<Legal type="about" />} />
-                        <Route path="/terms" element={<Legal type="terms" />} />
-                        <Route
-                          path="/privacy"
-                          element={<Legal type="privacy" />}
-                        />
-                        <Route path="*" element={<Navigate to="/" replace />} />
-                      </>
-                    )}
-                  </Routes>
-                </main>
-                {user && !isLocked && <BottomNav />}
-              </div>
-            </SyncContext.Provider>
-          </SecurityContext.Provider>
+              </SyncContext.Provider>
+            </SecurityContext.Provider>
+          </NotificationProvider>
         </ToastContext.Provider>
       </ThemeContext.Provider>
     </LanguageContext.Provider>

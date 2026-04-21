@@ -1,11 +1,24 @@
 // services/notificationService.ts
 
-import { TransactionType } from '../shared/types';
-import { http } from './httpClient';
+import { TransactionType } from "../shared/types";
+import { http } from "./httpClient";
 
 export interface Notification {
   id: string;
-  type: 'transfer_in' | 'transfer_out' | 'security' | 'promo' | 'card' | 'request' | 'transfer_received' | 'FRIEND_REQUEST' | 'FRIEND_ACCEPTED' | 'scheduled_request' | 'scheduled_confirmed' | 'scheduled_cancelled' | 'scheduled_created';
+  type:
+    | "transfer_in"
+    | "transfer_out"
+    | "security"
+    | "promo"
+    | "card"
+    | "request"
+    | "transfer_received"
+    | "FRIEND_REQUEST"
+    | "FRIEND_ACCEPTED"
+    | "scheduled_request"
+    | "scheduled_confirmed"
+    | "scheduled_cancelled"
+    | "scheduled_created";
   title: string;
   body: string;
   timestamp: string;
@@ -17,6 +30,8 @@ export interface Notification {
     route?: string;
     params?: any;
     targetId?: string;
+    name?: string;
+    amount?: string;
   };
 }
 
@@ -29,23 +44,23 @@ export interface NotificationPrefs {
 }
 
 class NotificationService {
-  private readonly PREFS_KEY = 'piyes_notif_prefs';
+  private readonly PREFS_KEY = "piyes_notif_prefs";
 
   // --- DEVICE & PERMISSIONS ---
 
-  async requestPermission(): Promise<'granted' | 'denied' | 'default'> {
-    if (!('Notification' in window)) return 'default';
+  async requestPermission(): Promise<"granted" | "denied" | "default"> {
+    if (!("Notification" in window)) return "default";
     const permission = await window.Notification.requestPermission();
     return permission;
   }
 
   async getDeviceToken(): Promise<string> {
     // In a real app with FCM, this would get the actual token
-    return 'token_' + Math.random().toString(36).substring(7);
+    return "token_" + Math.random().toString(36).substring(7);
   }
 
   async registerDevice(token: string): Promise<boolean> {
-    console.log('[API] Registering device token:', token);
+    console.log("[API] Registering device token:", token);
     // In a real app, send this to backend
     return true;
   }
@@ -54,39 +69,41 @@ class NotificationService {
 
   async getHistory(): Promise<Notification[]> {
     try {
-      const response = await http.get<any>('/user/sync');
+      const response = await http.get<any>("/user/sync");
       return response.notifications || [];
     } catch (error) {
-      console.error('Failed to fetch notifications:', error);
+      console.error("Failed to fetch notifications:", error);
       return [];
     }
   }
 
   async markAsRead(id: string): Promise<void> {
-    await http.post('/user/notifications/mark-read', { id });
+    await http.post("/user/notifications/mark-read", { id });
   }
 
   async markAllAsRead(): Promise<void> {
-    await http.post('/user/notifications/mark-read', { all: true });
+    await http.post("/user/notifications/mark-read", { all: true });
   }
 
   // --- PREFERENCES ---
 
   getPreferences(): NotificationPrefs {
     const saved = localStorage.getItem(this.PREFS_KEY);
-    return saved ? JSON.parse(saved) : {
-      push: true,
-      email: false,
-      sms: true,
-      security: true,
-      promotions: true
-    };
+    return saved
+      ? JSON.parse(saved)
+      : {
+          push: true,
+          email: false,
+          sms: true,
+          security: true,
+          promotions: true,
+        };
   }
 
   async updatePreferences(prefs: NotificationPrefs): Promise<void> {
     localStorage.setItem(this.PREFS_KEY, JSON.stringify(prefs));
-    console.log('[API] Syncing notification preferences to backend...', prefs);
-    await http.post('/user/privacy', { notificationPrefs: prefs });
+    console.log("[API] Syncing notification preferences to backend...", prefs);
+    await http.post("/user/privacy", { notificationPrefs: prefs });
   }
 }
 

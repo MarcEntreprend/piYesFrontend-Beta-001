@@ -178,7 +178,7 @@ const ServicesMarket: React.FC = () => {
       id: "notifications",
       label: t("boutique.tabs.notifications"),
       icon: <Bell size={18} />,
-      badge: "9+",
+      badge: "0",
     },
   ];
 
