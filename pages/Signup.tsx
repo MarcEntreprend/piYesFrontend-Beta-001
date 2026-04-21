@@ -32,6 +32,8 @@ import Button from "../components/Button";
 import LanguageSelector from "../components/LanguageSelector";
 import ThemeSelector from "../components/ThemeSelector";
 import SegmentedControl from "../components/SegmentedControl";
+import PageTransition from "../components/PageTransition";
+import { motion } from "motion/react";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const toTitleCase = (str: string): string =>
@@ -75,56 +77,78 @@ const InputField: React.FC<InputFieldProps> = ({
     isPasswordVisible,
     showValidationErrors,
     required,
-}) => (
-    <div className="space-y-1.5 w-full">
-        <div className="flex justify-between items-center px-1">
-            <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest">
-                {label}
-                {required && <span className="text-red-400 ml-0.5">*</span>}
-            </label>
-            {value &&
-                isValid !== null &&
-                (isValid ? (
-                    <CheckCircle2
-                        size={12}
-                        className="text-green-500 animate-in zoom-in"
-                    />
-                ) : (
-                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
-                ))}
-        </div>
-        <div
-            className={`flex items-center gap-3 theme-bubble-bg p-4 rounded-2xl border transition-all duration-300 ${value
-                ? isValid === false
-                    ? "border-red-500/50 bg-red-50/5 dark:bg-red-900/10 focus-within:border-red-500"
-                    : "border-transparent focus-within:border-(--primary-color) focus-within:bg-transparent"
-                : isValid === false && showValidationErrors
-                    ? "border-red-500/50 bg-red-50/5 dark:bg-red-900/10 focus-within:border-red-500"
-                    : "border-transparent focus-within:border-(--primary-color) focus-within:bg-transparent"
-                }`}
-        >
-            <div className="theme-primary-text opacity-50 shrink-0">{icon}</div>
-            <input
-                name={name}
-                type={type}
-                value={value}
-                onChange={onChange}
-                placeholder={placeholder}
-                autoComplete="off"
-                className="flex-1 bg-transparent outline-none theme-text-main text-sm font-bold placeholder:font-normal placeholder:opacity-40"
-            />
-            {showPasswordToggle && onTogglePassword && (
-                <button
-                    type="button"
-                    onClick={onTogglePassword}
-                    className="theme-text-secondary opacity-40 active:scale-90 transition-transform"
+}) => {
+    const [isFocused, setIsFocused] = useState(false);
+    const hasValue = String(value).length > 0;
+    const isFloated = isFocused || hasValue || placeholder;
+
+    return (
+        <div className="space-y-1 w-full relative">
+            <div className="flex justify-end items-center px-1 absolute right-2 top-2 z-10">
+                {value &&
+                    isValid !== null &&
+                    (isValid ? (
+                        <CheckCircle2
+                            size={12}
+                            className="text-green-500 animate-in zoom-in"
+                        />
+                    ) : (
+                        <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
+                    ))}
+            </div>
+            <div
+                className={`relative flex items-center w-full theme-bubble-bg rounded-2xl border transition-all duration-300 ${value && isValid === false
+                    ? "border-red-500/50 bg-red-50/5 dark:bg-red-900/10"
+                    : isValid === false && showValidationErrors
+                        ? "border-red-500/50 bg-red-50/5 dark:bg-red-900/10"
+                        : isFocused
+                            ? "border-(--primary-color) glow-primary bg-transparent"
+                            : "border-transparent"
+                    }`}
+            >
+                <motion.div
+                    animate={{ scale: isFocused ? 1.1 : 1 }}
+                    className="pl-4 pr-2 shrink-0 transition-colors"
+                    style={{ color: isFocused ? "var(--primary-color)" : "var(--theme-text-secondary)", opacity: isFocused ? 1 : 0.5 }}
                 >
-                    {isPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-            )}
+                    {icon}
+                </motion.div>
+
+                <div className="relative flex-1 px-1 pt-5 pb-2">
+                    <label
+                        className={`absolute left-1 transition-all duration-300 pointer-events-none font-bold ${isFloated
+                            ? "top-1 text-[10px] uppercase tracking-widest text-[var(--theme-text-secondary)] opacity-70"
+                            : "top-1/2 -translate-y-1/2 text-[var(--theme-text-secondary)] text-sm"
+                            }`}
+                        style={isFocused && isValid !== false ? { color: "var(--primary-color)", opacity: 1 } : undefined}
+                    >
+                        {label} {required && <span className="text-red-400 ml-0.5">*</span>}
+                    </label>
+                    <input
+                        name={name}
+                        type={type}
+                        value={value}
+                        onChange={onChange}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={() => setIsFocused(false)}
+                        placeholder={isFocused ? placeholder : ""}
+                        autoComplete="off"
+                        className="w-full bg-transparent outline-none theme-text-main text-sm font-bold placeholder:font-normal placeholder:opacity-40 h-6"
+                    />
+                </div>
+                {showPasswordToggle && onTogglePassword && (
+                    <button
+                        type="button"
+                        onClick={onTogglePassword}
+                        className="pr-4 pl-2 theme-text-secondary opacity-40 active:scale-90 transition-transform shrink-0"
+                    >
+                        {isPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                )}
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 // ─── AccountTypeToggle ────────────────────────────────────────────────────────
 const AccountTypeToggle: React.FC<{
@@ -428,16 +452,18 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
     const content = getLegalContent();
 
     return (
-        <div className="min-h-screen theme-card-bg flex flex-col animate-in fade-in duration-500">
+        <PageTransition direction="left" className="min-h-screen theme-card-bg flex flex-col">
             {/* Header */}
             <header className="px-6 pt-12 pb-6 flex items-center justify-between sticky top-0 theme-card-bg z-20 shrink-0">
-                <button
+                <motion.button
+                    whileHover={{ x: -2, scale: 1.05 }}
+                    whileTap={{ scale: 0.9 }}
                     onClick={() => navigate("/login")}
                     disabled={isSubmitting}
-                    className="p-2 -ml-2 theme-text-secondary active:scale-90 transition-transform disabled:opacity-30"
+                    className="p-2 -ml-2 theme-text-secondary transition-transform disabled:opacity-30"
                 >
                     <ArrowLeft size={24} />
-                </button>
+                </motion.button>
                 <span className="theme-primary-text font-black italic text-xl tracking-tighter">
                     piYès
                 </span>
@@ -996,7 +1022,7 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
                     </div>
                 )}
             </Modal>
-        </div>
+        </PageTransition>
     );
 };
 

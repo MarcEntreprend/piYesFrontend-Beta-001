@@ -59,6 +59,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <motion.button
         ref={ref}
+        whileHover={!disabled && !isLoading ? { scale: 1.02 } : undefined}
         whileTap={!disabled && !isLoading ? { scale: 0.98 } : undefined}
         disabled={disabled || isLoading}
         className={cn(
@@ -79,8 +80,23 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
         {/* UN SEUL SPINNER - centré en absolu */}
         {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Loader2 className="animate-spin" size={size === "sm" ? 14 : size === "md" ? 18 : 22} />
+          <div className="absolute inset-0 flex items-center justify-center gap-1">
+            {[0, 1, 2].map((i) => (
+              <motion.div
+                key={i}
+                className="w-1.5 h-1.5 bg-current rounded-full"
+                animate={{
+                  y: ["0%", "-50%", "0%"],
+                  opacity: [0.5, 1, 0.5],
+                }}
+                transition={{
+                  duration: 0.6,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i * 0.15,
+                }}
+              />
+            ))}
           </div>
         )}
       </motion.button>

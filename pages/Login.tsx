@@ -14,6 +14,8 @@ import LanguageSelector from "../components/LanguageSelector";
 import ThemeSelector from "../components/ThemeSelector";
 import Modal from "../components/Modal";
 import Button from "../components/Button";
+import Input from "../components/Input";
+import PageTransition from "../components/PageTransition";
 import { cn } from "../src/lib/utils";
 import { motion } from "motion/react";
 
@@ -102,21 +104,23 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     };
 
     return (
-        <div className="min-h-screen theme-card-bg flex flex-col px-8 pt-12 animate-in fade-in duration-500">
+        <PageTransition direction="left" className="min-h-screen theme-card-bg flex flex-col px-8 pt-12">
             {/* Top bar */}
             <div className="mb-10 flex justify-between items-center">
                 <div className="flex items-center gap-4">
                     {step === 2 && (
-                        <button
+                        <motion.button
+                            whileHover={{ x: -2, scale: 1.05 }}
+                            whileTap={{ scale: 0.9 }}
                             onClick={() => {
                                 setStep(1);
                                 setPassword("");
                                 setError("");
                             }}
-                            className="theme-text-main p-2 hover:bg-black/5 rounded-full transition-colors active:scale-90"
+                            className="theme-text-main p-2 hover:bg-black/5 rounded-full transition-colors"
                         >
                             <ArrowLeft size={24} />
-                        </button>
+                        </motion.button>
                     )}
                     <h1 className="theme-primary-text text-3xl font-black italic tracking-tighter">
                         piYès
@@ -150,27 +154,18 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {step === 1 ? (
-                        <div className="space-y-2">
-                            <div className={`flex items-center theme-bubble-bg p-4 rounded-2xl border transition-all duration-300 ${error ? "border-red-500/50 bg-red-50/5 dark:bg-red-900/10" : "border-transparent focus-within:border-(--primary-color) focus-within:bg-transparent"}`}>
-                                <input
-                                    autoFocus
-                                    type="text"
-                                    value={identifier}
-                                    onChange={(e) => {
-                                        setIdentifier(e.target.value);
-                                        if (error) setError("");
-                                    }}
-                                    placeholder="Email ou téléphone"
-                                    className="w-full text-lg outline-none bg-transparent theme-text-main font-bold placeholder:font-normal placeholder:opacity-40"
-                                    required
-                                />
-                            </div>
-                            {error && (
-                                <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest px-2">
-                                    {error}
-                                </p>
-                            )}
-                        </div>
+                        <Input
+                            label="Email ou téléphone"
+                            autoFocus
+                            type="text"
+                            value={identifier}
+                            onChange={(e) => {
+                                setIdentifier(e.target.value);
+                                if (error) setError("");
+                            }}
+                            error={error}
+                            required
+                        />
                     ) : (
                         <div className="space-y-4">
                             {/* Show who is logging in */}
@@ -185,17 +180,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                                 </p>
                             </div>
                             <div className="space-y-2">
-                                <div className="flex items-center theme-bubble-bg p-4 rounded-2xl border transition-all duration-300 border-transparent focus-within:border-(--primary-color) focus-within:bg-transparent">
-                                    <input
-                                        autoFocus
-                                        type="password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        placeholder={t("auth.password_placeholder")}
-                                        className="w-full text-lg outline-none bg-transparent theme-text-main font-bold placeholder:font-normal placeholder:opacity-40"
-                                        required
-                                    />
-                                </div>
+                                <Input
+                                    label={t("auth.password_placeholder")}
+                                    autoFocus
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
                                 <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest px-2">
                                     {t("auth.signup_pass_hint")}
                                 </p>
@@ -318,7 +310,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                     </Button>
                 </div>
             </Modal>
-        </div>
+        </PageTransition>
     );
 };
 
