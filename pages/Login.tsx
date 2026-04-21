@@ -133,20 +133,22 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {step === 1 ? (
             <div className="space-y-2">
-              <input
-                autoFocus
-                type="text"
-                value={identifier}
-                onChange={(e) => {
-                  setIdentifier(e.target.value);
-                  if (error) setError("");
-                }}
-                placeholder="email ou téléphone"
-                className={`w-full text-lg border-b-2 ${error ? "border-red-500" : "theme-border focus:border-(--primary-color)"} py-3 outline-none transition-colors bg-transparent theme-text-main font-bold`}
-                required
-              />
+              <div className={`flex items-center theme-bubble-bg p-4 rounded-2xl border transition-all duration-300 ${error ? "border-red-500/50 bg-red-50/5 dark:bg-red-900/10" : "border-transparent focus-within:border-(--primary-color) focus-within:bg-transparent"}`}>
+                <input
+                  autoFocus
+                  type="text"
+                  value={identifier}
+                  onChange={(e) => {
+                    setIdentifier(e.target.value);
+                    if (error) setError("");
+                  }}
+                  placeholder="Email ou téléphone"
+                  className="w-full text-lg outline-none bg-transparent theme-text-main font-bold placeholder:font-normal placeholder:opacity-40"
+                  required
+                />
+              </div>
               {error && (
-                <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest">
+                <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest px-2">
                   {error}
                 </p>
               )}
@@ -165,16 +167,18 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 </p>
               </div>
               <div className="space-y-2">
-                <input
-                  autoFocus
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder={t("auth.password_placeholder")}
-                  className="w-full text-lg border-b-2 theme-border focus:border-(--primary-color) py-3 outline-none transition-colors bg-transparent theme-text-main font-bold"
-                  required
-                />
-                <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">
+                <div className="flex items-center theme-bubble-bg p-4 rounded-2xl border transition-all duration-300 border-transparent focus-within:border-(--primary-color) focus-within:bg-transparent">
+                  <input
+                    autoFocus
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder={t("auth.password_placeholder")}
+                    className="w-full text-lg outline-none bg-transparent theme-text-main font-bold placeholder:font-normal placeholder:opacity-40"
+                    required
+                  />
+                </div>
+                <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest px-2">
                   {t("auth.signup_pass_hint")}
                 </p>
               </div>

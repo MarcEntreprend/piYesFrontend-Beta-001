@@ -93,14 +93,14 @@ const InputField: React.FC<InputFieldProps> = ({
         ))}
     </div>
     <div
-      className={`flex items-center gap-3 theme-bubble-bg p-4 rounded-[20px] border-2 transition-all duration-300 ${
+      className={`flex items-center gap-3 theme-bubble-bg p-4 rounded-2xl border transition-all duration-300 ${
         value
           ? isValid === false
-            ? "border-red-500/20"
-            : "border-transparent"
+            ? "border-red-500/50 bg-red-50/5 dark:bg-red-900/10 focus-within:border-red-500"
+            : "border-transparent focus-within:border-(--primary-color) focus-within:bg-transparent"
           : isValid === false && showValidationErrors
-            ? "border-red-500/50"
-            : "border-transparent focus-within:border-(--primary-color)"
+            ? "border-red-500/50 bg-red-50/5 dark:bg-red-900/10 focus-within:border-red-500"
+            : "border-transparent focus-within:border-(--primary-color) focus-within:bg-transparent"
       }`}
     >
       <div className="theme-primary-text opacity-50 shrink-0">{icon}</div>

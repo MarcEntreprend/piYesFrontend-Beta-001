@@ -52,9 +52,9 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
 
   const step = steps[currentStep];
 
-    return (
-    <div className="theme-card-bg min-h-screen pb-24 max-w-[430px] mx-auto px-6">
-      <div className="flex justify-between items-center pt-6 mb-8">
+  return (
+    <div className="theme-card-bg min-h-screen flex flex-col max-w-[430px] mx-auto relative pb-32">
+      <div className="flex justify-between items-center pt-6 px-6 mb-8 shrink-0">
         <div className="flex items-center gap-3">
           <ThemeSelector />
           <LanguageSelector />
@@ -67,48 +67,51 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center text-center gap-12">
+      <div className="flex-1 flex flex-col items-center justify-center text-center gap-12 px-6">
         <div className="w-32 h-32 rounded-[40px] theme-bubble-bg flex items-center justify-center shadow-inner animate-in zoom-in duration-700">
           {step.icon}
         </div>
         
-        <div className="space-y-6 px-4">
-          <h1 className="text-3xl font-black theme-text-main tracking-tight leading-tight">
-            {step.title}
-          </h1>
-          <p className="text-lg font-bold theme-primary-text">
-            {step.subtitle}
-          </p>
+        <div className="space-y-8 px-4">
+          <div className="space-y-4">
+            <h1 className="text-3xl font-black theme-text-main tracking-tight leading-tight">
+              {step.title}
+            </h1>
+            <p className="text-lg font-bold theme-primary-text">
+              {step.subtitle}
+            </p>
+          </div>
           <p className="theme-text-secondary leading-relaxed text-sm">
             {step.description}
           </p>
         </div>
       </div>
 
-      <div className="space-y-12 pb-20">
-        <div className="flex justify-center gap-3">
-          {steps.map((_, i) => (
-            <div 
-              key={i} 
-              className={`h-1.5 rounded-full transition-all duration-500 ${
-                currentStep === i ? 'w-10 theme-primary-bg' : 'w-2 theme-bubble-bg'
-              }`} 
-            />
-          ))}
+      <div className="fixed bottom-0 left-0 right-0 glass-panel p-6 pb-8 z-50">
+        <div className="max-w-[430px] mx-auto space-y-8">
+          <div className="flex justify-center gap-3">
+            {steps.map((_, i) => (
+              <div 
+                key={i} 
+                className={`h-1.5 rounded-full transition-all duration-500 ${
+                  currentStep === i ? 'w-10 theme-primary-bg' : 'w-2 theme-bubble-bg'
+                }`} 
+              />
+            ))}
+          </div>
+          
+          <Button 
+            onClick={next} 
+            fullWidth 
+            size="lg" 
+            className="py-5 text-base uppercase tracking-widest font-black shadow-lg"
+          >
+            {currentStep === steps.length - 1 ? t('onboarding.get_started') : t('onboarding.next')}
+          </Button>
         </div>
-        
-        <Button 
-          onClick={next} 
-          fullWidth 
-          size="lg" 
-          className="py-5 text-base uppercase tracking-widest font-black"
-        >
-          {currentStep === steps.length - 1 ? t('onboarding.get_started') : t('onboarding.next')}
-        </Button>
       </div>
     </div>
   );
-
 };
 
 export default Onboarding;

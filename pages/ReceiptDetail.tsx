@@ -91,30 +91,34 @@ const ReceiptDetail: React.FC = () => {
         <style>
           * { font-family: Arial, sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
           body { background: #fff; padding: 0; width: 400px; }
-          .receipt { background: #fff; border-radius: 24px; overflow: hidden; border: 1px solid #f0f0f0; }
+          .receipt { background: #fff; border-radius: 24px; overflow: hidden; border: 1px solid #e5e7eb; }
           .body { padding: 32px; }
           .header { text-align: center; margin-bottom: 24px; }
-          .brand { font-size: 22px; font-weight: 900; color: #830AD1; letter-spacing: -1px; }
-          .type { font-size: 9px; font-weight: 900; color: #aaa; text-transform: uppercase; letter-spacing: 3px; margin-top: 2px; }
-          .amount { font-size: 36px; font-weight: 900; color: #111; margin: 12px 0 2px; }
-          .fees-note { font-size: 9px; color: #aaa; font-style: italic; }
+          .brand { font-size: 24px; font-weight: 900; color: #4318FF; letter-spacing: -1px; }
+          .type { font-size: 10px; font-weight: 900; color: #9ca3af; text-transform: uppercase; letter-spacing: 3px; margin-top: 4px; }
+          .amount-container { background: #f9fafb; border-radius: 16px; padding: 16px; margin: 16px 0; text-align: center; }
+          .amount { font-size: 36px; font-weight: 900; color: #111; margin-bottom: 4px; }
+          .fees-note { font-size: 9px; color: #9ca3af; font-style: italic; }
           .status { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px; color: ${receipt.status === 'success' || receipt.status === 'completed' ? '#16a34a' : receipt.status === 'pending' ? '#d97706' : '#dc2626'}; }
-          .date { font-size: 10px; color: #aaa; margin-top: 4px; }
-          .divider { text-align: center; color: #eee; font-size: 10px; letter-spacing: 2px; margin: 16px 0; overflow: hidden; white-space: nowrap; }
-          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 8px; margin: 16px 0; }
-          .field-label { font-size: 8px; font-weight: 900; color: #aaa; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2px; }
-          .field-value { font-size: 11px; font-weight: 700; color: #111; }
-          .party-label { font-size: 9px; font-weight: 900; color: #aaa; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
-          .party-name { font-size: 13px; font-weight: 900; color: #111; }
-          .party-detail { font-size: 9px; color: #777; margin-top: 2px; }
-          .separator { height: 1px; background: #f5f5f5; margin: 12px 0; }
-          .ext-id { font-size: 9px; font-family: monospace; color: #aaa; word-break: break-all; line-height: 1.5; }
-          .footer { background: #f9f4ff; padding: 24px; text-align: center; }
-          .footer-brand { font-size: 13px; font-weight: 900; color: #830AD1; }
-          .footer-thanks { font-size: 9px; color: #777; margin-top: 2px; }
-          .footer-contact { font-size: 9px; font-weight: 700; color: #555; margin-top: 4px; line-height: 1.8; }
-          .footer-email { color: #830AD1; }
-          .footer-note { font-size: 8px; color: #aaa; font-style: italic; margin-top: 8px; }
+          .date { font-size: 10px; color: #9ca3af; font-weight: 600; margin-top: 4px; }
+          .divider { border-top: 1px dashed #e5e7eb; margin: 24px 0; }
+          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 8px; }
+          .field-label { font-size: 9px; font-weight: 900; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+          .field-value { font-size: 12px; font-weight: 700; color: #111; }
+          .party-card { background: #f9fafb; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+          .party-label { font-size: 9px; font-weight: 900; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+          .party-name { font-size: 14px; font-weight: 900; color: #111; margin-bottom: 4px; }
+          .party-detail { font-size: 10px; color: #6b7280; margin-top: 2px; font-weight: 500; }
+          .note-section { background: #fefce8; border: 1px solid #fef08a; border-radius: 12px; padding: 16px; margin-top: 16px; }
+          .note-label { font-size: 10px; font-weight: 900; color: #ca8a04; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+          .note-value { font-size: 13px; font-weight: 700; color: #854d0e; line-height: 1.5; }
+          .ext-id { font-size: 10px; font-family: monospace; color: #9ca3af; word-break: break-all; }
+          .footer { background: #f9fafb; border-top: 1px solid #e5e7eb; padding: 24px; text-align: center; }
+          .footer-brand { font-size: 14px; font-weight: 900; color: #4318FF; margin-bottom: 4px; }
+          .footer-thanks { font-size: 10px; font-weight: 700; color: #6b7280; }
+          .footer-contact { font-size: 10px; font-weight: 600; color: #4b5563; margin-top: 12px; line-height: 1.8; }
+          .footer-email { color: #4318FF; font-weight: 700; }
+          .footer-note { font-size: 9px; color: #9ca3af; font-style: italic; margin-top: 12px; }
         </style>
       </head>
       <body>
@@ -123,12 +127,16 @@ const ReceiptDetail: React.FC = () => {
             <div class="header">
               <div class="brand">piYès</div>
               <div class="type">${typeLabel}</div>
-              <div class="amount">${receipt.amount.toLocaleString('fr-HT')} G *</div>
-              <div class="fees-note">* Aucun frais appliqué pour ce transfert</div>
+              <div class="amount-container">
+                <div class="amount">${receipt.amount.toLocaleString('fr-HT')} G *</div>
+                <div class="fees-note">* Aucun frais appliqué pour ce transfert</div>
+              </div>
               <div class="status">${statusLabel}</div>
               <div class="date">${formattedDate}</div>
             </div>
-            <div class="divider">────────────────────────────────────</div>
+            
+            <div class="divider"></div>
+            
             <div class="grid">
               <div>
                 <div class="field-label">Code d'autorisation</div>
@@ -144,36 +152,41 @@ const ReceiptDetail: React.FC = () => {
                 <div class="field-value">${receipt.moncashTransactionId}</div>
               </div>` : ''}
             </div>
-            <div class="divider">────────────────────────────────────</div>
+            
+            <div class="divider"></div>
+            
             ${receipt.receiver ? `
-            <div style="margin-bottom:12px">
+            <div class="party-card">
               <div class="party-label">Bénéficiaire</div>
               <div class="party-name">${receipt.receiver.name}</div>
               <div class="party-detail">ID: ${receipt.receiver.idNumber || 'N/A'}</div>
               <div class="party-detail">Banque: ${receipt.receiver.bank || 'piYès'}</div>
-              <div class="party-detail">compte: ${receipt.receiver.masked_account || '••••00-6'}</div>
+              <div class="party-detail">Compte: ${receipt.receiver.masked_account || '••••00-6'}</div>
             </div>` : ''}
-            <div class="separator"></div>
+            
             ${receipt.sender ? `
-            <div style="margin-bottom:12px">
+            <div class="party-card">
               <div class="party-label">Expéditeur</div>
               <div class="party-name">${receipt.sender.name}</div>
               <div class="party-detail">ID: ${receipt.sender.idNumber || 'N/A'}</div>
               <div class="party-detail">Banque: ${receipt.sender.bank || 'piYès'}</div>
-              <div class="party-detail">compte: ${receipt.sender.masked_account || '••••00-6'}</div>
+              <div class="party-detail">Compte: ${receipt.sender.masked_account || '••••00-6'}</div>
             </div>` : ''}
+            
             ${receipt.description ? `
-            <div class="separator"></div>
-            <div>
-              <div class="field-label">Note</div>
-              <div class="field-value" style="font-size:11px">${receipt.description}</div>
+            <div class="note-section">
+              <div class="note-label">Note</div>
+              <div class="note-value">${receipt.description}</div>
             </div>` : ''}
-            <div class="divider">────────────────────────────────────</div>
+            
+            <div class="divider"></div>
+            
             <div>
               <div class="field-label">Identifiant Externe</div>
               <div class="ext-id">${receipt.external_id}</div>
             </div>
           </div>
+          
           <div class="footer">
             <div class="footer-brand">piYès</div>
             <div class="footer-thanks">Merci d'avoir utilisé piYès !</div>
@@ -352,133 +365,122 @@ const ReceiptDetail: React.FC = () => {
 
 
       <div className="px-6 py-4">
-        <div ref={receiptRef} className="bg-white text-black rounded-3xl overflow-hidden shadow-xl border border-gray-100 flex flex-col">
+        <div ref={receiptRef} className="bg-white text-gray-900 rounded-3xl overflow-hidden shadow-sm border border-gray-200 flex flex-col">
           <div className="p-8 space-y-8 flex-1">
             {/* Header */}
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-6">
               <div className="flex flex-col items-center gap-1">
-                <span className="text-2xl font-black tracking-tighter text-[#830AD1]">piYès</span>
+                <span className="text-3xl font-black tracking-tighter text-(--primary-color)">piYès</span>
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{typeLabel}</p>
               </div>
               
-             <div className="space-y-1">
-  <p className="text-4xl font-black text-black">
-    {receipt.amount.toLocaleString('fr-HT')} G
-    <span className="align-top text-sm">*</span>
-  </p>
-  <p className="text-[9px] text-gray-400 italic">
-    * Aucun frais appliqué pour ce transfert
-  </p>
-</div>
+              <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                <p className="text-4xl font-black text-gray-900 mb-1">
+                  {receipt.amount.toLocaleString('fr-HT')} G <span className="text-sm align-top text-gray-400">*</span>
+                </p>
+                <p className="text-[10px] text-gray-400 italic">
+                  * Aucun frais appliqué pour ce transfert
+                </p>
+              </div>
 
-
-              <div className="flex flex-col items-center gap-1">
+              <div className="flex flex-col items-center gap-1.5">
                 <p className={`text-sm font-black uppercase tracking-widest ${getStatusColor(receipt.status)}`}>
                   {getStatusLabel(receipt.status)}
                 </p>
-                <p className="text-[10px] text-gray-400 font-medium">
+                <p className="text-xs text-gray-500 font-semibold">
                   {formatDate(receipt.date)}
                 </p>
               </div>
             </div>
 
-            <div className="text-center text-gray-200 font-light tracking-widest overflow-hidden whitespace-nowrap">
-              --------------------------------------------------------------------------------
-            </div>
+            <div className="border-t border-dashed border-gray-300"></div>
 
             {/* Transaction Details */}
             <div className="grid grid-cols-2 gap-y-6 gap-x-4">
-              <div className="space-y-1">
-                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Code d'autorisation</p>
-                <p className="text-xs font-bold text-black">{receipt.auth_code || 'N/A'}</p>
+              <div className="space-y-1.5">
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Code d'autorisation</p>
+                <p className="text-sm font-bold text-gray-900">{receipt.auth_code || 'N/A'}</p>
               </div>
-              <div className="space-y-1">
-                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">ID de transaction</p>
-                <p className="text-xs font-bold text-black">{receipt.external_id?.slice(0, 12) || 'N/A'}</p>
+              <div className="space-y-1.5">
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">ID de transaction</p>
+                <p className="text-sm font-bold text-gray-900">{receipt.external_id?.slice(0, 12) || 'N/A'}</p>
               </div>
               {receipt.moncashTransactionId && (
-                <div className="space-y-1">
-                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">ID MonCash</p>
-                  <p className="text-xs font-bold text-black">{receipt.moncashTransactionId}</p>
+                <div className="space-y-1.5">
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">ID MonCash</p>
+                  <p className="text-sm font-bold text-gray-900">{receipt.moncashTransactionId}</p>
                 </div>
               )}
             </div>
 
-            <div className="text-center text-gray-200 font-light tracking-widest overflow-hidden whitespace-nowrap">
-              --------------------------------------------------------------------------------
-            </div>
+            <div className="border-t border-dashed border-gray-300"></div>
 
             {/* Parties */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               {receipt.receiver && (
-                <div className="space-y-3">
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-2">
                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Bénéficiaire</p>
-                  <div className="space-y-1">
-                    <p className="text-sm font-black text-black">{receipt.receiver.name}</p>
-                    <div className="flex flex-col text-[10px] text-gray-500 font-medium">
+                  <div>
+                    <p className="text-base font-black text-gray-900 mb-1">{receipt.receiver.name}</p>
+                    <div className="flex flex-col text-xs text-gray-500 font-medium space-y-0.5">
                       <span>ID: {receipt.receiver.idNumber || 'N/A'}</span>
                       <span>Banque: {receipt.receiver.bank || 'piYès'}</span>
-                      <p className="font-mono text-gray-400">compte : {receipt.receiver.masked_account || '••••00-6'}</p>
+                      <span className="font-mono text-gray-400">Compte: {receipt.receiver.masked_account || '••••00-6'}</span>
                     </div>
                   </div>
                 </div>
               )}
 
-              <div className="h-px bg-gray-50"></div>
-
               {receipt.sender && (
-                <div className="space-y-3">
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-2">
                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Expéditeur</p>
-                  <div className="space-y-1">
-                    <p className="text-sm font-black text-black">{receipt.sender.name}</p>
-                    <div className="flex flex-col text-[10px] text-gray-500 font-medium">
+                  <div>
+                    <p className="text-base font-black text-gray-900 mb-1">{receipt.sender.name}</p>
+                    <div className="flex flex-col text-xs text-gray-500 font-medium space-y-0.5">
                       <span>ID: {receipt.sender.idNumber || 'N/A'}</span>
                       <span>Banque: {receipt.sender.bank || 'piYès'}</span>
-                      <p className="font-mono text-gray-400">compte : {receipt.sender.masked_account || '••••00-6'}</p>
+                      <span className="font-mono text-gray-400">Compte: {receipt.sender.masked_account || '••••00-6'}</span>
                     </div>
                   </div>
                 </div>
               )}
 
               {receipt.description && (
-                <>
-                  <div className="h-px bg-gray-50"></div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Note</p>
-                    <p className="text-xs font-bold text-black">{receipt.description}</p>
+                <div className="bg-yellow-50 rounded-xl p-5 border border-yellow-200 mt-6 shadow-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <p className="text-[10px] font-black text-yellow-600 uppercase tracking-widest">Note</p>
                   </div>
-                </>
+                  <p className="text-sm font-bold text-yellow-900 leading-relaxed">{receipt.description}</p>
+                </div>
               )}
             </div>
 
-            <div className="text-center text-gray-200 font-light tracking-widest overflow-hidden whitespace-nowrap">
-              --------------------------------------------------------------------------------
-            </div>
+            <div className="border-t border-dashed border-gray-300"></div>
 
             {/* External ID */}
             <div className="space-y-2">
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Identifiant Externe</p>
-              <p className="text-[10px] font-mono text-gray-400 break-all leading-tight">{receipt.external_id}</p>
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Identifiant Externe</p>
+              <p className="text-[11px] font-mono text-gray-400 break-all leading-relaxed">{receipt.external_id}</p>
             </div>
           </div>
 
           {/* Footer */}
-          <div className="bg-purple-50 p-8 text-center space-y-4">
+          <div className="bg-gray-50 border-t border-gray-200 p-8 text-center space-y-4">
             <div className="space-y-1">
-              <p className="text-sm font-black text-[#830AD1]">piYès</p>
-              <p className="text-[10px] font-bold text-gray-500">Merci d’avoir utilisé piYès !</p>
+              <p className="text-base font-black text-(--primary-color)">piYès</p>
+              <p className="text-[11px] font-bold text-gray-500">Merci d’avoir utilisé piYès !</p>
             </div>
             
             <div className="space-y-2">
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Besoin d’aide ? Contactez-nous :</p>
-              <div className="space-y-1 text-[10px] font-bold text-gray-600">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Besoin d’aide ? Contactez-nous :</p>
+              <div className="space-y-1 text-xs font-bold text-gray-600">
                 <p>Téléphone : +509 29 99 9999</p>
                 <p>SMS / WhatsApp : +509 28 88 8888</p>
-                <p className="text-[#830AD1]">paiements@piyes.ht</p>
+                <p className="text-(--primary-color)">paiements@piyes.ht</p>
               </div>
             </div>
 
-            <p className="text-[8px] text-gray-400 italic">
+            <p className="text-[9px] text-gray-400 italic">
               Service clientèle disponible en semaine, de 8h am à 4h pm
             </p>
           </div>

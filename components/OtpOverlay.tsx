@@ -149,7 +149,7 @@ const OtpOverlay: React.FC<OtpOverlayProps> = ({
           </div>
         </div>
 
-        <div className="flex gap-2 justify-center">
+        <div className="flex gap-3 justify-center">
           {code.map((digit, i) => (
             <input
               key={i}
@@ -161,7 +161,7 @@ const OtpOverlay: React.FC<OtpOverlayProps> = ({
               value={digit}
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}
-              className={`w-10 h-14 text-center text-xl font-black rounded-xl border-2 transition-all outline-none ${digit ? "theme-primary-bg text-white border-transparent" : "theme-bubble-bg theme-text-main theme-border focus:border-(--primary-color)"}`}
+              className={`w-12 h-14 text-center text-2xl font-black rounded-xl border transition-all outline-none shadow-sm ${digit ? "theme-primary-bg text-white border-transparent" : "theme-bubble-bg theme-text-main border-transparent focus:border-(--primary-color) focus:ring-2 focus:ring-(--primary-color)/20"}`}
               disabled={loading}
               autoFocus={i === 0}
             />
