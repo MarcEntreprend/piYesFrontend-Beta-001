@@ -24,6 +24,7 @@ import Button from "../components/Button";
 import { ContactSearch } from "@/components/ContactSearch";
 import { ContactItem } from "@/components/ContactComponents";
 import PageHeader from "../components/PageHeader";
+import StepIndicator from "../components/StepIndicator";
 import {
   formatRecipientValue,
   isOwnKey,
@@ -399,6 +400,9 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
         }
         className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-all cursor-pointer group"
       />
+      {/* Indicateur d'étapes - 3 étapes */}
+      <StepIndicator totalSteps={3} currentStep={step} />
+
       <div className="flex-1 px-0 flex flex-col overflow-y-auto no-scrollbar pb-6 pt-6">
         {step === 1 ? (
           <div className="flex-1 animate-in slide-in-from-right duration-300">
