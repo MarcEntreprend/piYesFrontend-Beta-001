@@ -220,10 +220,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
 
     // Aggressively filter out the ghost green account (#00875A, balance 0) or accounts with label 'id'
     baseAccounts = baseAccounts.filter((a) => {
-      const isGhost =
-        a.label === "id" ||
-        a.label === "" ||
-        (a.color?.toUpperCase() === "#00875A" && a.balance === 0);
+      const isGhost = a.label === "id" || a.label === "";
       const isActive = a.status === "active";
       return !isGhost && isActive;
     });
@@ -734,10 +731,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 onFocus={() => setIsSearchFocused(true)}
                 placeholder={t("dashboard.search_placeholder")}
                 className={`w-full py-2.5 pl-10 pr-10 rounded-full text-sm outline-none border transition-all duration-300 ${isSearchFocused
-                    ? "bg-white text-gray-900 border-transparent shadow-2xl scale-[1.02]"
-                    : selectedAccountId === "all"
-                      ? "theme-bubble-bg theme-text-main border-transparent"
-                      : "bg-white/10 text-white placeholder-white/60 border-transparent"
+                  ? "bg-white text-gray-900 border-transparent shadow-2xl scale-[1.02]"
+                  : selectedAccountId === "all"
+                    ? "theme-bubble-bg theme-text-main border-transparent"
+                    : "bg-white/10 text-white placeholder-white/60 border-transparent"
                   }`}
               />
               {isSearchFocused && (
