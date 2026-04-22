@@ -169,3 +169,9 @@ npm run build
 npx cap sync android
 npx cap open android
 ```
+
+---
+cd C:\Users\mmarc\Documents\Antigravity\piyes-wallet-frontend
+npm run build
+npx cap sync android
+npx cap open android
