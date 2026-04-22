@@ -732,10 +732,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 onFocus={() => setIsSearchFocused(true)}
                 placeholder={t("dashboard.search_placeholder")}
                 className={`w-full py-2.5 pl-10 pr-10 rounded-full text-sm outline-none border transition-all duration-300 ${isSearchFocused
-                  ? "bg-white text-gray-900 border-transparent shadow-2xl scale-[1.02]"
+                  ? "bg-white text-gray-900 border-transparent shadow-2xl scale-[1.02] placeholder:text-gray-400"
                   : selectedAccountId === "all"
-                    ? "theme-bubble-bg theme-text-main border-transparent"
-                    : "glass-panel text-white placeholder-white/60 border-transparent"
+                    ? "theme-bubble-bg theme-text-main border-transparent placeholder:text-(--theme-text-secondary) placeholder:opacity-50"
+                    : "bg-white/10 text-white border-white/10 placeholder:text-white/40"
                   }`}
               />
               {isSearchFocused && (

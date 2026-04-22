@@ -15,7 +15,7 @@ npm run dev # Run the app
 
 ## Android studio :
 
-cd C:\Users\mmarc\Documents\Programming\myProjects\piYes_projects\piyes-wallet-frontend
+cd C:\Users\mmarc\Documents\Antigravity\piyes-wallet-frontend
 
 ```bash
 npm run build
