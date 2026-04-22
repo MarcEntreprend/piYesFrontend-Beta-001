@@ -33,6 +33,7 @@ import { useGroupedTransactions } from "../hooks/useGroupedTransactions";
 import { motion, AnimatePresence } from "framer-motion";
 import AnimatedButton from "../components/AnimatedButton";
 import PageHeader from "../components/PageHeader";
+import { App as CapacitorApp } from "@capacitor/app";
 
 const History: React.FC = () => {
   const { t, language } = useTranslation();
@@ -51,6 +52,11 @@ const History: React.FC = () => {
   const [offset, setOffset] = useState(0);
   const isFetching = useRef(false);
   const [highlightedTxId, setHighlightedTxId] = useState<string | null>(null);
+
+  // États pour le swipe et la persistance
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const historyStateKey = 'piyes-history-state'; // Clé unique pour sessionStorage
+
 
   const limit = 20;
   const observerTarget = useRef<HTMLDivElement>(null);
@@ -140,9 +146,15 @@ const History: React.FC = () => {
     return base;
   }, [allTransactions, activeFilter, searchTerm]);
 
-  // Chargement initial
+  // Chargement initial - Utilise le cache sessionStorage si disponible
   useEffect(() => {
-    loadTransactions(true);
+    const saved = sessionStorage.getItem(historyStateKey);
+    const hasCachedTransactions = saved && JSON.parse(saved).transactions?.length > 0;
+
+    // Ne charger depuis l'API que s'il n'y a pas de transactions en cache
+    if (!isFetching.current && allTransactions.length === 0 && !hasCachedTransactions) {
+      loadTransactions(true);
+    }
   }, []);
 
   // Déclenchement automatique si le filtre actif n'a pas assez d'éléments
@@ -201,11 +213,91 @@ const History: React.FC = () => {
     }
   }, [searchParams, filtered]);
 
+  // Restaurer l'état sauvegardé au montage (filtre, scroll ET transactions)
+  useEffect(() => {
+    const saved = sessionStorage.getItem(historyStateKey);
+    if (saved) {
+      const { filter, scrollPos, transactions, offset: savedOffset, hasMore: savedHasMore } = JSON.parse(saved);
+      if (filter) setActiveFilter(filter);
+      //  Restaurer les transactions depuis le cache session
+      if (transactions && Array.isArray(transactions) && transactions.length > 0) {
+        setAllTransactions(transactions);
+        setOffset(savedOffset || 0);
+        setHasMore(savedHasMore ?? true);
+        setLoading(false); // Important : ne pas afficher le loader
+      }
+      setTimeout(() => window.scrollTo(0, scrollPos || 0), 100);
+    }
+
+    // Sauvegarder avant de quitter la page
+    const handleBeforeUnload = () => {
+      sessionStorage.setItem(historyStateKey, JSON.stringify({
+        filter: activeFilter,
+        scrollPos: window.scrollY,
+        //  Sauvegarder aussi les transactions
+        transactions: allTransactions,
+        offset: offset,
+        hasMore: hasMore
+      }));
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      handleBeforeUnload();
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []); //  Dépendance vide - exécuté une seule fois au montage
+
+  // Sauvegarder automatiquement quand les transactions changent (après chargement)
+  useEffect(() => {
+    if (allTransactions.length > 0) {
+      const saved = sessionStorage.getItem(historyStateKey);
+      const existingData = saved ? JSON.parse(saved) : {};
+      sessionStorage.setItem(historyStateKey, JSON.stringify({
+        ...existingData,
+        transactions: allTransactions,
+        offset: offset,
+        hasMore: hasMore
+      }));
+    }
+  }, [allTransactions, offset, hasMore]);
+
+  // Sauvegarder quand le filtre change
+  useEffect(() => {
+    const saved = sessionStorage.getItem(historyStateKey);
+    const scrollPos = saved ? JSON.parse(saved).scrollPos : 0;
+    sessionStorage.setItem(historyStateKey, JSON.stringify({
+      filter: activeFilter,
+      scrollPos
+    }));
+  }, [activeFilter]);
+
   const groupedTransactions = useGroupedTransactions(filtered, t, language);
 
   const toggleGroup = (key: string) => {
     setCollapsedGroups((prev) => ({ ...prev, [key]: !prev[key] }));
   };
+
+  // Gestion du swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartX) return;
+    const deltaX = e.touches[0].clientX - touchStartX;
+    if (Math.abs(deltaX) > 50) {
+      const currentIndex = filters.findIndex(f => f.id === activeFilter);
+      if (deltaX > 0 && currentIndex > 0) {
+        setActiveFilter(filters[currentIndex - 1].id);
+      } else if (deltaX < 0 && currentIndex < filters.length - 1) {
+        setActiveFilter(filters[currentIndex + 1].id);
+      }
+      setTouchStartX(null);
+    }
+  };
+
+  const handleTouchEnd = () => setTouchStartX(null);
 
   const getTransactionIcon = (tx: Transaction) => {
     if (tx.status === "PENDING")
@@ -269,8 +361,34 @@ const History: React.FC = () => {
     },
   ];
 
+  // Gestion du bouton retour matériel
+  useEffect(() => {
+    let listener: any = null;
+
+    CapacitorApp.addListener('backButton', () => {
+      if (activeFilter !== 'all') {
+        setActiveFilter('all');
+      } else {
+        navigate(-1);
+      }
+    }).then((handle) => {
+      listener = handle;
+    });
+
+    return () => {
+      if (listener) {
+        listener.remove();
+      }
+    };
+  }, [activeFilter, navigate]);
+
   return (
-    <div className="theme-card-bg min-h-screen pb-20">
+    <div
+      className="theme-card-bg min-h-screen pb-20"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Header sticky - wrapper nécessaire pour que sticky fonctionne */}
       <div className="sticky top-0 z-30 theme-card-bg border-b theme-border">
         <PageHeader
@@ -364,11 +482,10 @@ const History: React.FC = () => {
                         key={tx.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={`flex items-start gap-4 cursor-pointer p-3 -mx-3 rounded-2xl transition-all duration-700 relative overflow-hidden group ${
-                          highlightedTxId === tx.id
-                            ? "ring-2 ring-(--primary-color) bg-(--primary-color)/10 scale-[1.02] z-10"
-                            : "active:bg-gray-50 dark:active:bg-white/5"
-                        }`}
+                        className={`flex items-start gap-4 cursor-pointer p-3 -mx-3 rounded-2xl transition-all duration-700 relative overflow-hidden group ${highlightedTxId === tx.id
+                          ? "ring-2 ring-(--primary-color) bg-(--primary-color)/10 scale-[1.02] z-10"
+                          : "active:bg-gray-50 dark:active:bg-white/5"
+                          }`}
                         onClick={() =>
                           navigate(
                             `/receipt/${tx.id}?type=${tx.type}&role=${tx.role}`,

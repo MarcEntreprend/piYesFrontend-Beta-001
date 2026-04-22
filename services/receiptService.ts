@@ -1,4 +1,4 @@
-// services/receiptService.ts
+//  services/receiptService.ts
 
 import { Receipt } from '../shared/types';
 import { api } from './apiService';
@@ -8,7 +8,7 @@ class ReceiptService {
   async getReceipt(id: string, type: string, role: string): Promise<Receipt> {
     // Clé de cache unique par reçu — TTL 7 jours (standard fintech)
     const cacheKey = `receipts_${id}`;
-    
+
     // Vérifier le cache d'abord
     const cached = cacheService.get(cacheKey);
     if (cached) {

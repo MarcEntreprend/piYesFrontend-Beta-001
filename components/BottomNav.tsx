@@ -1,6 +1,6 @@
 // components\BottomNav.tsx
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { NAV_ITEMS } from "../constants";
 import { useTranslation } from "../App";
@@ -29,10 +29,9 @@ const BottomNav: React.FC = () => {
   const location = useLocation();
   const { t } = useTranslation();
   const { unreadCount } = useNotifications();
+  const [touchStartX, setTouchStartX] = useState<number | null>(null); // État pour le swipe
   const marketplaceBadge = useMarketplaceBadges();
-
   const isExpanded = MAIN_ROUTES.includes(location.pathname);
-
   const [showSideItems, setShowSideItems] = React.useState(false);
 
   React.useEffect(() => {
@@ -65,6 +64,30 @@ const BottomNav: React.FC = () => {
     }
   };
 
+  // Gestion du swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartX) return;
+    const deltaX = e.touches[0].clientX - touchStartX;
+    if (Math.abs(deltaX) > 50) {
+      const currentIndex = NAV_ITEMS.findIndex(
+        item => item.route === location.pathname ||
+          (item.id === 'home' && location.pathname === '/')
+      );
+      if (deltaX > 0 && currentIndex > 0) {
+        navigate(NAV_ITEMS[currentIndex - 1].route);
+      } else if (deltaX < 0 && currentIndex < NAV_ITEMS.length - 1) {
+        navigate(NAV_ITEMS[currentIndex + 1].route);
+      }
+      setTouchStartX(null);
+    }
+  };
+
+  const handleTouchEnd = () => setTouchStartX(null);
+
   const leftItems = NAV_ITEMS.filter((item) => item.id === "services");
   const centerItem = NAV_ITEMS.find((item) => item.id === "home");
   const rightItems = NAV_ITEMS.filter((item) => item.id === "keys");
@@ -79,6 +102,9 @@ const BottomNav: React.FC = () => {
           paddingLeft: isExpanded ? "2rem" : "1.5rem",
           paddingRight: isExpanded ? "2rem" : "1.5rem",
         }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         transition={{
           type: "spring",
           stiffness: 350,

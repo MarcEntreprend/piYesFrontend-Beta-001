@@ -24,20 +24,32 @@ const ReceiptDetail: React.FC = () => {
   const receiptRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let cancelled = false;
+
     if (id) {
       const type = searchParams.get('type') || 'transfer';
       const role = searchParams.get('role') || 'payer';
+
+      // Éviter de refetch si les params sont identiques
       receiptService.getReceipt(id, type, role)
         .then(data => {
-          setReceipt(data);
-          setLoading(false);
+          if (!cancelled) {
+            setReceipt(data);
+            setLoading(false);
+          }
         })
         .catch(err => {
-          console.error(err);
-          setLoading(false);
+          if (!cancelled) {
+            console.error(err);
+            setLoading(false);
+          }
         });
     }
-  }, [id, searchParams]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
   const handleShare = async () => {
     setExporting(true);

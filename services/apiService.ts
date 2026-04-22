@@ -122,17 +122,24 @@ class PiyesApiService {
       return data;
     }
 
-    // Cache uniquement si pas de filtres spéciaux (pas de recherche par nom, etc.)
-    const hasFilters = params.counterpartyName || params.type || params.offset;
+    // Offset ne doit PAS compter comme filtre bloquant le cache
+    // Seuls counterpartyName et type (différent de "all") sont des filtres réels
+    const hasFilters = params.counterpartyName || (params.type && params.type !== "all");
+
     if (!hasFilters) {
-      const cacheKey = `history_${params.limit || 50}`;
+      // Inclure l'offset dans la clé de cache pour gérer la pagination
+      const cacheKey = `history_${params.limit || 50}_${params.offset || 0}`;
       const cached = cacheService.get(cacheKey);
-      if (cached) return cached;
+      if (cached) {
+        console.log(`[CACHE] History (offset ${params.offset || 0}) loaded from cache`);
+        return cached;
+      }
       const query = new URLSearchParams(params as any).toString();
       const data = await http.get<Transaction[]>(`/transactions?${query}`);
       cacheService.set(cacheKey, data, 1000 * 60 * 5); // 5 minutes
       return data;
     }
+
     const query = new URLSearchParams(params as any).toString();
     return http.get<Transaction[]>(`/transactions?${query}`);
   }

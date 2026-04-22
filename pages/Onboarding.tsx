@@ -1,12 +1,13 @@
 // pages/Onboarding.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import { Landmark, PieChart, Zap, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Button from '../components/Button';
 import LanguageSelector from '../components/LanguageSelector';
 import ThemeSelector from '../components/ThemeSelector';
 import { useTranslation } from '../App';
+import { App as CapacitorApp } from "@capacitor/app";
 
 interface Props {
   onComplete: () => void;
@@ -15,6 +16,7 @@ interface Props {
 const Onboarding: React.FC<Props> = ({ onComplete }) => {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null); // État pour le swipe
 
   const steps = [
     {
@@ -51,10 +53,52 @@ const Onboarding: React.FC<Props> = ({ onComplete }) => {
     }
   };
 
+  // Gestion du swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartX) return;
+    const deltaX = e.touches[0].clientX - touchStartX;
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX > 0 && currentStep > 0) {
+        setCurrentStep(prev => prev - 1);
+      } else if (deltaX < 0 && currentStep < steps.length - 1) {
+        setCurrentStep(prev => prev + 1);
+      }
+      setTouchStartX(null);
+    }
+  };
+
+  const handleTouchEnd = () => setTouchStartX(null);
+
+  // Gestion du bouton retour matériel
+  useEffect(() => {
+    let listener: any = null;
+
+    CapacitorApp.addListener('backButton', () => {
+      CapacitorApp.exitApp();
+    }).then((handle) => {
+      listener = handle;
+    });
+
+    return () => {
+      if (listener) {
+        listener.remove();
+      }
+    };
+  }, []);
+
   const step = steps[currentStep];
 
   return (
-    <div className="theme-card-bg min-h-screen flex flex-col max-w-[430px] mx-auto relative pb-32">
+    <div
+      className="theme-card-bg min-h-screen flex flex-col max-w-[430px] mx-auto relative pb-32"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="flex justify-between items-center pt-6 px-6 mb-8 shrink-0">
         <div className="flex items-center gap-3">
           <ThemeSelector />

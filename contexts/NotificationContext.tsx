@@ -39,7 +39,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []);
 
   useEffect(() => {
-    // ✅ Vérifier si un token existe avant de charger les notifications
+    //  Vérifier si un token existe avant de charger les notifications
     const token = localStorage.getItem('piyes-auth-token');
     if (!token) {
       setLoading(false);
