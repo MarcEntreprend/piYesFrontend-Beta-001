@@ -9,6 +9,9 @@ import { useTranslation } from '../App';
 import Modal from '../components/Modal';
 import PageHeader from '../components/PageHeader';
 import Button from "../components/Button";
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+import { Capacitor } from '@capacitor/core';
 
 const ReceiptDetail: React.FC = () => {
   const { id } = useParams();
@@ -54,25 +57,58 @@ const ReceiptDetail: React.FC = () => {
   const handleShare = async () => {
     setExporting(true);
     try {
-      // Générer l'image du reçu via HTML propre (sans oklch)
+      // Générer l'image du reçu
       const imgBlob = await generateReceiptImageBlob();
+      if (!imgBlob) throw new Error('Failed to generate image');
 
-      if (navigator.share && imgBlob) {
-        // Partage natif avec fichier image — demande PDF ou image au user
-        const file = new File([imgBlob], `recu-piyes-${receipt.id}.png`, { type: 'image/png' });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      const fileName = `recu-piyes-${receipt.external_id || receipt.id}.png`;
+
+      if (Capacitor.isNativePlatform()) {
+        // Mobile : utiliser Capacitor Share
+        const base64Data = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const result = reader.result as string;
+            resolve(result.split(',')[1]);
+          };
+          reader.readAsDataURL(imgBlob);
+        });
+
+        // Sauvegarder temporairement dans le cache
+        await Filesystem.writeFile({
+          path: fileName,
+          data: base64Data,
+          directory: Directory.Cache,
+        });
+
+        const fileInfo = await Filesystem.getUri({
+          directory: Directory.Cache,
+          path: fileName,
+        });
+
+        await Share.share({
+          title: 'Reçu piYès',
+          text: `Reçu de transaction piYès : ${receipt.amount} G. ID: ${receipt.external_id}`,
+          url: fileInfo.uri,
+          dialogTitle: 'Partager le reçu',
+        });
+      } else if (navigator.share && navigator.canShare) {
+        // Desktop avec Web Share API
+        const file = new File([imgBlob], fileName, { type: 'image/png' });
+        if (navigator.canShare({ files: [file] })) {
           await navigator.share({
-            title: `Reçu piYès - ${receipt.id}`,
-            text: `Reçu de transaction piYès: ${receipt.amount} G. ID: ${receipt.external_id}`,
+            title: 'Reçu piYès',
+            text: `Reçu de transaction piYès : ${receipt.amount} G.`,
             files: [file],
           });
         } else {
-          // Fallback : partage texte + URL si le device ne supporte pas les fichiers
-          await navigator.share({
-            title: `Reçu piYès - ${receipt.id}`,
-            text: `Reçu de transaction piYès: ${receipt.amount} G. ID: ${receipt.external_id}`,
-            url: window.location.href,
-          });
+          // Fallback : téléchargement
+          const url = URL.createObjectURL(imgBlob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = fileName;
+          link.click();
+          URL.revokeObjectURL(url);
         }
       } else {
         // Fallback desktop : copier le lien
@@ -81,6 +117,9 @@ const ReceiptDetail: React.FC = () => {
       }
     } catch (err) {
       console.error('Error sharing:', err);
+      // Fallback : copier le lien
+      navigator.clipboard.writeText(window.location.href);
+      alert('Lien copié dans le presse-papier');
     } finally {
       setExporting(false);
     }
@@ -251,36 +290,95 @@ const ReceiptDetail: React.FC = () => {
     setShowDownloadModal(false);
 
     try {
+      const imgBlob = await generateReceiptImageBlob();
+      if (!imgBlob) throw new Error('Failed to generate image');
+
+      const isNative = Capacitor.isNativePlatform();
+      const fileExtension = format === 'pdf' ? 'pdf' : 'png';
+      const fileName = `recu-piyes-${receipt.external_id || receipt.id}.${fileExtension}`;
+
       if (format === 'image') {
-        // Export PNG via blob HTML statique (sans oklch)
-        const blob = await generateReceiptImageBlob();
-        if (!blob) throw new Error('Failed to generate image');
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `recu-piyes-${receipt.id}.png`;
-        link.click();
-        URL.revokeObjectURL(url);
+        // Export PNG
+        if (isNative) {
+          // Mobile : sauvegarder directement
+          const base64Data = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const result = reader.result as string;
+              resolve(result.split(',')[1]);
+            };
+            reader.readAsDataURL(imgBlob);
+          });
 
+          await Filesystem.writeFile({
+            path: fileName,
+            data: base64Data,
+            directory: Directory.Documents,
+          });
+
+          alert(`Reçu sauvegardé : ${fileName}`);
+        } else {
+          // Desktop : téléchargement
+          const url = URL.createObjectURL(imgBlob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = fileName;
+          link.click();
+          URL.revokeObjectURL(url);
+        }
       } else {
-        // Export PDF : convertir le blob en base64 et l'injecter directement dans le HTML
-        // Évite le problème des blob: URLs qui ne sont pas accessibles cross-window
-        const blob = await generateReceiptImageBlob();
-        if (!blob) throw new Error('Failed to generate image');
+        // Export PDF
+        if (isNative) {
+          // Mobile : générer PDF et sauvegarder directement (sans ouvrir de fenêtre)
+          const { default: jsPDF } = await import('jspdf');
 
-        // Convertir le blob en base64 pour pouvoir l'injecter dans la nouvelle fenêtre
-        const base64 = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
+          // Convertir le blob en base64 pour l'image
+          const base64Image = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(imgBlob);
+          });
 
-        const pdfHtml = `<!DOCTYPE html>
+          // Créer un canvas temporaire pour obtenir les dimensions
+          const img = new Image();
+          await new Promise((resolve) => {
+            img.onload = resolve;
+            img.src = base64Image;
+          });
+
+          const imgWidth = 210; // A4 width in mm
+          const imgHeight = (img.height * imgWidth) / img.width;
+
+          const pdf = new jsPDF({
+            orientation: imgHeight > imgWidth ? 'portrait' : 'landscape',
+            unit: 'mm',
+            format: 'a4',
+          });
+
+          pdf.addImage(base64Image, 'PNG', 0, 0, imgWidth, imgHeight);
+
+          const pdfBase64 = pdf.output('datauristring').split(',')[1];
+
+          await Filesystem.writeFile({
+            path: fileName,
+            data: pdfBase64,
+            directory: Directory.Documents,
+          });
+
+          alert(`Reçu sauvegardé : ${fileName}`);
+        } else {
+          // Desktop : ouvrir dans une nouvelle fenêtre pour impression
+          const base64 = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(imgBlob);
+          });
+
+          const pdfHtml = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8"/>
-  <title>Reçu piYès</title>
+  <title>Reçu piYès - ${receipt.external_id || receipt.id}</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { display:flex; justify-content:center; align-items:flex-start; padding:20px; background:#fff; }
@@ -292,19 +390,21 @@ const ReceiptDetail: React.FC = () => {
   <img src="${base64}" alt="Reçu piYès" />
   <script>
     window.onload = function() {
-      setTimeout(function() { window.print(); }, 600);
+      setTimeout(function() { window.print(); }, 300);
     };
   </script>
 </body>
 </html>`;
-        const win = window.open('', '_blank');
-        if (win) {
-          win.document.write(pdfHtml);
-          win.document.close();
+          const win = window.open('', '_blank');
+          if (win) {
+            win.document.write(pdfHtml);
+            win.document.close();
+          }
         }
       }
     } catch (err) {
       console.error('Error exporting receipt:', err);
+      alert('Erreur lors de l\'export du reçu');
     } finally {
       setExporting(false);
     }
