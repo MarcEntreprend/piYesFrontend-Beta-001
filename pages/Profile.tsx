@@ -33,6 +33,7 @@ import { User as UserType, getInitials } from "../shared/types";
 import { useTranslation, useToast } from "../App";
 import Modal from "../components/Modal";
 import PageHeader from "../components/PageHeader";
+import AvatarViewer from "../components/AvatarViewer";
 
 interface ProfileProps {
   user: UserType;
@@ -517,35 +518,30 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
         {/* Avatar */}
         <div className="px-6 py-10 flex flex-col items-center space-y-6">
           <div className="relative group">
-            <div
-              ref={avatarRef}
-              className={`w-32 h-32 rounded-full border-4 border-white dark:border-gray-800 shadow-2xl overflow-hidden bg-gray-100 relative flex items-center justify-center ${formData.avatarUrl && !isEditing ? 'cursor-pointer' : ''}`}
-              onClick={() => {
-                if (formData.avatarUrl && !isEditing) {
-                  openFullscreenAvatar();
-                }
-              }}
-            >
-              {formData.avatarUrl ? (
-                <img
-                  src={formData.avatarUrl}
-                  alt="Avatar"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
+            <AvatarViewer
+              avatarUrl={formData.avatarUrl}
+              size="xl"
+              shape="circle"
+              fallback={
                 <span className="text-4xl font-black theme-primary-text">
                   {user.initials || getInitials(user.name)}
                 </span>
-              )}
-              {isEditing && (
-                <div
-                  className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Camera size={32} className="text-white" />
-                </div>
-              )}
-            </div>
+              }
+              disablePreview={isEditing}
+              className="border-4 border-(--primary-color) shadow-2xl"
+            />
+
+            {/* Overlay d'édition - apparaît au hover */}
+            {isEditing && (
+              <div
+                className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Camera size={32} className="text-white" />
+              </div>
+            )}
+
+            {/* Boutons d'édition sous l'avatar */}
             {isEditing && (
               <div className="absolute -bottom-2 flex gap-2">
                 <button
@@ -569,6 +565,8 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
                 />
               </div>
             )}
+
+            {/* Badge vérifié */}
             {!isEditing && user.verificationStatus === "verified" && (
               <div className="absolute -bottom-1 -right-1 bg-green-500 text-white p-1.5 rounded-full border-4 border-white dark:border-gray-800 shadow-lg">
                 <ShieldCheck size={20} />
@@ -1159,7 +1157,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
         </div>
       )}
 
-      {/* ✅ MODAL PLEIN ÉCRAN - Format mobile avec animation vers/depuis l'avatar */}
+      {/* MODAL PLEIN ÉCRAN - Format mobile avec animation vers/depuis l'avatar */}
       <AnimatePresence>
         {showFullscreenAvatar && formData.avatarUrl && (
           <motion.div

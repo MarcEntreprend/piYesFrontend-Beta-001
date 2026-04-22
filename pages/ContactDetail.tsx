@@ -33,6 +33,7 @@ import {
   User,
 } from "../shared/types";
 import { getRecipientType, RecipientType } from "../shared/recipientUtils";
+import AvatarViewer from "../components/AvatarViewer";
 import { useTranslation, useToast } from "../App";
 
 interface ContactDetailProps {
@@ -313,18 +314,17 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
         )}
 
         <div className="flex flex-col items-center gap-4 text-white">
-          <div className="w-24 h-24 bg-white/20 rounded-[40px] border-4 border-white/30 flex items-center justify-center text-3xl font-black shadow-xl backdrop-blur-sm overflow-hidden">
-            {contact.avatarUrl ? (
-              <img
-                src={contact.avatarUrl}
-                alt={contact.name}
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              getInitials(contact.name)
-            )}
-          </div>
+          <AvatarViewer
+            avatarUrl={contact.avatarUrl}
+            size="xl"
+            shape="circle"
+            fallback={
+              <span className="text-3xl font-black text-white">
+                {getInitials(contact.name)}
+              </span>
+            }
+            className="bg-white/20 border-4 border-white/30 shadow-xl backdrop-blur-sm"
+          />
           <div className="text-center w-full px-8">
             {isEditing ? (
               <input
@@ -416,13 +416,12 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
                           : "primary"
                     }
                     size="sm"
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                      status === "friends"
-                        ? "bg-red-500/10 text-red-500 border-none"
-                        : status === "pending"
-                          ? "bg-orange-500/10 text-orange-500 border-none"
-                          : ""
-                    }`}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${status === "friends"
+                      ? "bg-red-500/10 text-red-500 border-none"
+                      : status === "pending"
+                        ? "bg-orange-500/10 text-orange-500 border-none"
+                        : ""
+                      }`}
                   >
                     {status === "friends" ? (
                       <>
@@ -547,9 +546,9 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
               <p className="text-sm font-bold theme-text-main">
                 {contact.lastTransactionDate
                   ? new Date(contact.lastTransactionDate).toLocaleDateString(
-                      "fr-HT",
-                      { day: "numeric", month: "long", year: "numeric" },
-                    )
+                    "fr-HT",
+                    { day: "numeric", month: "long", year: "numeric" },
+                  )
                   : "Aucune"}
               </p>
             </div>
@@ -569,10 +568,9 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
                   )
                 }
                 variant={isUserContact ? "primary" : "secondary"}
-                className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all active:scale-95 h-auto ${
-                  !isUserContact &&
+                className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all active:scale-95 h-auto ${!isUserContact &&
                   "opacity-40 pointer-events-none grayscale border-dashed"
-                }`}
+                  }`}
               >
                 <Send size={20} />
                 <span className="text-[10px] font-bold">Envoyer</span>
@@ -587,10 +585,9 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
                   )
                 }
                 variant="utility"
-                className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all active:scale-95 h-auto ${
-                  (!isUserContact || !isMutualFriend) &&
+                className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all active:scale-95 h-auto ${(!isUserContact || !isMutualFriend) &&
                   "opacity-40 pointer-events-none grayscale border-dashed"
-                }`}
+                  }`}
               >
                 <ArrowDownLeft size={20} />
                 <span className="text-[10px] font-bold">Demander</span>
@@ -605,10 +602,9 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
                   )
                 }
                 variant="utility"
-                className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all active:scale-95 h-auto ${
-                  (!isUserContact || !isMutualFriend) &&
+                className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all active:scale-95 h-auto ${(!isUserContact || !isMutualFriend) &&
                   "opacity-40 pointer-events-none grayscale border-dashed"
-                }`}
+                  }`}
               >
                 <CalendarClock size={20} />
                 <span className="text-[10px] font-bold">Rappel</span>
@@ -636,9 +632,8 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
                 }
                 variant="utility"
                 fullWidth
-                className={`py-3 rounded-xl font-bold text-xs transition-all ${
-                  !isUserContact && "opacity-40 pointer-events-none"
-                }`}
+                className={`py-3 rounded-xl font-bold text-xs transition-all ${!isUserContact && "opacity-40 pointer-events-none"
+                  }`}
               >
                 Mes interactions avec {contact.name.split(" ")[0]}
               </Button>
