@@ -728,7 +728,7 @@ export const translations = {
       logout_confirm: "Se déconnecter de ce compte ?",
       logout_btn: "Se déconnecter",
       crop_title: "Recadrer la photo",
-      crop_hint: "Utilisez les flèches pour centrer le sujet",
+      crop_hint: "Pincez ou utilisez le slider pour zoomer · Glissez pour repositionner",
       apply: "Appliquer",
       otp_sent_to: "Code envoyé à {{target}}",
       otp_sent_to_phone: "Code envoyé au +509 {{target}}",

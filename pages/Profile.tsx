@@ -1,6 +1,7 @@
 //pages/Profile.tsx
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
@@ -136,14 +137,32 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
   // Crop d'image
   const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
   const [showCropModal, setShowCropModal] = useState(false);
-  const [cropOffset, setCropOffset] = useState({ x: 0, y: 0 });
   const [cropImg, setCropImg] = useState<HTMLImageElement | null>(null);
+
+  // states pour drag et zoom
+  const [cropScale, setCropScale] = useState(1);
+  const [cropPosition, setCropPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [minScale, setMinScale] = useState(1);
+  const [maxScale, setMaxScale] = useState(3);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
 
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [isCheckingTag, setIsCheckingTag] = useState(false);
   const [tagError, setTagError] = useState<string | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  // State pour la visualisation de l'avatar
+  const [showFullscreenAvatar, setShowFullscreenAvatar] = useState(false);
+  const [fullscreenScale, setFullscreenScale] = useState(1);
+  const [fullscreenPosition, setFullscreenPosition] = useState({ x: 0, y: 0 });
+  const [isFullscreenDragging, setIsFullscreenDragging] = useState(false);
+  const [fullscreenDragStart, setFullscreenDragStart] = useState({ x: 0, y: 0 });
+  const [isClosingBySwipe, setIsClosingBySwipe] = useState(false);
+  const avatarRef = useRef<HTMLDivElement>(null);
+  const [avatarRect, setAvatarRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
     if (searchParams.get("edit") === "true") setIsEditing(true);
@@ -252,24 +271,150 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
     e.target.value = "";
   };
 
-  const handleCropConfirm = () => {
-    if (!cropImg || !cropCanvasRef.current) return;
-    const canvas = cropCanvasRef.current;
-    const size = Math.min(cropImg.naturalWidth, cropImg.naturalHeight);
-    canvas.width = 256;
-    canvas.height = 256;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    // Découpe centrée avec offset
-    const sx = (cropImg.naturalWidth - size) / 2 + cropOffset.x;
-    const sy = (cropImg.naturalHeight - size) / 2 + cropOffset.y;
-    ctx.drawImage(cropImg, sx, sy, size, size, 0, 0, 256, 256);
-    const croppedUrl = canvas.toDataURL("image/jpeg", 0.85);
-    setFormData((prev) => ({ ...prev, avatarUrl: croppedUrl }));
-    setShowCropModal(false);
-    setRawImageSrc(null);
-    setCropImg(null);
-    setCropOffset({ x: 0, y: 0 });
+  // Calculer l'échelle minimale pour que l'image remplisse le cercle
+  const calculateMinScale = (img: HTMLImageElement, containerSize: number) => {
+    const imgSize = Math.min(img.naturalWidth, img.naturalHeight);
+    return containerSize / imgSize;
+  };
+
+  // Gestionnaires de drag
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    setIsDragging(true);
+    setDragStart({ x: clientX - cropPosition.x, y: clientY - cropPosition.y });
+  };
+
+  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+    let newX = clientX - dragStart.x;
+    let newY = clientY - dragStart.y;
+
+    // Limites avec effet ressort léger
+    const maxOffset = 50 * cropScale;
+    newX = Math.max(-maxOffset, Math.min(maxOffset, newX));
+    newY = Math.max(-maxOffset, Math.min(maxOffset, newY));
+
+    setCropPosition({ x: newX, y: newY });
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  // Gestionnaire de zoom (wheel + slider)
+  const handleZoom = (delta: number) => {
+    setCropScale(prev => {
+      const newScale = Math.max(minScale, Math.min(maxScale, prev + delta));
+      // Ajuster la position si on dézoome pour rester dans les limites
+      if (newScale < prev) {
+        setCropPosition(pos => ({
+          x: pos.x * (newScale / prev),
+          y: pos.y * (newScale / prev)
+        }));
+      }
+      return newScale;
+    });
+  };
+
+  // Slider de zoom
+  const handleSliderChange = (value: number) => {
+    const newScale = minScale + (value / 100) * (maxScale - minScale);
+    setCropScale(newScale);
+  };
+
+  // Reset zoom et position
+  const resetCropPosition = () => {
+    // Revenir au zoom qui remplit le cercle
+    setCropScale(minScale * 1.1);
+    setCropPosition({ x: 0, y: 0 });
+  };
+
+  // FONCTIONS - Gestion du plein écran
+  const openFullscreenAvatar = () => {
+    if (!formData.avatarUrl) return;
+
+    // Capturer la position de l'avatar pour l'animation
+    if (avatarRef.current) {
+      const rect = avatarRef.current.getBoundingClientRect();
+      setAvatarRect(rect);
+    }
+
+    setFullscreenScale(1);
+    setFullscreenPosition({ x: 0, y: 0 });
+    setIsClosingBySwipe(false);
+    setShowFullscreenAvatar(true);
+  };
+
+  const closeFullscreenAvatar = () => {
+    setShowFullscreenAvatar(false);
+    setFullscreenScale(1);
+    setFullscreenPosition({ x: 0, y: 0 });
+    setIsClosingBySwipe(false);
+  };
+
+  // Gestionnaires de drag - uniquement vertical pour fermer
+  const handleFullscreenDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    setIsFullscreenDragging(true);
+    setFullscreenDragStart({
+      x: 0,
+      y: clientY - fullscreenPosition.y
+    });
+  };
+
+  const handleFullscreenDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isFullscreenDragging) return;
+    e.preventDefault();
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+    let newY = clientY - fullscreenDragStart.y;
+
+    // Permettre de tirer vers le bas pour fermer (effet ressort)
+    const maxPullDown = 200;
+    newY = Math.max(-50, Math.min(maxPullDown, newY));
+
+    setFullscreenPosition({ x: 0, y: newY });
+
+    // Si on tire assez vers le bas, déclencher la fermeture
+    if (newY > 120) {
+      setIsClosingBySwipe(true);
+    } else {
+      setIsClosingBySwipe(false);
+    }
+  };
+
+  const handleFullscreenDragEnd = () => {
+    if (isClosingBySwipe) {
+      closeFullscreenAvatar();
+    } else {
+      // Retour à la position normale avec ressort
+      setFullscreenPosition({ x: 0, y: 0 });
+    }
+    setIsFullscreenDragging(false);
+    setIsClosingBySwipe(false);
+  };
+
+  // Gestion du pinch-to-zoom (simulé via wheel pour desktop)
+  const handleFullscreenWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    setFullscreenScale(prev => {
+      const newScale = Math.max(1, Math.min(3, prev + delta));
+      return newScale;
+    });
+  };
+
+  // Reset zoom au double-clic
+  const handleFullscreenDoubleClick = () => {
+    setFullscreenScale(1);
+    setFullscreenPosition({ x: 0, y: 0 });
   };
 
   const resetAvatar = () => {
@@ -372,7 +517,15 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
         {/* Avatar */}
         <div className="px-6 py-10 flex flex-col items-center space-y-6">
           <div className="relative group">
-            <div className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-800 shadow-2xl overflow-hidden bg-gray-100 relative flex items-center justify-center">
+            <div
+              ref={avatarRef}
+              className={`w-32 h-32 rounded-full border-4 border-white dark:border-gray-800 shadow-2xl overflow-hidden bg-gray-100 relative flex items-center justify-center ${formData.avatarUrl && !isEditing ? 'cursor-pointer' : ''}`}
+              onClick={() => {
+                if (formData.avatarUrl && !isEditing) {
+                  openFullscreenAvatar();
+                }
+              }}
+            >
               {formData.avatarUrl ? (
                 <img
                   src={formData.avatarUrl}
@@ -831,9 +984,9 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
         </div>
       )}
 
-      {/* Modal crop d'image */}
+      {/* Modal crop d'image - avec drag & zoom */}
       {showCropModal && rawImageSrc && (
-        <div className="fixed inset-0 z-200 flex items-center justify-center bg-black/80 backdrop-blur-sm p-6">
+        <div className="fixed inset-0 z-200 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
           <div className="w-full max-w-sm theme-card-bg rounded-4xl p-6 space-y-5 shadow-2xl">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-black theme-text-main">
@@ -843,6 +996,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
                 onClick={() => {
                   setShowCropModal(false);
                   setRawImageSrc(null);
+                  resetCropPosition();
                 }}
                 className="p-2 theme-bubble-bg rounded-full theme-text-secondary active:scale-90"
               >
@@ -850,64 +1004,152 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
               </button>
             </div>
 
-            {/* Preview cercle avec drag pour repositionner */}
-            <div className="relative w-64 h-64 mx-auto rounded-full overflow-hidden border-4 border-(--primary-color) shadow-xl">
+            {/* Zone de crop avec drag & zoom */}
+            <div
+              ref={imageContainerRef}
+              className="relative w-64 h-64 mx-auto rounded-full overflow-hidden border-4 border-(--primary-color) shadow-xl bg-gray-900"
+              onMouseDown={handleDragStart}
+              onMouseMove={handleDragMove}
+              onMouseUp={handleDragEnd}
+              onMouseLeave={handleDragEnd}
+              onTouchStart={handleDragStart}
+              onTouchMove={handleDragMove}
+              onTouchEnd={handleDragEnd}
+              style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+            >
+              <div className="absolute inset-0 rounded-full pointer-events-none z-10"
+                style={{
+                  boxShadow: 'inset 0 0 0 9999px rgba(0, 0, 0, 0.25)',
+                  border: '2px solid rgba(255, 255, 255, 0.2)'
+                }}
+              />
               <img
                 src={rawImageSrc}
                 alt="crop preview"
-                className="absolute w-full h-full object-cover"
+                className="absolute w-full h-full object-cover select-none"
                 style={{
-                  transform: `translate(${cropOffset.x}px, ${cropOffset.y}px)`,
+                  transform: `translate(${cropPosition.x}px, ${cropPosition.y}px) scale(${cropScale})`,
+                  transformOrigin: 'center center',
+                  transition: isDragging ? 'none' : 'transform 0.1s ease-out',
                 }}
-                onLoad={(e) => setCropImg(e.currentTarget as HTMLImageElement)}
+                // Force un zoom minimum pour remplir le cercle
+                onLoad={(e) => {
+                  const img = e.currentTarget as HTMLImageElement;
+                  setCropImg(img);
+                  const containerSize = 256;
+                  const imgSize = Math.min(img.naturalWidth, img.naturalHeight);
+
+                  // Calculer l'échelle pour que l'image remplisse EXACTEMENT le cercle
+                  const fillScale = containerSize / imgSize;
+
+                  // Échelle minimale = celle qui remplit le cercle (pas moins)
+                  const minScaleValue = fillScale;
+
+                  // Échelle initiale = fillScale + 10% pour être sûr que ça déborde un peu
+                  const initialScale = fillScale * 1.1;
+
+                  setMinScale(minScaleValue);
+                  setMaxScale(Math.max(minScaleValue * 3, 2.5));
+                  setCropScale(initialScale);
+
+                  // Centrer l'image
+                  setCropPosition({ x: 0, y: 0 });
+                }}
                 draggable={false}
               />
             </div>
 
-            <div className="grid grid-cols-4 gap-2">
-              <button
-                onClick={() => setCropOffset((o) => ({ ...o, x: o.x - 10 }))}
-                className="py-3 theme-bubble-bg rounded-xl text-sm font-bold theme-text-main border theme-border active:scale-95"
-              >
-                ←
-              </button>
-              <button
-                onClick={() => setCropOffset((o) => ({ ...o, x: o.x + 10 }))}
-                className="py-3 theme-bubble-bg rounded-xl text-sm font-bold theme-text-main border theme-border active:scale-95"
-              >
-                →
-              </button>
-              <button
-                onClick={() => setCropOffset((o) => ({ ...o, y: o.y - 10 }))}
-                className="py-3 theme-bubble-bg rounded-xl text-sm font-bold theme-text-main border theme-border active:scale-95"
-              >
-                ↑
-              </button>
-              <button
-                onClick={() => setCropOffset((o) => ({ ...o, y: o.y + 10 }))}
-                className="py-3 theme-bubble-bg rounded-xl text-sm font-bold theme-text-main border theme-border active:scale-95"
-              >
-                ↓
-              </button>
+            {/* Slider de zoom */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => handleZoom(-0.1)}
+                  className="w-8 h-8 theme-bubble-bg rounded-full flex items-center justify-center theme-text-secondary active:scale-90 transition-all"
+                >
+                  <span className="text-lg font-bold">−</span>
+                </button>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={((cropScale - minScale) / (maxScale - minScale)) * 100}
+                  onChange={(e) => handleSliderChange(Number(e.target.value))}
+                  className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer accent-(--primary-color)"
+                />
+                <button
+                  onClick={() => handleZoom(0.1)}
+                  className="w-8 h-8 theme-bubble-bg rounded-full flex items-center justify-center theme-text-secondary active:scale-90 transition-all"
+                >
+                  <span className="text-lg font-bold">+</span>
+                </button>
+              </div>
+              <p className="text-[9px] theme-text-secondary text-center">
+                {t("profile_hub.crop_hint")}
+              </p>
             </div>
 
-            <p className="text-[9px] theme-text-secondary text-center">
-              {t("profile_hub.crop_hint")}
-            </p>
-
-            <div className="flex gap-3">
+            {/* Boutons d'action */}
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={resetCropPosition}
+                className="px-4 py-3 theme-bubble-bg theme-text-secondary rounded-2xl font-bold text-sm border theme-border active:scale-95 transition-all"
+              >
+                {t("common.reset")}
+              </button>
               <button
                 onClick={() => {
                   setShowCropModal(false);
                   setRawImageSrc(null);
-                  setCropOffset({ x: 0, y: 0 });
+                  resetCropPosition();
                 }}
                 className="flex-1 py-3 theme-bubble-bg theme-text-secondary rounded-2xl font-bold text-sm border theme-border active:scale-95"
               >
                 {t("common.cancel")}
               </button>
               <button
-                onClick={handleCropConfirm}
+                onClick={() => {
+                  if (cropImg && imageContainerRef.current) {
+                    // Calculer la zone cropée avec le scale et la position
+                    const canvas = cropCanvasRef.current;
+                    if (!canvas) return;
+
+                    const size = 256;
+                    canvas.width = size;
+                    canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) return;
+
+                    // Fond blanc
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, size, size);
+
+                    // Calculer les coordonnées de source en fonction du scale et de la position
+                    const imgSize = Math.min(cropImg.naturalWidth, cropImg.naturalHeight);
+                    const scaleFactor = imgSize / size;
+                    const effectiveScale = cropScale * scaleFactor;
+
+                    const centerX = cropImg.naturalWidth / 2;
+                    const centerY = cropImg.naturalHeight / 2;
+                    const offsetX = -cropPosition.x * scaleFactor / cropScale;
+                    const offsetY = -cropPosition.y * scaleFactor / cropScale;
+
+                    const sourceSize = size / cropScale;
+                    const sx = centerX - sourceSize / 2 + offsetX;
+                    const sy = centerY - sourceSize / 2 + offsetY;
+
+                    ctx.drawImage(
+                      cropImg,
+                      sx, sy, sourceSize, sourceSize,
+                      0, 0, size, size
+                    );
+
+                    const croppedUrl = canvas.toDataURL("image/jpeg", 0.85);
+                    setFormData((prev) => ({ ...prev, avatarUrl: croppedUrl }));
+                  }
+                  setShowCropModal(false);
+                  setRawImageSrc(null);
+                  resetCropPosition();
+                }}
                 className="flex-1 py-3 theme-primary-bg text-white rounded-2xl font-bold text-sm shadow-lg active:scale-95"
               >
                 {t("profile_hub.apply")}
@@ -916,6 +1158,133 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
           </div>
         </div>
       )}
+
+      {/* ✅ MODAL PLEIN ÉCRAN - Format mobile avec animation vers/depuis l'avatar */}
+      <AnimatePresence>
+        {showFullscreenAvatar && formData.avatarUrl && (
+          <motion.div
+            className="fixed inset-0 z-250 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={closeFullscreenAvatar}
+          >
+            {/* Backdrop identique aux autres modals */}
+            <motion.div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+
+            {/* Conteneur limité au format mobile */}
+            <div className="relative w-full max-w-md h-full flex items-center justify-center p-4">
+              <motion.div
+                className="relative w-full flex items-center justify-center overflow-hidden"
+                style={{ maxHeight: '85vh' }}
+                initial={avatarRect ? {
+                  scale: avatarRect.width / 300,
+                  x: avatarRect.left + avatarRect.width / 2 - window.innerWidth / 2,
+                  y: avatarRect.top + avatarRect.height / 2 - window.innerHeight / 2,
+                  opacity: 0
+                } : { opacity: 0 }}
+                animate={{
+                  scale: 1,
+                  x: 0,
+                  y: fullscreenPosition.y,
+                  opacity: 1
+                }}
+                exit={avatarRect ? {
+                  scale: avatarRect.width / 300,
+                  x: avatarRect.left + avatarRect.width / 2 - window.innerWidth / 2,
+                  y: avatarRect.top + avatarRect.height / 2 - window.innerHeight / 2,
+                  opacity: 0
+                } : { opacity: 0 }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 350,
+                  damping: 30,
+                  mass: 0.9
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Indicateur de fermeture */}
+                <button
+                  onClick={closeFullscreenAvatar}
+                  className="absolute top-2 right-2 z-20 p-2 bg-black/30 backdrop-blur-md rounded-full text-white active:scale-90 transition-all"
+                >
+                  <X size={20} />
+                </button>
+
+                {/* Conteneur de l'image avec drag vertical et zoom */}
+                <div
+                  className="relative w-full flex items-center justify-center overflow-hidden"
+                  onMouseDown={handleFullscreenDragStart}
+                  onMouseMove={handleFullscreenDragMove}
+                  onMouseUp={handleFullscreenDragEnd}
+                  onMouseLeave={handleFullscreenDragEnd}
+                  onTouchStart={handleFullscreenDragStart}
+                  onTouchMove={handleFullscreenDragMove}
+                  onTouchEnd={handleFullscreenDragEnd}
+                  onWheel={handleFullscreenWheel}
+                  onDoubleClick={handleFullscreenDoubleClick}
+                  style={{
+                    cursor: isFullscreenDragging
+                      ? (fullscreenPosition.y > 50 ? 'grabbing' : 'ns-resize')
+                      : 'default',
+                    touchAction: 'pan-y'
+                  }}
+                >
+                  <motion.img
+                    src={formData.avatarUrl}
+                    alt="Avatar plein écran"
+                    className="w-full h-auto object-contain select-none rounded-2xl"
+                    style={{
+                      transform: `scale(${fullscreenScale})`,
+                      maxWidth: '100%',
+                      maxHeight: '85vh',
+                    }}
+                    animate={{
+                      scale: fullscreenScale
+                    }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    draggable={false}
+                  />
+                </div>
+
+                {/* Indicateur "Tirer pour fermer" */}
+                <AnimatePresence>
+                  {fullscreenPosition.y > 30 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute top-16 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-md text-white text-xs font-bold px-4 py-2 rounded-full"
+                    >
+                      {fullscreenPosition.y > 120 ? "Relâcher pour fermer" : "Tirer vers le bas pour fermer"}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Indicateur de zoom */}
+                <AnimatePresence>
+                  {fullscreenScale > 1 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full"
+                    >
+                      {Math.round(fullscreenScale * 100)}%
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Logout Confirmation Modal */}
       <Modal
