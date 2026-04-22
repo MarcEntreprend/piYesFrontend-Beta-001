@@ -339,6 +339,8 @@ export const translations = {
         pin: {
           label: "Code PIN piYès",
           sub: "Sécuriser l'accès et les transferts",
+          incorrect_attempts_remaining: "Code PIN incorrect. {{count}} tentative(s) restante(s).",
+          max_attempts_exceeded: "Trop de tentatives. Session terminée pour sécurité.",
         },
         notifications: {
           label: "Notifications",
@@ -2134,6 +2136,8 @@ export const translations = {
         pin: {
           label: "Kòd PIN piYès",
           sub: "Pwoteje kont ou ak tranzaksyon w",
+          incorrect_attempts_remaining: "Kòd PIN sa pa bon. Ou rete {{count}} chans avan ou dekonnekte pou rezon sekirite.",
+          max_attempts_exceeded: "Ou fin itilize tout chans ou genyen pou mete PIN nan. Ou dekonnekte pou rezon sekirite.",
         },
         notifications: { label: "Notifikasyon", sub: "Alerte sou tranzaksyon" },
         verify_receipt: {
@@ -3794,6 +3798,8 @@ export const translations = {
         pin: {
           label: "piYès PIN Code",
           sub: "Secure your access and transfers",
+          incorrect_attempts_remaining: "Invalid PIN. You have {{count}} attempt(s) remaining.",
+          max_attempts_exceeded: "Too many attempts. Session ended for security.",
         },
         notifications: {
           label: "Notifications",

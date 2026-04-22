@@ -277,6 +277,12 @@ const App: React.FC = () => {
   const [wasOffline, setWasOffline] = useState(false);
   const [showBackOnlineBar, setShowBackOnlineBar] = useState(false);
 
+  // États pour la gestion du PIN
+  const [lastActivity, setLastActivity] = useState<number>(Date.now());
+  const [pinAttempts, setPinAttempts] = useState<number>(0);
+  const PIN_MAX_ATTEMPTS = 3;
+  const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+
   // Security Logic States
   const [securityQueue, setSecurityQueue] = useState<{
     type: "otp" | "pin_setup" | "pin_verify" | "pin_intro" | "welcome";
@@ -285,8 +291,62 @@ const App: React.FC = () => {
   } | null>(null);
   const pendingActionRef = useRef<((pin?: string) => void) | null>(null);
 
+  // Tracker l'activité utilisateur pour le PIN
+  useEffect(() => {
+    const updateActivity = () => {
+      setLastActivity(Date.now());
+    };
+
+    window.addEventListener('mousemove', updateActivity);
+    window.addEventListener('keydown', updateActivity);
+    window.addEventListener('touchstart', updateActivity);
+    window.addEventListener('scroll', updateActivity);
+
+    return () => {
+      window.removeEventListener('mousemove', updateActivity);
+      window.removeEventListener('keydown', updateActivity);
+      window.removeEventListener('touchstart', updateActivity);
+      window.removeEventListener('scroll', updateActivity);
+    };
+  }, []);
+
   const [hasPin, setHasPin] = useState(false);
   const [isDeviceVerified, setIsDeviceVerified] = useState(false);
+
+  // Vérifier l'inactivité quand l'app revient au premier plan
+  useEffect(() => {
+    const handleAppStateChange = () => {
+      if (document.visibilityState === 'visible') {
+        const now = Date.now();
+        const inactiveTime = now - lastActivity;
+
+        if (user && hasPin && inactiveTime > INACTIVITY_TIMEOUT) {
+          setIsLocked(true);
+        }
+        setLastActivity(now);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleAppStateChange);
+
+    const handleResume = () => {
+      const now = Date.now();
+      const inactiveTime = now - lastActivity;
+
+      if (user && hasPin && inactiveTime > INACTIVITY_TIMEOUT) {
+        setIsLocked(true);
+      }
+      setLastActivity(now);
+    };
+
+    CapacitorApp.addListener('resume', handleResume);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleAppStateChange);
+      CapacitorApp.removeAllListeners();
+    };
+  }, [user, hasPin, lastActivity]);
+
 
   // Toast State
   const [toast, setToast] = useState<{
@@ -614,7 +674,17 @@ const App: React.FC = () => {
   }, [handleLogout, showToast, t]);
 
   const handlePinFailure = () => {
-    handleLogout();
+    const newAttempts = pinAttempts + 1;
+    setPinAttempts(newAttempts);
+
+    if (newAttempts >= PIN_MAX_ATTEMPTS) {
+      showToast(t("pin.max_attempts_exceeded"), "error");
+      setPinAttempts(0);
+      handleLogout();
+    } else {
+      const remaining = PIN_MAX_ATTEMPTS - newAttempts;
+      showToast(t("pin.incorrect_attempts_remaining", { count: remaining }), "error");
+    }
   };
 
   if (showSplash)
@@ -656,7 +726,11 @@ const App: React.FC = () => {
                 {user && isLocked && (
                   <PinOverlay
                     mode="unlock"
-                    onSuccess={() => setIsLocked(false)}
+                    onSuccess={() => {
+                      setPinAttempts(0);
+                      setIsLocked(false);
+                      setLastActivity(Date.now());
+                    }}
                     onFailure={handlePinFailure}
                     onForgot={handleForgotPin}
                   />

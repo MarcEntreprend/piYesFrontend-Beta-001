@@ -1,4 +1,4 @@
-// hooks/useSync.ts -> C:\Users\mmarc\Documents\Antigravity\piyes-wallet-frontend\hooks\useSync.ts
+// hooks/useSync.ts
 
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../services/apiService';
