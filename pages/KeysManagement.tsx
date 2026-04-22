@@ -34,12 +34,13 @@ import {
   Scan,
   Shield,
   Camera as CameraIcon,
+  Copy,
 } from "lucide-react";
 import QrScanner from "../components/QrScanner";
 import { api } from "../services/apiService";
 import { aiService, ParsedTransaction } from "../services/aiService";
 import { Key } from "../shared/types";
-import { useTranslation } from "../App";
+import { useToast, useTranslation } from "../App";
 import Modal from "../components/Modal";
 import AiSupportChat from "../components/AiSupportChat";
 import PageHeader from "../components/PageHeader";
@@ -52,6 +53,7 @@ const KeysManagement: React.FC = () => {
   const searchParams = useMemo(() => new URLSearchParams(search), [search]);
   const [keys, setKeys] = useState<Key[]>([]);
   const [loading, setLoading] = useState(true);
+  const { showToast } = useToast();
 
   // Modals
   const [showNewModal, setShowNewModal] = useState(false);
@@ -89,6 +91,9 @@ const KeysManagement: React.FC = () => {
   const [isAnalyzingLink, setIsAnalyzingLink] = useState(false);
 
   const [newKeyType, setNewKeyType] = useState<KeyType>("email");
+  const [copyFeedback, setCopyFeedback] = useState(false); // État pour l'icône de chargement du bouton Copier
+  const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null); // État pour le feedback de copie des clés
+  const [isRegenerating, setIsRegenerating] = useState(false); // État pour l'icône de chargement du bouton Régénérer
 
   // Isolated states for each tab
   const [emailValue, setEmailValue] = useState("");
@@ -405,14 +410,44 @@ const KeysManagement: React.FC = () => {
     }
   }, [tagValue, newKeyType]);
 
-  // Random key generation
+  // Random key generation avec effet de spin
   const generateRandomKey = () => {
-    const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-    let result = "";
-    for (let i = 0; i < 25; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    setIsRegenerating(true);
+
+    // Petit délai pour que l'animation soit visible
+    setTimeout(() => {
+      const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+      let result = "";
+      for (let i = 0; i < 25; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      setRandomValue(result);
+      setIsRegenerating(false);
+    }, 400);
+  };
+
+  const handleCopyRandomKey = async () => {
+    if (!randomValue) return;
+    try {
+      await navigator.clipboard.writeText(randomValue);
+      setCopyFeedback(true);
+      showToast(t("common.copied"), "success");
+      setTimeout(() => setCopyFeedback(false), 2000);
+    } catch (err) {
+      showToast(t("common.error"), "error");
     }
-    setRandomValue(result);
+  };
+
+  const handleCopyKey = async (keyValue: string, keyId: string) => {
+    if (!keyValue) return;
+    try {
+      await navigator.clipboard.writeText(keyValue);
+      setCopiedKeyId(keyId);
+      showToast(t("common.copied"), "success");
+      setTimeout(() => setCopiedKeyId(null), 2000);
+    } catch (err) {
+      showToast(t("common.error"), "error");
+    }
   };
 
   useEffect(() => {
@@ -439,9 +474,12 @@ const KeysManagement: React.FC = () => {
         setShowNewModal(false);
         resetNewKeyStates();
       } else {
+        //  AJOUTER LA CLÉ NON-VÉRIFIÉE DANS LE TABLEAU
+        setKeys([...keys, k]);
         // Trigger verification flow for email/phone
         setVerifyingKey(k);
         setShowNewModal(false);
+        resetNewKeyStates();
       }
     } catch (e) {
       alert(t("common.error"));
@@ -464,19 +502,20 @@ const KeysManagement: React.FC = () => {
     try {
       const success = await api.verifySecondaryKey(verifyingKey.id, otpCode);
       if (success) {
-        setKeys(
-          keys.map((k) =>
-            k.id === verifyingKey.id ? { ...k, isVerified: true } : k,
-          ),
+        // Mettre à jour la clé pour la marquer comme vérifiée
+        setKeys(prevKeys =>
+          prevKeys.map((k) =>
+            k.id === verifyingKey.id ? { ...k, isVerified: true } : k
+          )
         );
         setVerifyingKey(null);
         setOtpCode("");
-        alert(t("pix.verify_modal.success"));
+        showToast(t("pix.verify_modal.success"), "success");
       } else {
-        alert(t("otp.error_invalid"));
+        showToast(t("otp.error_invalid"), "error");
       }
     } catch (e) {
-      alert(t("common.error"));
+      showToast(t("common.error"), "error");
     }
     setIsVerifying(false);
   };
@@ -785,12 +824,31 @@ const KeysManagement: React.FC = () => {
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleDeleteClick(k.id)}
-                  className="p-2 theme-text-secondary hover:text-red-500 active:scale-90 transition-all"
-                >
-                  <Trash2 size={18} />
-                </button>
+                <div className="flex items-center gap-1">
+                  {/*  Bouton Copier */}
+                  <button
+                    onClick={() => handleCopyKey(k.value, k.id)}
+                    className="p-2 theme-text-secondary hover:theme-primary-text active:scale-90 transition-all"
+                    aria-label={t("common.copy")}
+                  >
+                    {copiedKeyId === k.id ? (
+                      <Check size={18} className="text-green-500" />
+                    ) : (
+                      <Copy size={18} />
+                    )}
+                  </button>
+                  {/* Bouton Supprimer - avec effet de couleur au clic */}
+                  <button
+                    onClick={() => handleDeleteClick(k.id)}
+                    onMouseDown={(e) => e.currentTarget.classList.add('text-red-500')}
+                    onMouseUp={(e) => e.currentTarget.classList.remove('text-red-500')}
+                    onMouseLeave={(e) => e.currentTarget.classList.remove('text-red-500')}
+                    className="p-2 theme-text-secondary hover:text-red-500 active:scale-90 transition-all"
+                    aria-label={t("common.delete")}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
               </div>
             ))}
             {keys.length === 0 && (
@@ -1082,22 +1140,36 @@ const KeysManagement: React.FC = () => {
                         type="text"
                         readOnly
                         value={randomValue}
-                        className="w-full theme-bubble-bg p-4 pr-12 rounded-2xl outline-none theme-text-main border theme-border font-mono text-xs font-bold"
+                        className="w-full theme-bubble-bg p-4 pr-24 rounded-2xl outline-none theme-text-main border theme-border font-mono text-xs font-bold"
                       />
+                      {/* Bouton Copier - même style que RefreshCw */}
+                      <button
+                        onClick={handleCopyRandomKey}
+                        className="absolute right-12 top-1/2 -translate-y-1/2 theme-text-secondary hover:theme-primary-text active:scale-90 transition-all p-1"
+                        aria-label={t("common.copy")}
+                      >
+                        {copyFeedback ? (
+                          <Check size={18} className="text-green-500" />
+                        ) : (
+                          <Copy size={18} />
+                        )}
+                      </button>
+                      {/* Bouton Régénérer - avec spin et hover primary */}
                       <button
                         onClick={generateRandomKey}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 theme-primary-text active:rotate-180 transition-transform duration-500"
+                        disabled={isRegenerating}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 theme-text-secondary hover:theme-primary-text active:scale-90 transition-all p-1 disabled:opacity-50"
+                        aria-label={t("pix.labels.regenerate")}
                       >
-                        <RefreshCw size={18} />
+                        <RefreshCw
+                          size={18}
+                          className={isRegenerating ? "animate-spin" : ""}
+                        />
                       </button>
                     </div>
                   </div>
-                  <div className="p-4 theme-bubble-bg rounded-2xl border theme-border flex gap-3 items-start opacity-70">
-                    <Info
-                      size={16}
-                      className="theme-primary-text shrink-0 mt-0.5"
-                    />
-                    <p className="text-[10px] theme-primary-text font-medium leading-relaxed">
+                  <div className="space-y-2">
+                    <p className="text-[9px] theme-text-secondary px-1 italic">
                       {t("pix.labels.random_hint")}
                     </p>
                   </div>
@@ -1339,7 +1411,7 @@ const KeysManagement: React.FC = () => {
               <div className="flex flex-col gap-3">
                 <button
                   onClick={executeVoiceAction}
-                  className="w-full py-5 theme-primary-bg text-white rounded-3xl font-black shadow-2xl active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-[0.1em]"
+                  className="w-full py-5 theme-primary-bg text-white rounded-3xl font-black shadow-2xl active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-widest"
                 >
                   {t("pix.voice_modal.step_confirm.btn_continue")}{" "}
                   <ChevronRightIcon size={18} />
