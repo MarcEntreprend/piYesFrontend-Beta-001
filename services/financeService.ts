@@ -1,3 +1,15 @@
+//services/financeService.ts
+
+// what does this component do ? 
+// It calculates the fees for the transaction
+// It calculates the net amount for the transaction
+// It calculates the transfer fee
+// It calculates the service fee
+// It calculates the transfer percentage
+// It calculates the service percentage
+// It calculates the international conversion
+// It generates a transaction code
+
 
 import { TransactionType } from '../shared/types';
 
@@ -16,11 +28,11 @@ export interface CountryRate {
 
 class FinanceService {
   // --- CONFIGURATION ---
-  
+
   // Default fee rules for domestic operations
   private readonly DEFAULT_FEES: Record<string, FeeConfig> = {
     transfer: { transferFee: 0.01, serviceFee: 0.02 },
-    deposit:  { transferFee: 0.00, serviceFee: 0.00 }, // Usually free
+    deposit: { transferFee: 0.00, serviceFee: 0.00 }, // Usually free
     withdraw: { transferFee: 0.01, serviceFee: 0.01 },
   };
 

@@ -1,4 +1,15 @@
 // components/AccountSummary.tsx
+//what does this component do ? 
+// It displays the summary of the user's account
+// It displays the balance of the user's account
+// It displays the fees for the transaction
+// It displays the net amount for the transaction
+// It displays the recipient of the transaction
+// It displays the reason for the transaction
+// It displays the transaction ID of the transaction
+// It displays the role of the transaction
+// It displays the auth code of the transaction
+// It displays a countdown to return to the home page
 
 import React, { useMemo, useState, useEffect } from 'react';
 import { Landmark, Target } from 'lucide-react';
@@ -18,7 +29,7 @@ interface AccountSummaryProps {
 
 const AccountSummary: React.FC<AccountSummaryProps> = ({ user, type, amount, recipientName, onAmountChange }) => {
   const { t } = useTranslation();
-  
+
   const [showAid, setShowAid] = useState(false);
   const [debouncedAmount, setDebouncedAmount] = useState(amount);
 
@@ -38,14 +49,14 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({ user, type, amount, rec
   }, [amount, debouncedAmount, type]);
 
   const numericAmount = parseFloat(amount) || 0;
-  
+
   // Use Centralized Service for calculations
-  const { 
-    transferFeeVal, 
-    serviceFeeVal, 
-    netAmount, 
-    transferPercent, 
-    servicePercent 
+  const {
+    transferFeeVal,
+    serviceFeeVal,
+    netAmount,
+    transferPercent,
+    servicePercent
   } = useMemo(() => financeService.calculateFees(numericAmount, type), [numericAmount, type]);
 
   const getDynamicContent = () => {
@@ -92,7 +103,7 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({ user, type, amount, rec
           {t('deposit.select_account')}
         </h3>
         {showAid && onAmountChange && (
-          <button 
+          <button
             onClick={handleAidClick}
             className="text-[10px] font-black theme-primary-text uppercase tracking-tight animate-in slide-in-from-right flex items-center gap-1 bg-purple-50 dark:bg-purple-900/20 px-2 py-1 rounded-lg"
           >
@@ -101,24 +112,24 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({ user, type, amount, rec
           </button>
         )}
       </div>
-      
+
       <div className="p-5 theme-bubble-bg border-2 border-purple-100 dark:border-purple-900/30 rounded-[28px] space-y-4 shadow-sm">
         {/* Account Header */}
         <div className="flex items-center gap-4">
-          <BankIcon 
+          <BankIcon
             logoUrl={logo}
-            logoText="P" 
-            color="#830AD1" 
-            size="lg" 
+            logoText="P"
+            color="#830AD1"
+            size="lg"
             className="shadow-sm border theme-border"
             id="piyes"
           />
           <div>
             <p className="font-black theme-text-main text-sm">{t('accounts.piyes_current')}</p>
             <p className="text-[11px] theme-text-secondary font-medium">
-              {t('deposit.current_balance', { 
-                amount: user.balance.toLocaleString('fr-HT'), 
-                currency: t('currency.symbol') 
+              {t('deposit.current_balance', {
+                amount: user.balance.toLocaleString('fr-HT'),
+                currency: t('currency.symbol')
               })}
             </p>
           </div>
@@ -135,7 +146,7 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({ user, type, amount, rec
               <span>{t('account_summary.fees_service')} ({servicePercent}%)</span>
               <span>{serviceFeeVal.toLocaleString('fr-HT')} {t('currency.symbol')}</span>
             </div>
-            
+
             <div className="pt-3 flex justify-between items-center">
               <div>
                 <p className="text-[11px] font-black theme-primary-text tracking-tighter">

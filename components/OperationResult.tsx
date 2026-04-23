@@ -1,4 +1,14 @@
 //components/OperationResult.tsx
+// What does this component do? 
+// It displays the result of an operation (transfer, deposit, withdraw, international)
+// It displays a success or failure message
+// It displays the amount of the operation
+// It displays the recipient of the operation
+// It displays the reason for the operation
+// It displays the transaction ID of the operation
+// It displays the role of the operation
+// It displays the auth code of the operation
+// It displays a countdown to return to the home page
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
