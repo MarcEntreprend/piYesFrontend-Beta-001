@@ -121,8 +121,9 @@ const History: React.FC = () => {
           );
         if (activeFilter === "sent")
           return (
-            tx.role === TransactionRole.PAYER &&
-            tx.type === TransactionType.TRANSFER
+            (tx.role === TransactionRole.PAYER &&
+              tx.type === TransactionType.TRANSFER) ||
+            tx.type === TransactionType.RECHARGE
           );
         if (activeFilter === "deposits")
           return tx.type === TransactionType.DEPOSIT;

@@ -129,7 +129,7 @@ const InterBankTransfer: React.FC<InterBankTransferProps> = ({
     );
   }, [amount, sourceAccount]);
 
-  // ✅ Contexte interbancaire pour les frais
+  // Contexte interbancaire pour les frais
   const isInterbankOut = useMemo(
     () => sourceAccount?.provider === "piyes" && destAccount?.provider !== "piyes",
     [sourceAccount, destAccount],
@@ -164,7 +164,7 @@ const InterBankTransfer: React.FC<InterBankTransferProps> = ({
     try {
       const numericAmount = parseFloat(amount);
 
-      // ✅ Calcul du montant net avec les frais éventuels
+      // Calcul du montant net avec les frais éventuels
       const feeCalculation = financeService.calculateFees(
         numericAmount,
         TransactionType.TRANSFER,
@@ -175,7 +175,7 @@ const InterBankTransfer: React.FC<InterBankTransferProps> = ({
       const res = await api.interBankTransfer({
         sourceId,
         destId,
-        amount: netAmount, // ✅ On envoie le montant net
+        amount: netAmount, // On envoie le montant net
         note,
         pin,
       });
@@ -443,7 +443,7 @@ const InterBankTransfer: React.FC<InterBankTransferProps> = ({
                 user={user}
                 type={summaryType}
                 amount={amount}
-                isInterbankOut={isInterbankOut} // ✅ Passage du contexte
+                isInterbankOut={isInterbankOut} // Passage du contexte
               />
 
               <div className="space-y-2">
@@ -543,7 +543,7 @@ const InterBankTransfer: React.FC<InterBankTransferProps> = ({
                   user={user}
                   type={summaryType}
                   amount={amount}
-                  isInterbankOut={isInterbankOut} // ✅ Passage du contexte
+                  isInterbankOut={isInterbankOut} // Passage du contexte
                 />
 
                 {note && (

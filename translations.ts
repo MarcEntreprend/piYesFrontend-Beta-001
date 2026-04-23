@@ -1013,12 +1013,12 @@ export const translations = {
       scan_qr: "Vérification QR",
       verification_link: "Lien de vérification",
       types: {
-        TRANSFER: "Virement",
-        DEPOSIT: "Dépôt",
-        WITHDRAW: "Retrait",
-        RECHARGE: "Recharge",
-        INTERNATIONAL: "International",
-        CARD_PAYMENT: "Paiement Carte",
+        TRANSFER: "Preuve de transfert local",
+        DEPOSIT: "Preuve de dépôt",
+        WITHDRAW: "Preuve de retrait",
+        RECHARGE: "Preuve de recharge mobile",
+        INTERNATIONAL: "Preuve de transfert international",
+        CARD_PAYMENT: "Preuve de paiement par carte bancaire",
       },
     },
     transfer: {

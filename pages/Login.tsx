@@ -136,7 +136,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             {step === 1 && (
                 <div className="mb-10 space-y-2 animate-in slide-in-from-top duration-500">
                     <h2 className="text-[28px] font-black theme-text-main leading-tight tracking-tight">
-                        Gérez vos finances,
+                        Gérez vos fiiiiinances,
                         <br />
                         <span className="theme-primary-text">Simplement</span> et en toute
                         sécurité.

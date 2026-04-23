@@ -214,7 +214,7 @@ const KeysManagement: React.FC = () => {
       "Voye 500 goud bay Ronald",
       "Mande Sarah 1250 gourdes",
       "Paie 2000 à l'école de musique",
-      "Virement de 300 pour Marc",
+      "Virement de 300 pour Jean",
     ];
     const transcription =
       mockTranscriptions[Math.floor(Math.random() * mockTranscriptions.length)];

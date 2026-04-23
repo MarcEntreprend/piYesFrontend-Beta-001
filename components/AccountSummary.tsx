@@ -14,7 +14,7 @@ interface AccountSummaryProps {
   amount: string;
   recipientName?: string;
   onAmountChange?: (newAmount: string) => void;
-  isInterbankOut?: boolean; // ✅ Nouveau : pour les frais interbancaires sortants
+  isInterbankOut?: boolean; // Nouveau : pour les frais interbancaires sortants
 }
 
 const AccountSummary: React.FC<AccountSummaryProps> = ({
@@ -62,7 +62,7 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({
   const numericAmount = parseFloat(amount) || 0;
   const txType = getTransactionType();
 
-  // ✅ Calcul des frais avec le contexte interbancaire
+  // Calcul des frais avec le contexte interbancaire
   const feeCalculation = useMemo(() => {
     return financeService.calculateFees(numericAmount, txType, { isInterbankOut });
   }, [numericAmount, txType, isInterbankOut]);
