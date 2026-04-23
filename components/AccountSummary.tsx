@@ -1,20 +1,9 @@
 // components/AccountSummary.tsx
-//what does this component do ? 
-// It displays the summary of the user's account
-// It displays the balance of the user's account
-// It displays the fees for the transaction
-// It displays the net amount for the transaction
-// It displays the recipient of the transaction
-// It displays the reason for the transaction
-// It displays the transaction ID of the transaction
-// It displays the role of the transaction
-// It displays the auth code of the transaction
-// It displays a countdown to return to the home page
 
 import React, { useMemo, useState, useEffect } from 'react';
 import { Landmark, Target } from 'lucide-react';
 import { useTranslation } from '../App';
-import { User } from '../shared/types';
+import { User, TransactionType } from '../shared/types';
 import { financeService } from '../services/financeService';
 import BankIcon from './BankIcon';
 import logo from '../src/assets/images/logo-piyes-ppl-wh-wh-svg.svg';
@@ -25,13 +14,35 @@ interface AccountSummaryProps {
   amount: string;
   recipientName?: string;
   onAmountChange?: (newAmount: string) => void;
+  isInterbankOut?: boolean; // ✅ Nouveau : pour les frais interbancaires sortants
 }
 
-const AccountSummary: React.FC<AccountSummaryProps> = ({ user, type, amount, recipientName, onAmountChange }) => {
+const AccountSummary: React.FC<AccountSummaryProps> = ({
+  user,
+  type,
+  amount,
+  recipientName,
+  onAmountChange,
+  isInterbankOut = false,
+}) => {
   const { t } = useTranslation();
 
   const [showAid, setShowAid] = useState(false);
   const [debouncedAmount, setDebouncedAmount] = useState(amount);
+
+  // Convertir le type string en TransactionType
+  const getTransactionType = (): TransactionType => {
+    switch (type) {
+      case 'transfer':
+        return TransactionType.TRANSFER;
+      case 'deposit':
+        return TransactionType.DEPOSIT;
+      case 'withdraw':
+        return TransactionType.WITHDRAW;
+      default:
+        return TransactionType.TRANSFER;
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -49,15 +60,22 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({ user, type, amount, rec
   }, [amount, debouncedAmount, type]);
 
   const numericAmount = parseFloat(amount) || 0;
+  const txType = getTransactionType();
 
-  // Use Centralized Service for calculations
+  // ✅ Calcul des frais avec le contexte interbancaire
+  const feeCalculation = useMemo(() => {
+    return financeService.calculateFees(numericAmount, txType, { isInterbankOut });
+  }, [numericAmount, txType, isInterbankOut]);
+
   const {
     transferFeeVal,
     serviceFeeVal,
     netAmount,
     transferPercent,
-    servicePercent
-  } = useMemo(() => financeService.calculateFees(numericAmount, type), [numericAmount, type]);
+    servicePercent,
+    totalPercent,
+    hasFees,
+  } = feeCalculation;
 
   const getDynamicContent = () => {
     const formattedNet = netAmount.toLocaleString('fr-HT');
@@ -67,18 +85,18 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({ user, type, amount, rec
       case 'transfer':
         return {
           label: "LE DESTINATAIRE REÇOIT",
-          value: `${currency} ${formattedNet}`
+          value: `${currency} ${formattedNet}`,
         };
       case 'withdraw':
         return {
           label: "VOUS RECEVREZ",
           subLabel: "DE VOTRE AGENT",
-          value: `${currency} ${formattedNet}`
+          value: `${currency} ${formattedNet}`,
         };
       case 'deposit':
         return {
           label: "VOUS RECEVREZ",
-          value: `${currency} ${formattedNet}`
+          value: `${currency} ${formattedNet}`,
         };
       default:
         return { label: '', value: '' };
@@ -89,8 +107,8 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({ user, type, amount, rec
 
   const handleAidClick = () => {
     if (!onAmountChange) return;
-    const { transferPercent, servicePercent } = financeService.calculateFees(numericAmount, type);
-    const totalFeeRate = (transferPercent + servicePercent) / 100;
+    const calculation = financeService.calculateFees(numericAmount, txType, { isInterbankOut });
+    const totalFeeRate = (calculation.transferPercent + calculation.servicePercent) / 100;
     const grossAmount = numericAmount / (1 - totalFeeRate);
     onAmountChange(grossAmount.toFixed(2));
     setShowAid(false);
@@ -129,7 +147,7 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({ user, type, amount, rec
             <p className="text-[11px] theme-text-secondary font-medium">
               {t('deposit.current_balance', {
                 amount: user.balance.toLocaleString('fr-HT'),
-                currency: t('currency.symbol')
+                currency: t('currency.symbol'),
               })}
             </p>
           </div>
@@ -139,12 +157,20 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({ user, type, amount, rec
         {numericAmount > 0 && (
           <div className="pt-4 border-t theme-border space-y-3">
             <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider theme-text-secondary opacity-60">
-              <span>{t('account_summary.fees_transfer')} ({transferPercent}%)</span>
-              <span>{transferFeeVal.toLocaleString('fr-HT')} {t('currency.symbol')}</span>
+              <span>
+                {t('account_summary.fees_transfer')} ({transferPercent}%)
+              </span>
+              <span>
+                {transferFeeVal.toLocaleString('fr-HT')} {t('currency.symbol')}
+              </span>
             </div>
             <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider theme-text-secondary opacity-60">
-              <span>{t('account_summary.fees_service')} ({servicePercent}%)</span>
-              <span>{serviceFeeVal.toLocaleString('fr-HT')} {t('currency.symbol')}</span>
+              <span>
+                {t('account_summary.fees_service')} ({servicePercent}%)
+              </span>
+              <span>
+                {serviceFeeVal.toLocaleString('fr-HT')} {t('currency.symbol')}
+              </span>
             </div>
 
             <div className="pt-3 flex justify-between items-center">

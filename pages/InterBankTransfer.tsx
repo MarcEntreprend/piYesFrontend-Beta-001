@@ -30,6 +30,7 @@ import PinOverlay from "../components/PinOverlay";
 import AccountSummary from "../components/AccountSummary";
 import OperationResult from "../components/OperationResult";
 import BankIcon from "../components/BankIcon";
+import { financeService } from "../services/financeService";
 
 interface InterBankTransferProps {
   user: User;
@@ -128,6 +129,12 @@ const InterBankTransfer: React.FC<InterBankTransferProps> = ({
     );
   }, [amount, sourceAccount]);
 
+  // ✅ Contexte interbancaire pour les frais
+  const isInterbankOut = useMemo(
+    () => sourceAccount?.provider === "piyes" && destAccount?.provider !== "piyes",
+    [sourceAccount, destAccount],
+  );
+
   const handleSwap = () => {
     setIsSwapping(true);
     const temp = sourceId;
@@ -155,11 +162,20 @@ const InterBankTransfer: React.FC<InterBankTransferProps> = ({
     setIsVerifyingPin(false);
     setLoading(true);
     try {
-      const transferAmount = parseFloat(amount);
+      const numericAmount = parseFloat(amount);
+
+      // ✅ Calcul du montant net avec les frais éventuels
+      const feeCalculation = financeService.calculateFees(
+        numericAmount,
+        TransactionType.TRANSFER,
+        { isInterbankOut }
+      );
+      const netAmount = feeCalculation.netAmount;
+
       const res = await api.interBankTransfer({
         sourceId,
         destId,
-        amount: transferAmount,
+        amount: netAmount, // ✅ On envoie le montant net
         note,
         pin,
       });
@@ -171,7 +187,7 @@ const InterBankTransfer: React.FC<InterBankTransferProps> = ({
 
       const tx = {
         id: res.id,
-        amount: transferAmount,
+        amount: netAmount,
         date: new Date().toISOString(),
         sourceName: sourceAccount.label,
         destName: destAccount.label,
@@ -217,7 +233,7 @@ const InterBankTransfer: React.FC<InterBankTransferProps> = ({
       <OperationResult
         type={summaryType}
         status={result.status}
-        amount={parseFloat(amount)}
+        amount={result.tx?.amount || parseFloat(amount)}
         recipientName={destAccount?.label}
         reason={result.error}
         txId={result.tx?.id}
@@ -423,7 +439,12 @@ const InterBankTransfer: React.FC<InterBankTransferProps> = ({
                 </div>
               </div>
 
-              <AccountSummary user={user} type={summaryType} amount={amount} />
+              <AccountSummary
+                user={user}
+                type={summaryType}
+                amount={amount}
+                isInterbankOut={isInterbankOut} // ✅ Passage du contexte
+              />
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
@@ -522,6 +543,7 @@ const InterBankTransfer: React.FC<InterBankTransferProps> = ({
                   user={user}
                   type={summaryType}
                   amount={amount}
+                  isInterbankOut={isInterbankOut} // ✅ Passage du contexte
                 />
 
                 {note && (
