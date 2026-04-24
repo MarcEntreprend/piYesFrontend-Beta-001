@@ -183,16 +183,16 @@ export interface Receipt {
   transaction_id?: string;
   moncashTransactionId?: string;
   description?: string;
-  sender?: { 
-    name: string; 
-    account_number?: string; 
+  sender?: {
+    name: string;
+    account_number?: string;
     masked_account?: string;
     idNumber?: string;
     bank?: string;
   };
-  receiver?: { 
-    name: string; 
-    account_number?: string; 
+  receiver?: {
+    name: string;
+    account_number?: string;
     masked_account?: string;
     idNumber?: string;
     bank?: string;
@@ -359,10 +359,11 @@ export interface Friendship {
 
 export interface Key {
   id: string;
-  type: 'email' | 'phone' | 'random' | 'cpf' | 'tag';
+  type: "email" | "phone" | "random" | "nif" | "tag";
   value: string;
   createdAt: string;
   isVerified?: boolean;
+  isPrimary?: boolean;
 }
 
 export interface AuthResponse {

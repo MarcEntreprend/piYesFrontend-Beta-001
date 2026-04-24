@@ -65,6 +65,8 @@ const KeysManagement: React.FC = () => {
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
   const [pendingRoute, setPendingRoute] = useState<string | null>(null);
+  const [showAlreadyExistsModal, setShowAlreadyExistsModal] = useState(false);
+  const [alreadyExistsMessage, setAlreadyExistsMessage] = useState("");
 
   // Intelligent Message States (Text Flow)
   const [message, setMessage] = useState("");
@@ -91,9 +93,9 @@ const KeysManagement: React.FC = () => {
   const [isAnalyzingLink, setIsAnalyzingLink] = useState(false);
 
   const [newKeyType, setNewKeyType] = useState<KeyType>("email");
-  const [copyFeedback, setCopyFeedback] = useState(false); // État pour l'icône de chargement du bouton Copier
-  const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null); // État pour le feedback de copie des clés
-  const [isRegenerating, setIsRegenerating] = useState(false); // État pour l'icône de chargement du bouton Régénérer
+  const [copyFeedback, setCopyFeedback] = useState(false);
+  const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null);
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
   // Isolated states for each tab
   const [emailValue, setEmailValue] = useState("");
@@ -259,7 +261,6 @@ const KeysManagement: React.FC = () => {
     try {
       const url = new URL(pastedLink);
       if (url.hostname.includes("piyes.ht")) {
-        // ── Lien de confirmation de rappel (/schedule?token=...)
         const scheduleToken = url.searchParams.get("token");
         if (url.pathname.includes("/schedule") && scheduleToken) {
           setIsAnalyzingLink(false);
@@ -267,7 +268,6 @@ const KeysManagement: React.FC = () => {
           setPastedLink("");
           try {
             await api.getScheduleByToken(scheduleToken);
-            // Naviguer vers scheduler avec le token pour déclencher le modal
             navigate(`/scheduler?tab=outgoing&confirm=${scheduleToken}`);
           } catch (e) {
             alert("Rappel introuvable ou lien expiré.");
@@ -315,11 +315,9 @@ const KeysManagement: React.FC = () => {
   const handleScanResult = (decodedText: string) => {
     setShowQRScanner(false);
 
-    // Process the decoded text
     try {
       const url = new URL(decodedText);
       if (url.hostname.includes("piyes.ht")) {
-        // ── QR de confirmation de rappel
         const scheduleToken = url.searchParams.get("token");
         if (url.pathname.includes("/schedule") && scheduleToken) {
           setShowQRScanner(false);
@@ -349,11 +347,9 @@ const KeysManagement: React.FC = () => {
           alert(t("pix.actions.qr_invalid_dest"));
         }
       } else {
-        // Fallback for other URLs or plain text
         navigate(`/transfer?recipient=${encodeURIComponent(decodedText)}`);
       }
     } catch (e) {
-      // If not a URL, treat as a key
       navigate(`/transfer?recipient=${encodeURIComponent(decodedText)}`);
     }
   };
@@ -410,11 +406,9 @@ const KeysManagement: React.FC = () => {
     }
   }, [tagValue, newKeyType]);
 
-  // Random key generation avec effet de spin
+  // Random key generation
   const generateRandomKey = () => {
     setIsRegenerating(true);
-
-    // Petit délai pour que l'animation soit visible
     setTimeout(() => {
       const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
       let result = "";
@@ -474,15 +468,27 @@ const KeysManagement: React.FC = () => {
         setShowNewModal(false);
         resetNewKeyStates();
       } else {
-        //  AJOUTER LA CLÉ NON-VÉRIFIÉE DANS LE TABLEAU
         setKeys([...keys, k]);
-        // Trigger verification flow for email/phone
         setVerifyingKey(k);
         setShowNewModal(false);
         resetNewKeyStates();
       }
-    } catch (e) {
-      alert(t("common.error"));
+    } catch (e: any) {
+      if (e?.code === "PRIMARY_KEY_EXISTS") {
+        setAlreadyExistsMessage(
+          t("pix.already_primary") ||
+          "Cette clé fait déjà partie de vos clés principales."
+        );
+        setShowAlreadyExistsModal(true);
+      } else if (e?.message?.includes("Key already in use")) {
+        setAlreadyExistsMessage(
+          t("pix.already_secondary") ||
+          "Cette clé existe déjà dans vos clés secondaires."
+        );
+        setShowAlreadyExistsModal(true);
+      } else {
+        alert(t("common.error"));
+      }
     }
     setLoading(false);
   };
@@ -502,7 +508,6 @@ const KeysManagement: React.FC = () => {
     try {
       const success = await api.verifySecondaryKey(verifyingKey.id, otpCode);
       if (success) {
-        // Mettre à jour la clé pour la marquer comme vérifiée
         setKeys(prevKeys =>
           prevKeys.map((k) =>
             k.id === verifyingKey.id ? { ...k, isVerified: true } : k
@@ -839,11 +844,15 @@ const KeysManagement: React.FC = () => {
                   </button>
                   {/* Bouton Supprimer - avec effet de couleur au clic */}
                   <button
-                    onClick={() => handleDeleteClick(k.id)}
+                    onClick={() => !k.isPrimary && handleDeleteClick(k.id)}
                     onMouseDown={(e) => e.currentTarget.classList.add('text-red-500')}
                     onMouseUp={(e) => e.currentTarget.classList.remove('text-red-500')}
                     onMouseLeave={(e) => e.currentTarget.classList.remove('text-red-500')}
-                    className="p-2 theme-text-secondary hover:text-red-500 active:scale-90 transition-all"
+                    className={`p-2 transition-all active:scale-90 ${k.isPrimary
+                        ? "theme-text-secondary opacity-20 cursor-not-allowed"
+                        : "theme-text-secondary hover:text-red-500"
+                      }`}
+                    disabled={k.isPrimary}
                     aria-label={t("common.delete")}
                   >
                     <Trash2 size={18} />
@@ -1030,8 +1039,6 @@ const KeysManagement: React.FC = () => {
             </button>
           </div>
           <div className="space-y-6">
-
-            {/* Sélecteur de type de clé */}
             <SegmentedControl
               options={[
                 { id: "email", label: t("pix.types.email") },
@@ -1142,7 +1149,6 @@ const KeysManagement: React.FC = () => {
                         value={randomValue}
                         className="w-full theme-bubble-bg p-4 pr-24 rounded-2xl outline-none theme-text-main border theme-border font-mono text-xs font-bold"
                       />
-                      {/* Bouton Copier - même style que RefreshCw */}
                       <button
                         onClick={handleCopyRandomKey}
                         className="absolute right-12 top-1/2 -translate-y-1/2 theme-text-secondary hover:theme-primary-text active:scale-90 transition-all p-1"
@@ -1154,7 +1160,6 @@ const KeysManagement: React.FC = () => {
                           <Copy size={18} />
                         )}
                       </button>
-                      {/* Bouton Régénérer - avec spin et hover primary */}
                       <button
                         onClick={generateRandomKey}
                         disabled={isRegenerating}
@@ -1265,7 +1270,6 @@ const KeysManagement: React.FC = () => {
             <X size={20} />
           </button>
 
-          {/* STEP 1 & 2: Recording and Processing */}
           {(voiceStep === "idle" || voiceStep === "processing") && (
             <div className="w-full flex flex-col items-center gap-10 py-6">
               <div className="text-center space-y-2 pt-4">
@@ -1329,7 +1333,6 @@ const KeysManagement: React.FC = () => {
             </div>
           )}
 
-          {/* STEP 3: Reformulate */}
           {voiceStep === "reformulate" && (
             <div className="w-full space-y-6 animate-in zoom-in duration-300">
               <div className="flex items-center gap-2">
@@ -1365,7 +1368,6 @@ const KeysManagement: React.FC = () => {
             </div>
           )}
 
-          {/* STEP 4: Final Confirmation */}
           {voiceStep === "confirm" && voiceParsedData && (
             <div className="w-full space-y-8 animate-in slide-in-from-bottom duration-300">
               <div className="text-center space-y-1">
@@ -1427,6 +1429,27 @@ const KeysManagement: React.FC = () => {
           )}
         </div>
       </Modal>
+
+      {/* ALREADY EXISTS MODAL */}
+      <Modal
+        isOpen={showAlreadyExistsModal}
+        onClose={() => setShowAlreadyExistsModal(false)}
+        type="centered"
+      >
+        <div className="p-8 text-center space-y-6">
+          <div className="w-16 h-16 bg-amber-50 dark:bg-amber-900/10 text-amber-500 rounded-3xl flex items-center justify-center mx-auto">
+            <Info size={32} />
+          </div>
+          <p className="text-lg font-bold theme-text-main">{alreadyExistsMessage}</p>
+          <button
+            onClick={() => setShowAlreadyExistsModal(false)}
+            className="w-full py-4 theme-primary-bg text-white rounded-2xl font-bold"
+          >
+            J’ai compris
+          </button>
+        </div>
+      </Modal>
+
       <AiSupportChat
         isOpen={showSupport}
         onClose={() => setShowSupport(false)}
@@ -1436,4 +1459,4 @@ const KeysManagement: React.FC = () => {
   );
 };
 
-export default KeysManagement;  
+export default KeysManagement;

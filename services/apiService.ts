@@ -276,9 +276,22 @@ class PiyesApiService {
   }
 
   // --- KEYS ---
+  // Fusionner clés primaires et secondaires
   async getKeys(): Promise<Key[]> {
     const sync = await this.sync();
-    return sync.user.secondaryKeys || [];
+    const primaryKeys: Key[] = (sync.user as any).primaryKeys?.map((k: any) => ({
+      id: `primary_${k.type}_${k.value}`,  // id synthétique unique
+      type: k.type,
+      value: k.value,
+      isVerified: true,
+      isPrimary: true,
+      createdAt: new Date().toISOString(),  // pas critique, pour l'affichage
+    })) || [];
+    const secondaryKeys: Key[] = (sync.user.secondaryKeys || []).map((k: any) => ({
+      ...k,
+      isPrimary: false,
+    }));
+    return [...primaryKeys, ...secondaryKeys];
   }
 
   async deleteKey(id: string): Promise<boolean> {
