@@ -157,7 +157,6 @@ const KeysManagement: React.FC = () => {
   const fetchKeys = async (forceRefresh = false) => {
     setLoading(true);
 
-    // Vérifier le cache d'abord
     if (!forceRefresh) {
       const cached = cacheService.get("keys");
       if (cached) {
@@ -168,11 +167,14 @@ const KeysManagement: React.FC = () => {
     }
 
     try {
+      // Forcer un sync frais pour avoir les primaryKeys à jour
+      if (forceRefresh) {
+        await api.syncFresh();
+      }
       const data = await api.getKeys();
       setKeys(data);
-      cacheService.set("keys", data, 1000 * 60 * 30); // Cache 30 minutes
+      cacheService.set("keys", data, 1000 * 60 * 30);
     } catch (e) {
-      // Si erreur réseau, utiliser le cache même expiré
       const stale = cacheService.get("keys");
       if (stale) setKeys(stale);
     }

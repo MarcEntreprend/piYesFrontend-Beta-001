@@ -34,6 +34,7 @@ import { useTranslation, useToast } from "../App";
 import Modal from "../components/Modal";
 import PageHeader from "../components/PageHeader";
 import AvatarViewer from "../components/AvatarViewer";
+import { cacheService } from "../services/cacheService";
 
 interface ProfileProps {
   user: UserType;
@@ -541,6 +542,11 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
         avatarUrl: formData.avatarUrl,
       });
       onUpdate(updatedUser);
+
+      // Invalider les caches pour forcer le rafraîchissement
+      cacheService.invalidate("sync");
+      cacheService.invalidate("keys");
+
       setIsEditing(false);
       setOriginalEmail(formData.email);
       setOriginalPhone(formData.phone);
