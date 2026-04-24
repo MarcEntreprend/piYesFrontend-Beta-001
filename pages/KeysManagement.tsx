@@ -45,6 +45,7 @@ import Modal from "../components/Modal";
 import AiSupportChat from "../components/AiSupportChat";
 import PageHeader from "../components/PageHeader";
 import SegmentedControl from "../components/SegmentedControl";
+import { cacheService } from "../services/cacheService";
 type KeyType = "email" | "phone" | "tag" | "random";
 
 const KeysManagement: React.FC = () => {
@@ -153,10 +154,28 @@ const KeysManagement: React.FC = () => {
     }
   }, [message]);
 
-  const fetchKeys = async () => {
+  const fetchKeys = async (forceRefresh = false) => {
     setLoading(true);
-    const data = await api.getKeys();
-    setKeys(data);
+
+    // Vérifier le cache d'abord
+    if (!forceRefresh) {
+      const cached = cacheService.get("keys");
+      if (cached) {
+        setKeys(cached);
+        setLoading(false);
+        return;
+      }
+    }
+
+    try {
+      const data = await api.getKeys();
+      setKeys(data);
+      cacheService.set("keys", data, 1000 * 60 * 30); // Cache 30 minutes
+    } catch (e) {
+      // Si erreur réseau, utiliser le cache même expiré
+      const stale = cacheService.get("keys");
+      if (stale) setKeys(stale);
+    }
     setLoading(false);
   };
 
@@ -370,7 +389,9 @@ const KeysManagement: React.FC = () => {
     setLoading(true);
     try {
       await api.deleteKey(keyToDelete);
-      setKeys(keys.filter((k) => k.id !== keyToDelete));
+      const updatedKeys = keys.filter((k) => k.id !== keyToDelete);
+      setKeys(updatedKeys);
+      cacheService.set("keys", updatedKeys, 1000 * 60 * 30);
       setShowDeleteConfirm(false);
       setKeyToDelete(null);
     } catch (e) {
@@ -465,10 +486,12 @@ const KeysManagement: React.FC = () => {
       const k = await api.createKey(newKeyType, value);
       if (k.isVerified) {
         setKeys([...keys, k]);
+        cacheService.set("keys", [...keys, k], 1000 * 60 * 30);
         setShowNewModal(false);
         resetNewKeyStates();
       } else {
         setKeys([...keys, k]);
+        cacheService.set("keys", [...keys, k], 1000 * 60 * 30);
         setVerifyingKey(k);
         setShowNewModal(false);
         resetNewKeyStates();
@@ -508,11 +531,13 @@ const KeysManagement: React.FC = () => {
     try {
       const success = await api.verifySecondaryKey(verifyingKey.id, otpCode);
       if (success) {
-        setKeys(prevKeys =>
-          prevKeys.map((k) =>
+        setKeys(prevKeys => {
+          const updated = prevKeys.map((k) =>
             k.id === verifyingKey.id ? { ...k, isVerified: true } : k
-          )
-        );
+          );
+          cacheService.set("keys", updated, 1000 * 60 * 30);
+          return updated;
+        });
         setVerifyingKey(null);
         setOtpCode("");
         showToast(t("pix.verify_modal.success"), "success");
@@ -804,7 +829,7 @@ const KeysManagement: React.FC = () => {
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 theme-bubble-bg rounded-full flex items-center justify-center theme-primary-text relative">
                     <KeyIcon size={18} />
-                    {k.isVerified && (
+                    {k.isVerified && (k.type === "email" || k.type === "phone") && (
                       <div className="absolute -top-1 -right-1 bg-green-500 text-white p-0.5 rounded-full border-2 theme-card-bg">
                         <Check size={8} />
                       </div>
@@ -824,8 +849,14 @@ const KeysManagement: React.FC = () => {
                         </button>
                       )}
                     </div>
-                    <p className="font-bold theme-text-main text-sm">
-                      {k.value}
+                    <p className="font-bold theme-text-main text-sm tracking-wider">
+                      {k.type === "phone"
+                        ? (() => {
+                          const digits = k.value.replace("+509", "").replace(/\D/g, "");
+                          if (digits.length <= 4) return `+509 ${digits}`;
+                          return `+509 ${digits.slice(0, 4)} ${digits.slice(4)}`;
+                        })()
+                        : k.value}
                     </p>
                   </div>
                 </div>
@@ -849,8 +880,8 @@ const KeysManagement: React.FC = () => {
                     onMouseUp={(e) => e.currentTarget.classList.remove('text-red-500')}
                     onMouseLeave={(e) => e.currentTarget.classList.remove('text-red-500')}
                     className={`p-2 transition-all active:scale-90 ${k.isPrimary
-                        ? "theme-text-secondary opacity-20 cursor-not-allowed"
-                        : "theme-text-secondary hover:text-red-500"
+                      ? "theme-text-secondary opacity-20 cursor-not-allowed"
+                      : "theme-text-secondary hover:text-red-500"
                       }`}
                     disabled={k.isPrimary}
                     aria-label={t("common.delete")}
@@ -1072,19 +1103,26 @@ const KeysManagement: React.FC = () => {
                   <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
                     {t("pix.labels.phone")}
                   </label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold theme-text-secondary">
-                      +509
+                  <div className="relative flex items-center">
+                    <span className="absolute left-4 font-bold theme-text-secondary text-sm">
+                      +509&nbsp;
                     </span>
                     <input
                       type="tel"
-                      placeholder="XXXX XXXX"
-                      maxLength={8}
-                      value={phoneValue}
-                      onChange={(e) =>
-                        setPhoneValue(e.target.value.replace(/\D/g, ""))
+                      placeholder="xxxx xxxx"
+                      maxLength={9}
+                      value={
+                        (() => {
+                          const digits = phoneValue.replace(/\D/g, "");
+                          if (digits.length <= 4) return digits;
+                          return `${digits.slice(0, 4)} ${digits.slice(4)}`;
+                        })()
                       }
-                      className="w-full theme-bubble-bg p-4 pl-16 rounded-2xl outline-none theme-text-main border theme-border focus:theme-card-bg focus:border-(--primary-color) transition-all font-bold"
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/[\s\D]/g, "");
+                        setPhoneValue(raw);
+                      }}
+                      className="w-full theme-bubble-bg p-4 pl-[4.25rem] rounded-2xl outline-none theme-text-main border theme-border focus:theme-card-bg focus:border-(--primary-color) transition-all font-bold tracking-wider"
                     />
                   </div>
                 </div>
