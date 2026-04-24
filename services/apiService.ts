@@ -30,7 +30,7 @@ import { cacheService } from "./cacheService";
  * Pour passer en prod, remplacez les retours par: return http.get/post(...)
  */
 class PiyesApiService {
-  // --- EXTERNAL BANKS MANAGEMENT ---
+  // --- EXTERNAL BANKS MANAGEMENT  - --
 
   async getAvailableBanks(): Promise<ExternalBank[]> {
     return externalBankService.getAvailableBanks();
@@ -116,30 +116,45 @@ class PiyesApiService {
       const cacheKey = `interactions_${params.counterpartyName}`;
       const cached = cacheService.get(cacheKey);
       if (cached) return cached;
-      const query = new URLSearchParams(params as any).toString();
-      const data = await http.get<Transaction[]>(`/transactions?${query}`);
-      cacheService.set(cacheKey, data, 1000 * 60 * 10);
-      return data;
+      try {
+        const query = new URLSearchParams(params as any).toString();
+        const data = await http.get<Transaction[]>(`/transactions?${query}`);
+        cacheService.set(cacheKey, data, 1000 * 60 * 10);
+        return data;
+      } catch (e: any) {
+        // Return stale cache on network error
+        if (e?.status === 0 || e?.data?.error?.code === "NETWORK_TIMEOUT") {
+          const stale = cacheService.get(cacheKey);
+          if (stale) return stale;
+        }
+        throw e;
+      }
     }
 
-    // Offset ne doit PAS compter comme filtre bloquant le cache
-    // Seuls counterpartyName et type (différent de "all") sont des filtres réels
     const hasFilters = params.counterpartyName || (params.type && params.type !== "all");
 
     if (!hasFilters) {
-      // Inclure l'offset dans la clé de cache pour gérer la pagination
       const cacheKey = `history_${params.limit || 50}_${params.offset || 0}`;
       const cached = cacheService.get(cacheKey);
       if (cached) {
         console.log(`[CACHE] History (offset ${params.offset || 0}) loaded from cache`);
         return cached;
       }
-      const query = new URLSearchParams(params as any).toString();
-      const data = await http.get<Transaction[]>(`/transactions?${query}`);
-      cacheService.set(cacheKey, data, 1000 * 60 * 5); // 5 minutes
-      return data;
+      try {
+        const query = new URLSearchParams(params as any).toString();
+        const data = await http.get<Transaction[]>(`/transactions?${query}`);
+        cacheService.set(cacheKey, data, 1000 * 60 * 5);
+        return data;
+      } catch (e: any) {
+        if (e?.status === 0 || e?.data?.error?.code === "NETWORK_TIMEOUT") {
+          const stale = cacheService.get(cacheKey);
+          if (stale) return stale;
+        }
+        throw e;
+      }
     }
 
+    // Has filters — no cache fallback
     const query = new URLSearchParams(params as any).toString();
     return http.get<Transaction[]>(`/transactions?${query}`);
   }
@@ -574,9 +589,17 @@ class PiyesApiService {
   async getScheduledPayments(): Promise<ScheduledPayment[]> {
     const cached = cacheService.get("scheduler");
     if (cached) return cached;
-    const data = await http.get<ScheduledPayment[]>("/scheduler");
-    cacheService.set("scheduler", data, 1000 * 60 * 5); // 5 min
-    return data;
+    try {
+      const data = await http.get<ScheduledPayment[]>("/scheduler");
+      cacheService.set("scheduler", data, 1000 * 60 * 5);
+      return data;
+    } catch (e: any) {
+      if (e?.status === 0 || e?.data?.error?.code === "NETWORK_TIMEOUT") {
+        const stale = cacheService.get("scheduler");
+        if (stale) return stale;
+      }
+      throw e;
+    }
   }
 
   async getScheduledPaymentsFresh(): Promise<ScheduledPayment[]> {

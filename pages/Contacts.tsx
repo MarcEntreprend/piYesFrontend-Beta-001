@@ -138,7 +138,7 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
       setContacts(contactsData);
       setFriendships(syncData.friendships || []);
     } catch (error) {
-      console.error("Failed to fetch data", error);
+      console.error(t("contacts.errors.fetch_failed"), error);
     }
     setLoading(false);
   };

@@ -86,7 +86,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   const [showSupport, setShowSupport] = useState(false);
 
   // Synchronisation globale via Context
-  const { syncData, syncLoading, isRefreshing, refresh } = useGlobalSync();
+  const { syncData, syncLoading, isDataStale, isRefreshing, refresh } = useGlobalSync();
 
   const [showBalance, setShowBalance] = useState(() => {
     const saved = localStorage.getItem("piyes_show_balance");
@@ -781,14 +781,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           className={`flex items-center justify-end transition-all duration-500 ${isSearchFocused ? "opacity-20" : "opacity-100"} ${selectedAccountId === "all" ? "theme-text-main" : "text-white"} hidden`}
         >
           <div
-            className={`transition-all duration-500 flex items-center gap-2 ${showSyncIcon ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4 pointer-events-none"}`}
+            className={`transition-all duration-500 flex items-center gap-2 ${showSyncIcon || isDataStale ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4 pointer-events-none"}`}
           >
             <RefreshCw
               size={14}
               className={`opacity-60 ${isRefreshing ? "animate-spin" : ""}`}
             />
             <span className="text-[8px] font-black uppercase tracking-widest opacity-40">
-              {isRefreshing ? "Sync..." : "Ok"}
+              {isRefreshing ? "Sync..." : isDataStale ? "Offline" : "Ok"}
             </span>
           </div>
         </div>
@@ -826,10 +826,37 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           />
         </div>
 
+
+        {/* Stale Data Indicator — shown when offline > 10s */}
+        {isDataStale && selectedAccountId !== "all" && (
+          <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/20 backdrop-blur-md rounded-xl border border-amber-500/30 animate-in fade-in duration-300">
+            <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
+            <span className="text-[9px] font-bold text-amber-300 uppercase tracking-wider">
+              Données non actualisées — reconnexion...
+            </span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                refresh();
+              }}
+              className="ml-auto p-1 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            >
+              <RefreshCw size={12} className="text-white animate-spin" />
+            </button>
+          </div>
+        )}
+
         {/* Balance Card */}
         <div
           onClick={() => refresh()}
-          className={`mt-4 rounded-[28px] p-6 space-y-6 transition-all duration-500 cursor-pointer active:scale-[0.99] ${isSearchFocused ? "opacity-10 translate-y-2" : isRefreshing ? "opacity-40 scale-[0.98]" : "opacity-100"} ${selectedAccountId === "all" ? "bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700" : "bg-white/5 backdrop-blur-md border border-white/10"}`}
+          className={`mt-4 rounded-[28px] p-6 space-y-6 transition-all duration-500 cursor-pointer active:scale-[0.99] ${isSearchFocused
+              ? "opacity-10 translate-y-2"
+              : isRefreshing
+                ? "opacity-40 scale-[0.98]"
+                : isDataStale && selectedAccountId !== "all"
+                  ? "opacity-70"
+                  : "opacity-100"
+            } ${selectedAccountId === "all" ? "bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700" : "bg-white/5 backdrop-blur-md border border-white/10"}`}
         >
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">

@@ -1,8 +1,8 @@
 // components/AccountSummary.tsx
 
 import React, { useMemo, useState, useEffect } from 'react';
-import { Landmark, Target } from 'lucide-react';
-import { useTranslation } from '../App';
+import { Landmark, Target, WifiOff } from 'lucide-react';
+import { useTranslation, useGlobalSync } from '../App';
 import { User, TransactionType } from '../shared/types';
 import { financeService } from '../services/financeService';
 import BankIcon from './BankIcon';
@@ -14,7 +14,7 @@ interface AccountSummaryProps {
   amount: string;
   recipientName?: string;
   onAmountChange?: (newAmount: string) => void;
-  isInterbankOut?: boolean; // Nouveau : pour les frais interbancaires sortants
+  isInterbankOut?: boolean;
 }
 
 const AccountSummary: React.FC<AccountSummaryProps> = ({
@@ -26,6 +26,7 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({
   isInterbankOut = false,
 }) => {
   const { t } = useTranslation();
+  const { isDataStale, isRefreshing } = useGlobalSync(); // ← Add this line
 
   const [showAid, setShowAid] = useState(false);
   const [debouncedAmount, setDebouncedAmount] = useState(amount);
@@ -115,12 +116,13 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({
   };
 
   return (
-    <div className="space-y-4 animate-in fade-in duration-300">
+    <div className={`space-y-4 animate-in fade-in duration-300 transition-all duration-500 ${isDataStale ? "opacity-60 grayscale-[30%]" : "opacity-100 grayscale-0"
+      }`}>
       <div className="flex items-center justify-between px-1">
         <h3 className="text-[10px] font-black theme-text-secondary uppercase tracking-widest">
           {t('deposit.select_account')}
         </h3>
-        {showAid && onAmountChange && (
+        {showAid && onAmountChange && !isDataStale && (
           <button
             onClick={handleAidClick}
             className="text-[10px] font-black theme-primary-text uppercase tracking-tight animate-in slide-in-from-right flex items-center gap-1 bg-purple-50 dark:bg-purple-900/20 px-2 py-1 rounded-lg"
@@ -131,27 +133,52 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({
         )}
       </div>
 
-      <div className="p-5 theme-bubble-bg border-2 border-purple-100 dark:border-purple-900/30 rounded-[28px] space-y-4 shadow-sm">
+      <div className={`p-5 border-2 rounded-[28px] space-y-4 shadow-sm transition-all duration-500 ${isDataStale
+          ? "bg-gray-100 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700"
+          : "theme-bubble-bg border-purple-100 dark:border-purple-900/30"
+        }`}>
         {/* Account Header */}
         <div className="flex items-center gap-4">
           <BankIcon
             logoUrl={logo}
             logoText="P"
-            color="#830AD1"
+            color={isDataStale ? "#9CA3AF" : "#830AD1"}
             size="lg"
-            className="shadow-sm border theme-border"
+            className={`shadow-sm border theme-border transition-all duration-500 ${isDataStale ? "opacity-50" : ""}`}
             id="piyes"
           />
           <div>
-            <p className="font-black theme-text-main text-sm">{t('accounts.piyes_current')}</p>
-            <p className="text-[11px] theme-text-secondary font-medium">
-              {t('deposit.current_balance', {
-                amount: user.balance.toLocaleString('fr-HT'),
-                currency: t('currency.symbol'),
-              })}
+            <p className={`font-black text-sm transition-colors duration-500 ${isDataStale ? "text-gray-400" : "theme-text-main"
+              }`}>{t('accounts.piyes_current')}</p>
+            <p className={`text-[11px] font-medium transition-all duration-500 ${isDataStale ? "text-gray-400 italic" : "theme-text-secondary"
+              }`}>
+              {isDataStale ? (
+                <span className="flex items-center gap-1">
+                  <WifiOff size={10} />
+                  {t('deposit.current_balance', {
+                    amount: user.balance.toLocaleString('fr-HT'),
+                    currency: t('currency.symbol'),
+                  })}
+                </span>
+              ) : (
+                t('deposit.current_balance', {
+                  amount: user.balance.toLocaleString('fr-HT'),
+                  currency: t('currency.symbol'),
+                })
+              )}
             </p>
           </div>
         </div>
+
+        {/* Stale Data Indicator */}
+        {isDataStale && (
+          <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-200 dark:border-amber-900/30">
+            <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
+            <p className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+              Données non actualisées — reconnexion en cours...
+            </p>
+          </div>
+        )}
 
         {/* Fees Breakdown - Only visible if amount > 0 */}
         {numericAmount > 0 && (
@@ -175,7 +202,8 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({
 
             <div className="pt-3 flex justify-between items-center">
               <div>
-                <p className="text-[11px] font-black theme-primary-text tracking-tighter">
+                <p className={`text-[11px] font-black tracking-tighter transition-colors duration-500 ${isDataStale ? "text-gray-400" : "theme-primary-text"
+                  }`}>
                   {content.label}
                 </p>
                 {content.subLabel && (
@@ -184,7 +212,8 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({
                   </p>
                 )}
               </div>
-              <p className="text-2xl font-black theme-primary-text tracking-tight">
+              <p className={`text-2xl font-black tracking-tight transition-colors duration-500 ${isDataStale ? "text-gray-400" : "theme-primary-text"
+                }`}>
                 {content.value}
               </p>
             </div>

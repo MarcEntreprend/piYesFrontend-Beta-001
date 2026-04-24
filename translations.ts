@@ -944,6 +944,9 @@ export const translations = {
       mark_all_read: "Tout marquer comme lu",
       clear_all: "Tout effacer",
       empty: "Vous n'avez aucune notification pour le moment.",
+      errors: {
+        fetch_failed: "Erreur de récupération des notifications.",
+      },
       types: {
         FRIEND_REQUEST: {
           title: "Demande d'ami",
@@ -2161,6 +2164,9 @@ export const translations = {
         about: { label: "Konsènan piYès", sub: "Vèsyon 1.2.0 • Build 2025" },
         terms: { label: "Kondisyon Jeneral", sub: "Li kondisyon sèvis nou yo" },
       },
+      errors: {
+        fetch_failed: "Nou pa rive resevwa kontak yo.",
+      },
     },
     pin: {
       title_setup: "Kreye PIN ou",
@@ -2645,6 +2651,9 @@ export const translations = {
       mark_all_read: "Make tout kòm li",
       clear_all: "Efase tout",
       empty: "Ou pa gen okenn notifikasyon.",
+      errors: {
+        fetch_failed: "Nou pa rive resevwa notifikasyon yo.",
+      },
       types: {
         transfer_in: {
           title: "Vire resevwa",
@@ -4322,6 +4331,9 @@ export const translations = {
       mark_all_read: "Mark all as read",
       clear_all: "Clear all",
       empty: "You have no notifications for now.",
+      errors: {
+        fetch_failed: "Failed to fetch notifications.",
+      },
       types: {
         FRIEND_REQUEST: {
           title: "Friend Request",

@@ -1,6 +1,7 @@
 // contexts/NotificationContext.tsx
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Notification, notificationService } from '../services/notificationService';
+import { useTranslation, useGlobalSync } from '../App';
 
 interface NotificationContextType {
   notifications: Notification[];
@@ -24,6 +25,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   const fetchNotifications = useCallback(async () => {
     setLoading(true);
@@ -32,7 +34,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       setNotifications(data);
       setUnreadCount(data.filter(n => !n.isRead).length);
     } catch (error) {
-      console.error('Failed to fetch notifications:', error);
+      console.error(t('notifications.errors.fetch_failed'), error);
     } finally {
       setLoading(false);
     }

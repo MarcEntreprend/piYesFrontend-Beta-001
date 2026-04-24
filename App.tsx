@@ -117,12 +117,12 @@ import Modal from "./components/Modal";
 import { useSync } from "./hooks/useSync";
 import { SyncResponse } from "./shared/types";
 
-// --- SYNC CONTEXT ---
 interface SyncContextType {
   syncData: SyncResponse | null;
   syncLoading: boolean;
   isRefreshing: boolean;
   refresh: () => Promise<void>;
+  isDataStale: boolean;
 }
 
 const SyncContext = createContext<SyncContextType | undefined>(undefined);
@@ -276,6 +276,11 @@ const App: React.FC = () => {
   const [wasOffline, setWasOffline] = useState(false);
   const [showBackOnlineBar, setShowBackOnlineBar] = useState(false);
 
+  // Offline data staleness tracking
+  const [isDataStale, setIsDataStale] = useState(false);
+  const offlineStartTime = useRef<number | null>(null);
+  const STALE_THRESHOLD = 10000; // 10 secondes offline → données considérées stale
+
   // États pour la gestion du PIN
   const [lastActivity, setLastActivity] = useState<number>(Date.now());
   const [pinAttempts, setPinAttempts] = useState<number>(0);
@@ -423,10 +428,13 @@ const App: React.FC = () => {
   useEffect(() => {
     const handleOnline = () => {
       setIsOnline(true);
+      setIsDataStale(false);
+      offlineStartTime.current = null;
       if (wasOffline) {
         setShowBackOnlineBar(true);
         showToast(t("common.online_msg"), "success");
-        // Hide success bar after delay
+        // Forcer un refresh des données après reconnexion
+        refresh();
         setTimeout(() => setShowBackOnlineBar(false), 3000);
       }
     };
@@ -434,7 +442,15 @@ const App: React.FC = () => {
     const handleOffline = () => {
       setIsOnline(false);
       setWasOffline(true);
+      offlineStartTime.current = Date.now();
       showToast(t("common.offline_msg"), "error");
+
+      // Après STALE_THRESHOLD, marquer les données comme périmées
+      setTimeout(() => {
+        if (!navigator.onLine) {
+          setIsDataStale(true);
+        }
+      }, STALE_THRESHOLD);
     };
 
     window.addEventListener("online", handleOnline);
@@ -444,7 +460,7 @@ const App: React.FC = () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
-  }, [wasOffline, t, showToast]);
+  }, [wasOffline, t, showToast, refresh]);
 
   useEffect(() => {
     const applyTheme = (themeName: string) => {
@@ -725,7 +741,7 @@ const App: React.FC = () => {
               }}
             >
               <SyncContext.Provider
-                value={{ syncData, syncLoading, isRefreshing, refresh }}
+                value={{ syncData, syncLoading, isRefreshing, refresh, isDataStale }}
               >
                 {user && isLocked && (
                   <PinOverlay
