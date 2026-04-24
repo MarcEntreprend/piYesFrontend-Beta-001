@@ -191,7 +191,7 @@ class FinanceService {
       const freeMessages = [
         "🎉 Aucun frais appliqué ! Avec piYès, l'argent circule librement.",
         "✨ Transfert gratuit — piYès ne prend rien sur cette opération.",
-        "💜 Zéro frais. C'est ça, la banque nouvelle génération."
+        "💜 Zéro frais. C'est ça, le transfert d'argent nouvelle génération."
       ];
       return freeMessages[Math.floor(Math.random() * freeMessages.length)];
     }

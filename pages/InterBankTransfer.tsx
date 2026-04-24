@@ -31,6 +31,8 @@ import AccountSummary from "../components/AccountSummary";
 import OperationResult from "../components/OperationResult";
 import BankIcon from "../components/BankIcon";
 import { financeService } from "../services/financeService";
+import StepIndicator from "../components/StepIndicator";
+import PageHeader from "../components/PageHeader";
 
 interface InterBankTransferProps {
   user: User;
@@ -255,34 +257,20 @@ const InterBankTransfer: React.FC<InterBankTransferProps> = ({
           onFailure={() => navigate("/")}
         />
       )}
-      <header className="px-6 pt-12 pb-6 border-b theme-border flex items-center justify-between sticky top-0 theme-card-bg z-30 shrink-0">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => (step === 1 ? navigate(-1) : setStep(step - 1))}
-            className="p-2 -ml-2 theme-text-secondary active:scale-90 transition-transform"
-          >
-            <ArrowLeft size={24} />
-          </button>
-          <div>
-            <h1 className="text-lg font-black theme-text-main tracking-tight">
-              {t("interbank.title")}
-            </h1>
-            <p className="text-[9px] font-bold theme-text-secondary uppercase tracking-[0.15em]">
-              {t("common.step_of", { current: step, total: 3 })}
-            </p>
+      <PageHeader
+        title={t("interbank.title")}
+        subtitle={t("common.step_of", { current: step, total: 3 })}
+        onBack={() => (step === 1 ? navigate(-1) : setStep(step - 1))}
+        rightElement={
+          <div className="w-10 h-10 rounded-full theme-bubble-bg flex items-center justify-center theme-primary-text border theme-border shadow-sm">
+            <ArrowRightLeft size={20} />
           </div>
-        </div>
-        <div className="w-10 h-10 rounded-full theme-bubble-bg flex items-center justify-center theme-primary-text border theme-border shadow-sm">
-          <ArrowRightLeft size={20} />
-        </div>
-      </header>
+        }
+      >
+      </PageHeader>
 
-      <div className="h-1 w-full bg-gray-100 dark:bg-gray-800 shrink-0">
-        <div
-          className="h-full theme-primary-bg transition-all duration-500"
-          style={{ width: `${(step / 3) * 100}%` }}
-        ></div>
-      </div>
+      {/* Indicateur d'étapes - 3 étapes */}
+      <StepIndicator totalSteps={4} currentStep={step} />
 
       <main className="flex-1 p-6 flex flex-col overflow-y-auto no-scrollbar">
         {step === 1 && (

@@ -322,23 +322,6 @@ const SchedulerCreate: React.FC = () => {
           {t("scheduler.create.subtitle")}
         </p>
 
-        {/* Titre (optionnel) */}
-        <div className="space-y-2">
-          <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
-            {t("scheduler.create.title_label")}{" "}
-            <span className="opacity-50">{t("scheduler.create.optional")}</span>
-          </label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder={t("scheduler.create.title_placeholder", {
-              name: payerName || "...",
-            })}
-            className="w-full theme-bubble-bg p-4 rounded-2xl outline-none theme-text-main border theme-border focus:border-(--primary-color) transition-all font-bold"
-          />
-        </div>
-
         {/* Payeur */}
         <div className="space-y-2">
           <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
@@ -407,6 +390,22 @@ const SchedulerCreate: React.FC = () => {
           )}
         </div>
 
+        {/* Titre (optionnel) */}
+        <div className="space-y-2">
+          <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
+            {t("scheduler.create.title_label")}{" "}
+            <span className="opacity-50">{t("scheduler.create.optional")}</span>
+          </label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder={t("scheduler.create.title_placeholder", {
+              name: payerName || "...",
+            })}
+            className="w-full theme-bubble-bg p-4 rounded-2xl outline-none theme-text-main border theme-border focus:border-(--primary-color) transition-all font-bold"
+          />
+        </div>
         {/* Montant */}
         <div className="space-y-2">
           <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
@@ -487,11 +486,10 @@ const SchedulerCreate: React.FC = () => {
                       <td key={r.date} className="py-1.5 px-0.5">
                         <button
                           onClick={() => toggleCell(r.date, "time1")}
-                          className={`w-10 h-8 rounded-xl text-[9px] font-bold transition-all active:scale-90 ${
-                            r.time1Active
-                              ? "theme-primary-bg text-white"
-                              : "bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600"
-                          }`}
+                          className={`w-10 h-8 rounded-xl text-[9px] font-bold transition-all active:scale-90 ${r.time1Active
+                            ? "theme-primary-bg text-white"
+                            : "bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600"
+                            }`}
                         >
                           {r.time1Active ? t("scheduler.create.time_830") : "—"}
                         </button>
@@ -509,11 +507,10 @@ const SchedulerCreate: React.FC = () => {
                       <td key={r.date} className="py-1.5 px-0.5">
                         <button
                           onClick={() => toggleCell(r.date, "time2")}
-                          className={`w-10 h-8 rounded-xl text-[9px] font-bold transition-all active:scale-90 ${
-                            r.time2Active
-                              ? "theme-primary-bg text-white"
-                              : "bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600"
-                          }`}
+                          className={`w-10 h-8 rounded-xl text-[9px] font-bold transition-all active:scale-90 ${r.time2Active
+                            ? "theme-primary-bg text-white"
+                            : "bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600"
+                            }`}
                         >
                           {r.time2Active
                             ? t("scheduler.create.time_1230")

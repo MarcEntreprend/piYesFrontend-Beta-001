@@ -56,6 +56,69 @@ const ReceiptDetail: React.FC = () => {
 
   // --- Tous les hooks sont regroupés ici, avant tout return conditionnel ---
 
+
+  // Note automatique basée sur le type de transaction
+  const automaticNote = useMemo(() => {
+    if (!receipt) return '';
+
+    const txTypeRaw = receipt.receipt_type;
+    const txTypeNormalized = typeof txTypeRaw === 'string' ? txTypeRaw.toUpperCase() : txTypeRaw;
+    const description = receipt.description || '';
+
+    // Sous-types P2P détectés via la description
+    if (txTypeNormalized === 'TRANSFER' || txTypeNormalized === 'P2P') {
+      if (description.includes('via clé') || description.includes('Transfert à')) return 'Transfert via clé';
+      if (description.includes('Rappel')) return 'Rappel de transfert';
+      if (description.includes('lien') || description.includes('Link')) return 'Paiement par lien';
+      if (description.includes('QR')) return 'Paiement par QR Code';
+    }
+
+    switch (txTypeNormalized) {
+      case 'MOBILE_RECHARGE':
+      case 'RECHARGE':
+        return 'Recharge mobile';
+      case 'DEPOSIT':
+        return 'Dépôt sur compte';
+      case 'WITHDRAWAL':
+      case 'WITHDRAW':
+        return 'Retrait de fonds';
+      case 'P2P_KEY':
+        return 'Transfert via clé';
+      case 'P2P_SCHEDULE':
+        return 'Rappel de transfert';
+      case 'P2P_LINK':
+        return 'Paiement par lien';
+      case 'P2P_QR':
+        return 'Paiement par QR Code';
+      case 'INTERNATIONAL':
+        return 'Transfert international';
+      case 'INTERBANK_IN': {
+        const receiverBank = receipt.receiver?.bank || 'Autre institution';
+        return `Transfert inter-bancaire : piYès → ${receiverBank}`;
+      }
+      case 'INTERBANK_OUT': {
+        const senderBank = receipt.sender?.bank || 'Autre institution';
+        return `Transfert inter-bancaire : ${senderBank} → piYès`;
+      }
+      default:
+        // Fallback pour TRANSFER non reconnu
+        if (txTypeNormalized === 'TRANSFER') {
+          // Vérifier si c'est interbancaire
+          const senderBank = receipt.sender?.bank?.toLowerCase() || '';
+          const receiverBank = receipt.receiver?.bank?.toLowerCase() || '';
+          if (senderBank.includes('piyès') && receiverBank && !receiverBank.includes('piyès')) {
+            return `Transfert inter-bancaire : piYès → ${receipt.receiver?.bank || 'Autre institution'}`;
+          }
+          if (!senderBank.includes('piyès') && receiverBank.includes('piyès')) {
+            return `Transfert inter-bancaire : ${receipt.sender?.bank || 'Autre institution'} → piYès`;
+          }
+          // P2P standard si aucun sous-type détecté
+          return 'Transfert via clé';
+        }
+        return '';
+    }
+  }, [receipt]);
+
   const feeDisplayText = useMemo(() => {
     if (!receipt) return '✨ Aucun frais appliqué !';
     // Détermine le contexte des frais
@@ -74,9 +137,9 @@ const ReceiptDetail: React.FC = () => {
 
     if (!hasFees) {
       const messages = [
-        "🎉 Aucun frais appliqué ! Avec piYès, l'argent circule librement.",
+        "🎉 Aucun frais appliqué ! Avec piYaès, l'argent circule librement.",
         "✨ Transfert gratuit — piYès ne prend rien sur cette opération.",
-        "💜 Zéro frais. C'est ça, la banque nouvelle génération.",
+        "💜 Zéro frais. C'est ça, le transfert d'argent nouvelle génération.",
         "🚀 Aucun frais ! Continuez à profiter de piYès sans limite.",
       ];
       return messages[Math.floor(Math.random() * messages.length)];
@@ -602,10 +665,19 @@ const ReceiptDetail: React.FC = () => {
                 </div>
               )}
 
-              {receipt.description && (
+              {(automaticNote || receipt.description) && (
                 <div className="bg-yellow-50 rounded-xl p-5 border border-yellow-200 mt-6">
-                  <p className="text-[10px] font-black text-yellow-600 uppercase tracking-widest mb-2">Note</p>
-                  <p className="text-sm font-bold text-yellow-900 leading-relaxed">{receipt.description}</p>
+                  {automaticNote && (
+                    <>
+                      <p className="text-[10px] font-black text-yellow-600 uppercase tracking-widest mb-2">Note</p>
+                      <p className="text-sm font-bold text-yellow-900 leading-relaxed">{automaticNote}</p>
+                    </>
+                  )}
+                  {receipt.description && (
+                    <p className="text-xs font-medium italic text-yellow-800 leading-relaxed mt-2">
+                      {receipt.description}
+                    </p>
+                  )}
                 </div>
               )}
             </div>

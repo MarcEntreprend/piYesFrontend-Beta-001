@@ -56,6 +56,7 @@ const InternationalTransfer: React.FC<InternationalTransferProps> = ({
   const [method, setMethod] = useState<"bank" | "cash" | "mobile">("bank");
   const [methodInfo, setMethodInfo] = useState("");
   const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
   const [searchCountry, setSearchCountry] = useState("");
   const [showCountryPicker, setShowCountryPicker] = useState(false);
 
@@ -101,6 +102,7 @@ const InternationalTransfer: React.FC<InternationalTransferProps> = ({
         currency: selectedCountry.currency,
         amountForeign: conversion.received,
         exchangeRate: conversion.rate,
+        note: note.trim() || undefined,
       });
 
       const tx = {
@@ -373,6 +375,18 @@ const InternationalTransfer: React.FC<InternationalTransferProps> = ({
                     {t("intl.time_val")}
                   </p>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
+                  {t("interbank.note_placeholder")}
+                </label>
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder={t("interbank.note_example")}
+                  className="w-full p-5 theme-bubble-bg rounded-3xl outline-none theme-text-main border theme-border focus:border-(--primary-color) transition-all resize-none h-24 text-sm font-bold"
+                />
               </div>
             </div>
           </div>

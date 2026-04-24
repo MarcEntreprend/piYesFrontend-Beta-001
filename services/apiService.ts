@@ -428,6 +428,7 @@ class PiyesApiService {
     currency?: string;
     amountForeign?: number;
     exchangeRate?: number;
+    note?: string;
   }): Promise<any> {
     return http.post<any>("/transactions/international", params);
   }

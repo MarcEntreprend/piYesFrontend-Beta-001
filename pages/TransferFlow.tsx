@@ -47,6 +47,7 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
   const searchParams = useMemo(() => new URLSearchParams(search), [search]);
   const [step, setStep] = useState(1);
   const [amount, setAmount] = useState(searchParams.get("amount") || "");
+  const [note, setNote] = useState("");
   const [keyValue, setKeyValue] = useState(
     searchParams.get("recipient") || searchParams.get("name") || "",
   );
@@ -242,10 +243,10 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
         throw new Error(t("transfer.recipient_not_found_error"));
       }
 
-      let description = undefined;
-      if (source === "link") description = t("transfer.prefilled_link_desc");
-      else if (source === "qr") description = t("transfer.prefilled_qr_desc");
-      else if (source === "scheduler") {
+      let description = note.trim() || undefined;
+      if (!description && source === "link") description = t("transfer.prefilled_link_desc");
+      else if (!description && source === "qr") description = t("transfer.prefilled_qr_desc");
+      else if (!description && source === "scheduler") {
         const schedulerNote = searchParams.get("description");
         description = schedulerNote || t("transfer.scheduler_payment_desc");
       }
@@ -526,6 +527,18 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
               recipientName={getRecipientDisplay()}
               onAmountChange={(val) => setAmount(val)}
             />
+
+            <div className="space-y-2 mt-6">
+              <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
+                {t("interbank.note_placeholder")}
+              </label>
+              <textarea
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder={t("interbank.note_example")}
+                className="w-full p-5 theme-bubble-bg rounded-3xl outline-none theme-text-main border theme-border focus:border-(--primary-color) transition-all resize-none h-24 text-sm font-bold"
+              />
+            </div>
           </div>
         ) : (
           <div className="flex-1 animate-in slide-in-from-right duration-300 px-6">
