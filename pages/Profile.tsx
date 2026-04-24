@@ -484,7 +484,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
 
   return (
     <div className="theme-card-bg min-h-screen flex flex-col animate-in fade-in duration-500 pb-32">
-      {/* Canvas invisible pour le crop */}
+      {/* Canvas invisible pour  le crop */}
       <canvas ref={cropCanvasRef} className="hidden" />
 
       <PageHeader
@@ -515,156 +515,154 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
       />
 
       <div className="flex-1 overflow-y-auto no-scrollbar">
-        {/* Avatar */}
-        <div className="px-6 py-10 flex flex-col items-center space-y-6">
-          <div className="relative group">
+        {/* Avatar Header - style horizontal */}
+        <div className="px-6 py-8 flex items-center gap-4 border-b theme-border">
+          <div className="relative group shrink-0">
             <AvatarViewer
               avatarUrl={formData.avatarUrl}
-              size="xl"
+              size="lg"
               shape="circle"
+              disablePreview={isEditing}
               fallback={
-                <span className="text-4xl font-black theme-primary-text">
-                  {user.initials || getInitials(user.name)}
+                <span className="text-2xl font-black theme-primary-text">
+                  {(user.name || "??")
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .substring(0, 2)
+                    .toUpperCase()}
                 </span>
               }
-              disablePreview={isEditing}
-              className="border-4 border-(--primary-color) shadow-2xl"
+              className="border-2 border-(--primary-color) shadow-sm"
             />
 
             {/* Overlay d'édition - apparaît au hover */}
             {isEditing && (
               <div
-                className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full"
+                className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full z-10"
                 onClick={() => fileInputRef.current?.click()}
               >
-                <Camera size={32} className="text-white" />
-              </div>
-            )}
-
-            {/* Boutons d'édition sous l'avatar */}
-            {isEditing && (
-              <div className="absolute -bottom-2 flex gap-2">
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="p-2 bg-white dark:bg-gray-800 shadow-lg rounded-full border theme-border theme-primary-text active:scale-90"
-                >
-                  <Edit2 size={16} />
-                </button>
-                <button
-                  onClick={resetAvatar}
-                  className="p-2 bg-white dark:bg-gray-800 shadow-lg rounded-full border theme-border text-red-500 active:scale-90"
-                >
-                  <Trash2 size={16} />
-                </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleAvatarFileSelect}
-                />
+                <Camera size={24} className="text-white" />
               </div>
             )}
 
             {/* Badge vérifié */}
             {!isEditing && user.verificationStatus === "verified" && (
-              <div className="absolute -bottom-1 -right-1 bg-green-500 text-white p-1.5 rounded-full border-4 border-white dark:border-gray-800 shadow-lg">
-                <ShieldCheck size={20} />
+              <div className="absolute -bottom-1 -right-1 bg-green-500 text-white p-1 rounded-full border-2 border-white dark:border-gray-800 shadow-lg z-10">
+                <ShieldCheck size={14} />
               </div>
             )}
           </div>
-          <div className="text-center">
-            <h2 className="text-2xl font-bold theme-text-main leading-tight">
+
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg font-bold theme-text-main truncate">
               {formData.name}
             </h2>
-            <p className="text-sm font-bold theme-primary-text mt-0.5">
+            <p className="text-xs font-bold theme-primary-text">
               {user.tag || "@piyes.user"}
             </p>
-            <p className="text-[10px] theme-text-secondary font-medium mt-1 uppercase tracking-widest">
+            <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">
               {t("profile_hub.account_number")} {user.accountNumber}
             </p>
           </div>
-        </div>
 
-        {/* Verification block */}
-        <div className="px-6 mb-8">
-          {user.verificationStatus === "verified" ? (
-            <div className="p-6 bg-green-50 dark:bg-green-900/10 rounded-4xl border border-green-200 dark:border-green-900/30 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-500 text-white rounded-2xl flex items-center justify-center shadow-lg">
-                  <CheckCircle2 size={24} />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-green-700 dark:text-green-400">
-                    {t("profile_hub.verified_box.title")}
-                  </p>
-                  <p className="text-[10px] text-green-600 font-medium">
-                    {t("profile_hub.verified_box.sub")}
-                  </p>
-                </div>
-              </div>
-              <span className="bg-white/50 px-3 py-1 rounded-full text-[9px] font-black text-green-700 uppercase tracking-tighter">
-                {t("profile_hub.verified_box.badge")}
-              </span>
-            </div>
-          ) : (
-            <div className="p-6 theme-primary-bg rounded-4xl shadow-xl text-white space-y-6 relative overflow-hidden">
-              <div className="absolute -right-4 -top-4 opacity-10 rotate-12">
-                <Shield size={120} />
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30">
-                  <AlertCircle size={24} />
-                </div>
-                <div className="flex-1">
-                  <h4 className="text-lg font-bold">
-                    {t("profile_hub.verify_box.title")}
-                  </h4>
-                  <p className="text-xs opacity-80 leading-relaxed">
-                    {t("profile_hub.verify_box.sub")}
-                  </p>
-                </div>
-              </div>
-              <p className="text-[10px] opacity-70 leading-relaxed">
-                {t("profile_hub.verify_box.process")}
-              </p>
+          {/* Boutons d'édition sous l'avatar - visibles uniquement en mode édition */}
+          {isEditing && (
+            <div className="flex gap-1 shrink-0">
               <button
-                onClick={() => navigate("/verify-identity")}
-                className="w-full bg-white text-black py-4 rounded-2xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg"
+                onClick={() => fileInputRef.current?.click()}
+                className="p-2 bg-white dark:bg-gray-800 shadow-lg rounded-full border theme-border theme-primary-text active:scale-90"
               >
-                {t("profile_hub.verify_box.btn")} <ChevronRight size={18} />
+                <Edit2 size={14} />
               </button>
+              <button
+                onClick={resetAvatar}
+                className="p-2 bg-white dark:bg-gray-800 shadow-lg rounded-full border theme-border text-red-500 active:scale-90"
+              >
+                <Trash2 size={14} />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={handleAvatarFileSelect}
+              />
             </div>
           )}
         </div>
+
+        {/* Verification Status Button - Only show when not editing */}
+        {!isEditing && (
+          <div className="px-6 mb-8">
+            {user.verificationStatus === "verified" ? (
+              <button
+                onClick={() => navigate("/identity-hub")}
+                className="w-full flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/10 rounded-4xl border border-green-200 dark:border-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/20 transition-all text-left group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <CheckCircle2 size={20} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-green-700 dark:text-green-400">
+                      {t("profile_hub.verified_box.title")}
+                    </p>
+                    <p className="text-[10px] text-green-600 font-medium">
+                      {t("profile_hub.verified_box.sub")}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="bg-white/50 px-3 py-1 rounded-full text-[9px] font-black text-green-700 uppercase tracking-tighter">
+                    {t("profile_hub.verified_box.badge")}
+                  </span>
+                  <ChevronRight
+                    size={18}
+                    className="text-green-600 opacity-50 group-hover:opacity-100 transition-opacity"
+                  />
+                </div>
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate("/verify-identity")}
+                className="w-full flex items-center justify-between p-4 theme-primary-bg rounded-4xl shadow-xl text-white hover:brightness-110 transition-all text-left group relative overflow-hidden"
+              >
+                <div className="absolute -right-4 -top-4 opacity-10 rotate-12">
+                  <Shield size={80} />
+                </div>
+                <div className="flex items-center gap-4 relative z-10">
+                  <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/30 group-hover:scale-110 transition-transform">
+                    <AlertCircle size={20} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">
+                      {t("profile_hub.verify_box.title")}
+                    </p>
+                    <p className="text-[10px] opacity-80">
+                      {t("profile_hub.verify_box.sub")}
+                    </p>
+                  </div>
+                </div>
+                <div className="relative z-10 flex items-center gap-2">
+                  <span className="bg-white/20 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter">
+                    {t("profile_hub.verify_box.btn")}
+                  </span>
+                  <ChevronRight
+                    size={18}
+                    className="opacity-70 group-hover:opacity-100 transition-opacity"
+                  />
+                </div>
+              </button>
+            )}
+          </div>
+        )}
 
         <div className="px-6 space-y-8 pb-10">
           <ProfileSection
             id="personal-info"
             title={t("profile_hub.sections.personal")}
           >
-            <button
-              onClick={() => navigate("/identity-hub")}
-              className="w-full flex items-center justify-between p-4 border-b theme-border hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-left group"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl theme-bubble-bg flex items-center justify-center theme-primary-text group-hover:scale-110 transition-transform">
-                  <QrIcon size={18} />
-                </div>
-                <div>
-                  <p className="text-sm font-bold theme-text-main">
-                    {t("profile_hub.identity_hub_title")}
-                  </p>
-                  <p className="text-[10px] theme-text-secondary">
-                    {t("profile_hub.identity_hub_sub")}
-                  </p>
-                </div>
-              </div>
-              <ChevronRight
-                size={18}
-                className="theme-text-secondary opacity-30"
-              />
-            </button>
 
             <ProfileField
               icon={<UserIcon size={18} />}

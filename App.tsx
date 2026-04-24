@@ -60,7 +60,6 @@ import Report from "./pages/Report";
 import IdentityVerification from "./pages/IdentityVerification";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
-import IdentityHub from "./pages/IdentityHub";
 import Notifications from "./pages/Notifications";
 import NotificationsSettings from "./pages/NotificationsSettings";
 import HelpCenter from "./pages/HelpCenter";
@@ -1088,15 +1087,7 @@ const App: React.FC = () => {
                               />
                             }
                           />
-                          <Route
-                            path="/identity-hub"
-                            element={
-                              <IdentityHub
-                                user={user}
-                                onUpdate={handleUpdateUser}
-                              />
-                            }
-                          />
+
                           <Route
                             path="/notifications"
                             element={<Notifications />}

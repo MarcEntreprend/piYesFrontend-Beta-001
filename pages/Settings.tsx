@@ -23,6 +23,8 @@ import {
   X,
   Type,
   Loader2,
+  QrCode as QrIcon,
+  Share2,
 } from "lucide-react";
 import { useTranslation } from "../App";
 import { Language } from "../translations";
@@ -32,6 +34,8 @@ import { api } from "../services/apiService";
 import { cacheService } from "../services/cacheService";
 import PageHeader from "../components/PageHeader";
 import Button from "../components/Button";
+import AvatarViewer from "../components/AvatarViewer";
+import { QRCodeSVG } from "qrcode.react";
 
 interface SettingsProps {
   user: User;
@@ -64,6 +68,7 @@ const Settings: React.FC<SettingsProps> = ({
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showLogoutAllConfirm, setShowLogoutAllConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
 
   const themes = [
     { id: "default", label: t("settings.themes.default"), color: "#830AD1" },
@@ -176,41 +181,45 @@ const Settings: React.FC<SettingsProps> = ({
     <div className="theme-card-bg min-h-screen pb-32">
       <PageHeader title={t("settings.title")} />
 
-      {/* Profile Header */}
-      <div
-        id="profile-main"
-        onClick={() => navigate("/profile")}
-        className="px-6 py-8 flex items-center justify-between border-b theme-border hover:bg-gray-50/50 dark:hover:bg-white/5 transition-all cursor-pointer group"
-      >
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 theme-bubble-bg rounded-full flex items-center justify-center font-black theme-primary-text text-2xl border-2 border-(--primary-color) shadow-sm group-active:scale-95 transition-transform overflow-hidden">
-            {user.avatarUrl ? (
-              <img
-                src={user.avatarUrl}
-                alt=""
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              user.name
+      {/* Profile Card */}
+      <div className="theme-bubble-bg rounded-4xl p-8 border theme-border flex flex-col items-center text-center space-y-4 shadow-sm mx-6 mt-6 relative">
+        {/* QR Icon - Top Right */}
+        <button
+          onClick={() => setShowQRModal(true)}
+          className="absolute top-4 right-4 p-2 theme-bubble-bg rounded-full theme-primary-text hover:scale-110 active:scale-90 transition-all shadow-sm border theme-border"
+        >
+          <QrIcon size={24} />
+        </button>
+
+        <AvatarViewer
+          avatarUrl={user.avatarUrl}
+          size="xl"
+          shape="circle"
+          fallback={
+            <span className="text-5xl font-black theme-primary-text">
+              {user.name
                 .split(" ")
                 .map((n) => n[0])
                 .join("")
-            )}
-          </div>
-          <div className="space-y-0.5">
-            <h2 className="text-lg font-bold theme-text-main group-hover:theme-primary-text transition-colors">
-              {user.name}
-            </h2>
-            <p className="text-xs font-bold theme-primary-text">
+                .substring(0, 2)
+                .toUpperCase()}
+            </span>
+          }
+          className="border-4 border-white dark:border-gray-800 shadow-xl"
+        />
+
+        <div className="space-y-1 w-full">
+          <h2 className="text-xl font-black theme-text-main">
+            {user.name}
+          </h2>
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-sm font-bold theme-primary-text">
               {user.tag || "@piyes.user"}
-            </p>
-            <p className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest">
-              {t("profile_hub.account_number")} {user.accountNumber}
-            </p>
+            </span>
           </div>
-        </div>
-        <div className="w-10 h-10 rounded-full theme-bubble-bg flex items-center justify-center theme-primary-text opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
-          <ChevronRight size={20} />
+          <p className="text-[10px] theme-text-secondary font-medium uppercase tracking-widest">
+            {t("profile_hub.account_number")} {user.accountNumber}
+          </p>
         </div>
       </div>
 
@@ -294,11 +303,10 @@ const Settings: React.FC<SettingsProps> = ({
                   <button
                     key={t_theme.id}
                     onClick={() => onThemeChange(t_theme.id)}
-                    className={`w-full flex items-center justify-between p-3 rounded-xl border-2 transition-all ${
-                      currentTheme === t_theme.id
-                        ? "border-(--primary-color) bg-(--bubble-bg)"
-                        : "theme-border bg-transparent opacity-60"
-                    }`}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl border-2 transition-all ${currentTheme === t_theme.id
+                      ? "border-(--primary-color) bg-(--bubble-bg)"
+                      : "theme-border bg-transparent opacity-60"
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
@@ -352,11 +360,10 @@ const Settings: React.FC<SettingsProps> = ({
                   <button
                     key={size.id}
                     onClick={() => onFontSizeChange(size.id)}
-                    className={`w-full flex items-center justify-between p-3 rounded-xl border-2 transition-all ${
-                      currentFontSize === size.id
-                        ? "border-(--primary-color) bg-(--bubble-bg)"
-                        : "theme-border bg-transparent opacity-60"
-                    }`}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl border-2 transition-all ${currentFontSize === size.id
+                      ? "border-(--primary-color) bg-(--bubble-bg)"
+                      : "theme-border bg-transparent opacity-60"
+                      }`}
                   >
                     <span className="text-xs font-bold theme-text-main">
                       {size.label}
@@ -458,6 +465,75 @@ const Settings: React.FC<SettingsProps> = ({
         </div>
       </div>
 
+      {/* QR Code Modal */}
+      <Modal
+        isOpen={showQRModal}
+        onClose={() => setShowQRModal(false)}
+      >
+        <div className="p-8 space-y-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-[11px] font-bold theme-text-secondary uppercase tracking-[0.2em]">
+              Votre QR Code Permanent
+            </h3>
+            <button
+              onClick={() => setShowQRModal(false)}
+              className="p-2 theme-bubble-bg rounded-full theme-text-secondary"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          <div className="bg-white p-8 rounded-[40px] shadow-xl border theme-border flex flex-col items-center space-y-6">
+            <div className="p-4 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+              <QRCodeSVG
+                value={`https://piyes.ht/pay?to=${user.tag?.replace("@", "")}&type=tag`}
+                size={200}
+                level="H"
+                includeMargin={false}
+                imageSettings={{
+                  src: "/favicon.ico",
+                  x: undefined,
+                  y: undefined,
+                  height: 40,
+                  width: 40,
+                  excavate: true,
+                }}
+              />
+            </div>
+            <div className="text-center space-y-2">
+              <p className="text-sm font-bold theme-text-main">
+                Scannez pour me payer
+              </p>
+              <p className="text-[10px] theme-text-secondary max-w-[200px] mx-auto">
+                Ce QR code est permanent et lié à votre tag{" "}
+                <span className="font-bold theme-primary-text">
+                  {user.tag}
+                </span>
+                .
+              </p>
+            </div>
+            <div className="flex gap-3 w-full">
+              <button
+                onClick={() => {
+                  const transferUrl = `https://piyes.ht/pay?to=${user.tag?.replace("@", "")}&type=tag`;
+                  if (navigator.share) {
+                    navigator.share({
+                      title: "Mon piYès Tag",
+                      text: `Payez-moi sur piYès via mon tag: ${user.tag}`,
+                      url: transferUrl,
+                    });
+                  }
+                }}
+                className="flex-1 theme-bubble-bg theme-text-main py-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all border theme-border"
+              >
+                <Share2 size={16} /> Partager
+              </button>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Language Modal */}
       <Modal
         isOpen={showLanguageModal}
         onClose={() => setShowLanguageModal(false)}

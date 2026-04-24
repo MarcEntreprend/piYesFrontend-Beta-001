@@ -680,7 +680,7 @@ export const translations = {
       },
     },
     profile_hub: {
-      title: "Hub Identitaire",
+      title: "Profile",
       account_number: "N° de compte :",
       identity_hub_title: "Identity Hub & QR Code",
       identity_hub_sub: "Gérez votre identité et vos tags",
@@ -2384,7 +2384,7 @@ export const translations = {
       },
     },
     profile_hub: {
-      title: "Hub Idantite",
+      title: "Pwofil",
       account_number: "Nimewo kont :",
       identity_hub_title: "Identity Hub & QR Code",
       identity_hub_sub: "Jere idantite w ak tag ou yo",
@@ -4061,7 +4061,7 @@ export const translations = {
       },
     },
     profile_hub: {
-      title: "Identity Hub",
+      title: "Profile",
       account_number: "Account No:",
       identity_hub_title: "Identity Hub & QR Code",
       identity_hub_sub: "Manage your identity and tags",
