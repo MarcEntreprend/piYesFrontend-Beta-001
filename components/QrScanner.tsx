@@ -1,4 +1,4 @@
-
+// components/QrScanner.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { X, Zap, ZapOff, RefreshCw, Camera, ArrowLeft, CheckCircle, ChevronDown } from 'lucide-react';
@@ -27,17 +27,16 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScan, onClose, title = "Scan QR
         setCameras(devices);
         if (devices.length > 0) {
           let initialCamera = currentCameraId;
-          
-          // If no stored camera or stored camera not found, pick best default
+
           if (!initialCamera || !devices.find(d => d.id === initialCamera)) {
-            const backCamera = devices.find(d => 
-              d.label.toLowerCase().includes('back') || 
+            const backCamera = devices.find(d =>
+              d.label.toLowerCase().includes('back') ||
               d.label.toLowerCase().includes('arrière') ||
               d.label.toLowerCase().includes('rear')
             );
             initialCamera = backCamera ? backCamera.id : devices[0].id;
           }
-          
+
           setCurrentCameraId(initialCamera);
           localStorage.setItem('lastCameraId', initialCamera);
           await startScanning(initialCamera);
@@ -75,8 +74,8 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScan, onClose, title = "Scan QR
         cameraId,
         {
           fps: 20,
-          qrbox: { width: 320, height: 320 },
-          aspectRatio: 1.0
+          qrbox: { width: 320, height: 320 },   // zone de scan (masquée via CSS)
+          aspectRatio: 1.0,
         },
         (decodedText) => {
           onScan(decodedText);
@@ -85,11 +84,11 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScan, onClose, title = "Scan QR
           // ignore scan failures
         }
       );
-      
+
       // Check for flash support
       try {
         const capabilities = html5QrCode.getRunningTrackCapabilities() as any;
-        if (capabilities.torch) {
+        if (capabilities?.torch) {
           setHasFlash(true);
         } else {
           setHasFlash(false);
@@ -131,15 +130,26 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScan, onClose, title = "Scan QR
   };
 
   return (
-    <div className="fixed inset-0 z-[250] bg-black flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-250 bg-black flex flex-col overflow-hidden">
+      {/* Styles pour masquer le rectangle de scan de la librairie */}
+      <style>{`
+        #${containerId} .qr-shaded-region {
+          border: none !important;
+          background: transparent !important;
+        }
+        #${containerId} .qr-region {
+          border: none !important;
+        }
+      `}</style>
+
       {/* Camera View - Full Screen */}
       <div id={containerId} className="absolute inset-0 w-full h-full [&>video]:object-cover [&>video]:w-full [&>video]:h-full"></div>
 
       {/* Custom UI Overlay */}
       <div className="absolute inset-0 flex flex-col pointer-events-none">
-        
+
         {/* Header */}
-        <div className="p-6 flex items-center justify-between pointer-events-auto bg-gradient-to-b from-black/70 to-transparent">
+        <div className="p-6 flex items-center justify-between pointer-events-auto bg-linear-to-b from-black/70 to-transparent">
           <button onClick={onClose} className="p-2 text-white active:scale-90 transition-transform">
             <ArrowLeft size={28} />
           </button>
@@ -160,13 +170,13 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScan, onClose, title = "Scan QR
                 <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-white rounded-tr-3xl"></div>
                 <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-white rounded-bl-3xl"></div>
                 <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-white rounded-br-3xl"></div>
-                
+
                 {/* Scanning Line Animation */}
-                <motion.div 
+                <motion.div
                   initial={{ top: '5%' }}
                   animate={{ top: '95%' }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute left-6 right-6 h-1 bg-[var(--primary-color)] shadow-[0_0_20px_var(--primary-color)] z-10 rounded-full"
+                  className="absolute left-6 right-6 h-1 bg-(--primary-color) shadow-[0_0_20px_var(--primary-color)] z-10 rounded-full"
                 />
 
                 {/* Inner Glow */}
@@ -186,19 +196,19 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScan, onClose, title = "Scan QR
         </div>
 
         {/* Bottom Controls */}
-        <div className="p-12 pb-24 flex items-center justify-center gap-10 pointer-events-auto bg-gradient-to-t from-black/80 to-transparent relative">
+        <div className="p-12 pb-24 flex items-center justify-center gap-10 pointer-events-auto bg-linear-to-t from-black/80 to-transparent relative">
           {hasFlash && (
-            <button 
+            <button
               onClick={toggleFlash}
               className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${isFlashOn ? 'bg-white text-black shadow-[0_0_25px_rgba(255,255,255,0.6)]' : 'bg-white/10 text-white backdrop-blur-2xl border border-white/20'}`}
             >
               {isFlashOn ? <Zap size={28} fill="currentColor" /> : <ZapOff size={28} />}
             </button>
           )}
-          
+
           {cameras.length > 1 && (
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setShowCameraMenu(!showCameraMenu)}
                 className="w-16 h-16 rounded-full bg-white/10 text-white backdrop-blur-2xl border border-white/20 flex items-center justify-center active:scale-90 transition-all shadow-xl"
               >
@@ -208,18 +218,18 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScan, onClose, title = "Scan QR
               {/* Camera Selection Menu */}
               <AnimatePresence>
                 {showCameraMenu && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: 10, scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                    className="absolute bottom-20 left-1/2 -translate-x-1/2 w-64 bg-neutral-900/95 backdrop-blur-2xl border border-white/10 rounded-3xl p-2 shadow-2xl z-[300]"
+                    className="absolute bottom-20 left-1/2 -translate-x-1/2 w-64 bg-neutral-900/95 backdrop-blur-2xl border border-white/10 rounded-3xl p-2 shadow-2xl z-300"
                   >
                     <div className="max-h-60 overflow-y-auto no-scrollbar">
                       {cameras.map((camera) => (
                         <button
                           key={camera.id}
                           onClick={() => selectCamera(camera.id)}
-                          className={`w-full text-left px-4 py-3 rounded-2xl text-sm font-bold transition-colors flex items-center justify-between ${currentCameraId === camera.id ? 'bg-[var(--primary-color)] text-white' : 'text-white/80 hover:bg-white/5'}`}
+                          className={`w-full text-left px-4 py-3 rounded-2xl text-sm font-bold transition-colors flex items-center justify-between ${currentCameraId === camera.id ? 'bg-(--primary-color) text-white' : 'text-white/80 hover:bg-white/5'}`}
                         >
                           <span className="truncate pr-2">{camera.label || `Camera ${camera.id.substring(0, 4)}`}</span>
                           {currentCameraId === camera.id && <CheckCircle size={16} />}
@@ -233,7 +243,7 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScan, onClose, title = "Scan QR
           )}
 
           {cameras.length > 1 && (
-            <button 
+            <button
               onClick={switchCamera}
               className="w-16 h-16 rounded-full bg-white/10 text-white backdrop-blur-2xl border border-white/20 flex items-center justify-center active:scale-90 transition-all shadow-xl"
             >
@@ -245,7 +255,7 @@ const QrScanner: React.FC<QrScannerProps> = ({ onScan, onClose, title = "Scan QR
 
       {/* Initializing State */}
       {isInitializing && (
-        <div className="absolute inset-0 bg-black flex flex-col items-center justify-center gap-4 z-[260]">
+        <div className="absolute inset-0 bg-black flex flex-col items-center justify-center gap-4 z-260">
           <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
           <p className="text-white/60 text-sm font-bold tracking-widest uppercase">Initialisation caméra...</p>
         </div>
