@@ -9,6 +9,7 @@ import {
   getRecipientType,
   RecipientType,
 } from "@/shared/recipientUtils";
+import { formatPhoneDisplay } from "../shared/phoneFormatter";
 
 interface ContactSearchProps {
   contacts: Contact[];
@@ -129,10 +130,10 @@ export const ContactSearch: React.FC<ContactSearchProps> = ({
                 </div>
                 <div className="flex-1">
                   <p
-                    className={`font-bold text-sm ${isContactSelf ? "text-red-500" : "theme-text-main"}`}
+                    className={`font-bold text-sm tracking-wider ${isContactSelf ? "text-red-500" : "theme-text-main"}`}
                   >
                     {contact.tag ||
-                      contact.phone ||
+                      formatPhoneDisplay(contact.phone) ||
                       contact.email ||
                       contact.randomKey}
                   </p>

@@ -42,6 +42,7 @@ import Button from "../components/Button";
 import { ContactItem, ContactSection } from "@/components/ContactComponents";
 import { ContactSearch } from "@/components/ContactSearch";
 import PageHeader from "../components/PageHeader";
+import { formatPhoneDisplay } from "../shared/phoneFormatter";
 
 interface ContactsProps {
   user?: User | null;
@@ -525,9 +526,9 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
                   <h3 className="text-xl font-bold theme-text-main">
                     {quickActionContact.name}
                   </h3>
-                  <p className="text-xs theme-text-secondary">
+                  <p className="text-xs theme-text-secondary tracking-wider">
                     {quickActionContact.tag ||
-                      quickActionContact.phone ||
+                      formatPhoneDisplay(quickActionContact.phone) ||
                       quickActionContact.email}
                   </p>
                 </div>
@@ -626,9 +627,9 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
                     <h3 className="text-2xl font-bold">
                       {selectedContact.name}
                     </h3>
-                    <p className="text-xs font-bold opacity-70">
+                    <p className="text-xs font-bold opacity-70 tracking-wider">
                       {selectedContact.tag ||
-                        selectedContact.phone ||
+                        formatPhoneDisplay(selectedContact.phone) ||
                         selectedContact.email}
                     </p>
                   </div>
@@ -651,8 +652,8 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
                           {selectedContact.type === "company"
                             ? t("contacts.detail.certified_company")
                             : getFriendshipStatus(
-                                  selectedContact.contactUserId,
-                                ) === "friends"
+                              selectedContact.contactUserId,
+                            ) === "friends"
                               ? t("contacts.detail.mutual_contact")
                               : t("contacts.detail.simple_contact")}
                           {selectedContact.isVerified && (
@@ -681,7 +682,7 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 theme-bubble-bg rounded-xl flex items-center justify-center theme-primary-text">
                         {getFriendshipStatus(selectedContact.contactUserId) ===
-                        "friends" ? (
+                          "friends" ? (
                           <UserCheck size={20} />
                         ) : (
                           <UserPlusIcon size={20} />
@@ -700,8 +701,8 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
                             ) === "friends"
                               ? t("contacts.detail.you_are_friends")
                               : getFriendshipStatus(
-                                    selectedContact.contactUserId,
-                                  ) === "pending"
+                                selectedContact.contactUserId,
+                              ) === "pending"
                                 ? isRequester(selectedContact.contactUserId)
                                   ? t("contacts.detail.request_sent")
                                   : t("contacts.detail.request_received")
@@ -709,17 +710,16 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
                           </p>
                           <button
                             onClick={() => handleFriendAction(selectedContact)}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                              getFriendshipStatus(
+                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${getFriendshipStatus(
+                              selectedContact.contactUserId,
+                            ) === "friends"
+                              ? "bg-red-500/10 text-red-500"
+                              : getFriendshipStatus(
                                 selectedContact.contactUserId,
-                              ) === "friends"
-                                ? "bg-red-500/10 text-red-500"
-                                : getFriendshipStatus(
-                                      selectedContact.contactUserId,
-                                    ) === "pending"
-                                  ? "bg-orange-500/10 text-orange-500"
-                                  : "theme-primary-bg text-white"
-                            }`}
+                              ) === "pending"
+                                ? "bg-orange-500/10 text-orange-500"
+                                : "theme-primary-bg text-white"
+                              }`}
                           >
                             {getFriendshipStatus(
                               selectedContact.contactUserId,
@@ -729,8 +729,8 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
                                 {t("contacts.detail.remove")}
                               </>
                             ) : getFriendshipStatus(
-                                selectedContact.contactUserId,
-                              ) === "pending" ? (
+                              selectedContact.contactUserId,
+                            ) === "pending" ? (
                               isRequester(selectedContact.contactUserId) ? (
                                 <>
                                   <X size={14} /> {t("contacts.detail.cancel")}
@@ -794,9 +794,10 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
                       <p className="text-[10px] theme-text-secondary uppercase font-bold tracking-widest">
                         {t("contacts.detail.mobile")}
                       </p>
-                      <p className="text-sm font-bold theme-text-main">
-                        {selectedContact.phone ||
-                          t("contacts.detail.not_specified")}
+                      <p className="text-sm font-bold theme-text-main tracking-wider">
+                        {selectedContact.phone
+                          ? formatPhoneDisplay(selectedContact.phone)
+                          : t("contacts.detail.not_specified")}
                       </p>
                     </div>
                   </div>
@@ -812,8 +813,8 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
                       <p className="text-sm font-bold theme-text-main">
                         {selectedContact.lastTransactionDate
                           ? new Date(
-                              selectedContact.lastTransactionDate,
-                            ).toLocaleDateString()
+                            selectedContact.lastTransactionDate,
+                          ).toLocaleDateString()
                           : t("contacts.detail.none")}
                       </p>
                     </div>
@@ -957,13 +958,12 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
                     setNewContactIsUser(null);
                   }}
                   onBlur={handleCheckNewInfo}
-                  className={`w-full theme-bubble-bg p-5 rounded-3xl outline-none theme-text-main border transition-all ${
-                    newContactIsUser === true
-                      ? "border-green-400"
-                      : newContactIsUser === false
-                        ? "border-red-400"
-                        : "theme-border"
-                  } focus:border-(--primary-color)`}
+                  className={`w-full theme-bubble-bg p-5 rounded-3xl outline-none theme-text-main border transition-all ${newContactIsUser === true
+                    ? "border-green-400"
+                    : newContactIsUser === false
+                      ? "border-red-400"
+                      : "theme-border"
+                    } focus:border-(--primary-color)`}
                 />
                 {/* Feedback utilisateur */}
                 {checkingNewContact && (

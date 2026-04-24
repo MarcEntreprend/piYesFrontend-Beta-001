@@ -1062,6 +1062,8 @@ export const translations = {
       key_random: "Aléatoire",
       key_recipient: "Destinataire",
       verifying_recipient: "Vérification du destinataire...",
+      self_transfer_error: "Erreur : Vous ne pouvez pas envoyer d'argent à vous-même.",
+      is_your_key: "C'est votre clé",
     },
     deposit: {
       title: "Déposer",
@@ -2772,6 +2774,8 @@ export const translations = {
       key_recipient: "Moun k ap resevwa",
       verifying_recipient: "N ap tcheke moun nan...",
       recipient_error_title: "Nou pa jwenn li, vire a pa ka fèt",
+      self_transfer_error: "Erè : ou pa ka voye kòb bay pwòp tèt ou.",
+      is_your_key: "Sa se kle pa w",
     },
     deposit: {
       title: "Depoze lajan",
@@ -4431,6 +4435,8 @@ export const translations = {
       key_random: "Random",
       key_recipient: "Recipient",
       verifying_recipient: "Verifying recipient...",
+      self_transfer_error: "Error: You can't send money to yourself.",
+      is_your_key: "This is your key",
     },
     deposit: {
       title: "Deposit",

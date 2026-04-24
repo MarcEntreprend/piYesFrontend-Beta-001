@@ -25,6 +25,8 @@ import { ContactSearch } from "@/components/ContactSearch";
 import { ContactItem } from "@/components/ContactComponents";
 import PageHeader from "../components/PageHeader";
 import StepIndicator from "../components/StepIndicator";
+import { formatPhoneDisplay } from "../shared/phoneFormatter";
+import { TransactionType } from "../shared/types";
 import {
   formatRecipientValue,
   isOwnKey,
@@ -228,9 +230,10 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
     setLoading(true);
     try {
       const numericAmount = parseFloat(amount);
+
       const { netAmount } = financeService.calculateFees(
         numericAmount,
-        "transfer",
+        TransactionType.TRANSFER,
       );
       const targetId = keyValue || selectedContact?.userId || "";
 
@@ -497,7 +500,7 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
               </h2>
               <div className="bg-purple-100 dark:bg-purple-900/30 px-4 py-1.5 rounded-full flex items-center gap-2">
                 <span className="text-[10px] font-black theme-primary-text uppercase tracking-wider">
-                  {keyValue || getRecipientDisplay()}
+                  {formatPhoneDisplay(keyValue || getRecipientDisplay())}
                 </span>
               </div>
             </div>
@@ -611,8 +614,8 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
                         keyValue}
                     </span>
                     {keyValue && (
-                      <span className="text-xs theme-primary-text font-bold">
-                        {keyValue}
+                      <span className="text-xs theme-primary-text font-bold tracking-wider">
+                        {formatPhoneDisplay(keyValue)}
                       </span>
                     )}
                     {/* Texte dynamique : rappel ou type standard */}

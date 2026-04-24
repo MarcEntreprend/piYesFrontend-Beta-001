@@ -35,6 +35,7 @@ import {
 import { getRecipientType, RecipientType } from "../shared/recipientUtils";
 import AvatarViewer from "../components/AvatarViewer";
 import { useTranslation, useToast } from "../App";
+import { formatPhoneDisplay } from "../shared/phoneFormatter";
 
 interface ContactDetailProps {
   user?: User | null;
@@ -500,8 +501,8 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
                   placeholder="+509..."
                 />
               ) : (
-                <p className="text-sm font-bold theme-text-main">
-                  {contact.phone || "—"}
+                <p className="text-sm font-bold theme-text-main tracking-wider">
+                  {contact.phone ? formatPhoneDisplay(contact.phone) : "—"}
                 </p>
               )}
             </div>

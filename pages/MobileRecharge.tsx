@@ -25,6 +25,7 @@ import PinOverlay from "../components/PinOverlay";
 import PageHeader from "../components/PageHeader";
 import Button from "../components/Button";
 import StepIndicator from "../components/StepIndicator";
+import { formatPhoneDisplay } from "../shared/phoneFormatter";
 
 type Step = "number" | "amount" | "confirm" | "receipt";
 
@@ -245,11 +246,10 @@ const MobileRecharge: React.FC = () => {
                 setAmount(amt);
                 setCustomAmount("");
               }}
-              className={`py-4 rounded-2xl font-black transition-all active:scale-95 border-2 ${
-                amount === amt
-                  ? "theme-primary-bg text-white border-transparent shadow-lg"
-                  : "theme-bubble-bg theme-text-main border-transparent"
-              }`}
+              className={`py-4 rounded-2xl font-black transition-all active:scale-95 border-2 ${amount === amt
+                ? "theme-primary-bg text-white border-transparent shadow-lg"
+                : "theme-bubble-bg theme-text-main border-transparent"
+                }`}
             >
               {amt} {t("currency.symbol")}
             </button>
@@ -292,11 +292,10 @@ const MobileRecharge: React.FC = () => {
                   key={acc.id}
                   disabled={isDisabled}
                   onClick={() => setSelectedAccountId(acc.id)}
-                  className={`px-3 py-3 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 w-full ${
-                    selectedAccountId === acc.id
-                      ? "theme-primary-bg text-white border-transparent shadow-lg"
-                      : "theme-bubble-bg theme-text-main border-transparent"
-                  } ${isDisabled ? "opacity-50 grayscale-[0.5]" : "active:scale-95"}`}
+                  className={`px-3 py-3 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 w-full ${selectedAccountId === acc.id
+                    ? "theme-primary-bg text-white border-transparent shadow-lg"
+                    : "theme-bubble-bg theme-text-main border-transparent"
+                    } ${isDisabled ? "opacity-50 grayscale-[0.5]" : "active:scale-95"}`}
                 >
                   <BankIcon
                     logoUrl={acc.logoUrl}
@@ -356,7 +355,9 @@ const MobileRecharge: React.FC = () => {
             <span className="text-xs font-bold theme-text-secondary">
               {t("recharge.phone_placeholder")}
             </span>
-            <span className="font-black theme-text-main">{phoneNumber}</span>
+            <span className="font-black theme-text-main tracking-wider">
+              {formatPhoneDisplay(phoneNumber)}
+            </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-xs font-bold theme-text-secondary">
@@ -414,7 +415,9 @@ const MobileRecharge: React.FC = () => {
           <span className="text-xs font-bold theme-text-secondary">
             {t("recharge.phone_placeholder")}
           </span>
-          <span className="font-black theme-text-main">{phoneNumber}</span>
+          <span className="font-black theme-text-main tracking-wider">
+            {formatPhoneDisplay(phoneNumber)}
+          </span>
         </div>
         <div className="flex justify-between items-center pb-4 border-b theme-border border-dashed">
           <span className="text-xs font-bold theme-text-secondary">
@@ -466,12 +469,12 @@ const MobileRecharge: React.FC = () => {
           step === "number"
             ? navigate(-1)
             : setStep(
-                step === "amount"
-                  ? "number"
-                  : step === "confirm"
-                    ? "amount"
-                    : "number",
-              )
+              step === "amount"
+                ? "number"
+                : step === "confirm"
+                  ? "amount"
+                  : "number",
+            )
         }
       />
 
@@ -522,8 +525,8 @@ const MobileRecharge: React.FC = () => {
                       <p className="font-bold theme-text-main">
                         {contact.name}
                       </p>
-                      <p className="text-xs theme-text-secondary">
-                        {contact.phone}
+                      <p className="text-xs theme-text-secondary tracking-wider">
+                        {formatPhoneDisplay(contact.phone)}
                       </p>
                     </div>
                   </button>

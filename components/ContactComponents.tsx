@@ -11,6 +11,7 @@ import {
   User as UserIcon,
 } from "lucide-react";
 import { Contact, getInitials } from "@/shared/types";
+import { formatPhoneDisplay } from "../shared/phoneFormatter";
 
 interface ContactItemProps {
   contact: Contact;
@@ -56,9 +57,9 @@ export const ContactItem: React.FC<ContactItemProps> = ({
         </div>
         <div className="flex-1">
           <p className="font-bold theme-text-main">{contact.name}</p>
-          <p className="text-xs theme-text-secondary">
+          <p className="text-xs theme-text-secondary tracking-wider">
             {contact.tag ||
-              contact.phone ||
+              formatPhoneDisplay(contact.phone) ||
               contact.email ||
               t("common.piyes_contact")}
           </p>
