@@ -109,6 +109,12 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cropCanvasRef = useRef<HTMLCanvasElement>(null);
 
+  // states pour les modification
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [pendingExitAction, setPendingExitAction] = useState<(() => void) | null>(null);
+
+
   const [formData, setFormData] = useState({
     name: user.name || "",
     tag: user.tag || "",
@@ -168,6 +174,70 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
   useEffect(() => {
     if (searchParams.get("edit") === "true") setIsEditing(true);
   }, [searchParams]);
+
+  // Track unsaved changes
+  useEffect(() => {
+    if (!isEditing) {
+      setHasUnsavedChanges(false);
+      return;
+    }
+    const original = {
+      name: user.name || "",
+      tag: user.tag || "",
+      email: user.email || "",
+      phone: user.phone || "",
+      dob: user.dob || "",
+      address: user.address || "",
+      nationality: user.nationality || "Haïtienne",
+      idNumber: user.idNumber || "",
+      language: user.language || "Français",
+      timezone: user.timezone || "GMT-5 (Haïti)",
+      avatarUrl: user.avatarUrl || "",
+    };
+    const changed = JSON.stringify(formData) !== JSON.stringify(original);
+    setHasUnsavedChanges(changed);
+  }, [formData, isEditing, user]);
+
+  const handleCancelEdit = () => {
+    if (hasUnsavedChanges) {
+      setPendingExitAction(() => () => {
+        setFormData({
+          name: user.name || "",
+          tag: user.tag || "",
+          email: user.email || "",
+          phone: user.phone || "",
+          dob: user.dob || "",
+          address: user.address || "",
+          nationality: user.nationality || "Haïtienne",
+          idNumber: user.idNumber || "",
+          language: user.language || "Français",
+          timezone: user.timezone || "GMT-5 (Haïti)",
+          avatarUrl: user.avatarUrl || "",
+        });
+        setIsEditing(false);
+        setPendingEmailOtp(false);
+        setPendingPhoneOtp(false);
+      });
+      setShowExitConfirm(true);
+    } else {
+      setFormData({
+        name: user.name || "",
+        tag: user.tag || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        dob: user.dob || "",
+        address: user.address || "",
+        nationality: user.nationality || "Haïtienne",
+        idNumber: user.idNumber || "",
+        language: user.language || "Français",
+        timezone: user.timezone || "GMT-5 (Haïti)",
+        avatarUrl: user.avatarUrl || "",
+      });
+      setIsEditing(false);
+      setPendingEmailOtp(false);
+      setPendingPhoneOtp(false);
+    }
+  };
 
   const handleFieldChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -484,7 +554,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
 
   return (
     <div className="theme-card-bg min-h-screen flex flex-col animate-in fade-in duration-500 pb-32">
-      {/* Canvas invisible pour  le crop */}
+      {/* Canvas invisible pour le crop */}
       <canvas ref={cropCanvasRef} className="hidden" />
 
       <PageHeader
@@ -498,18 +568,32 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
               <Edit2 size={14} /> {t("common.edit")}
             </button>
           ) : (
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="theme-primary-bg text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 active:scale-95 transition-all shadow-lg"
-            >
-              {saving ? (
-                <Loader2 className="animate-spin" size={14} />
-              ) : (
-                <Save size={14} />
-              )}
-              {t("common.save")}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleCancelEdit}
+                className="theme-bubble-bg theme-text-secondary px-3 py-2 rounded-full text-xs font-bold flex items-center gap-1 active:scale-95 transition-all"
+              >
+                <X size={14} /> {t("common.cancel")}
+              </button>
+              <button
+                onClick={resetAvatar}
+                className="theme-bubble-bg text-red-500 p-2 rounded-full active:scale-90 transition-all"
+              >
+                <Trash2 size={14} />
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="theme-primary-bg text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 active:scale-95 transition-all shadow-lg"
+              >
+                {saving ? (
+                  <Loader2 className="animate-spin" size={14} />
+                ) : (
+                  <Save size={14} />
+                )}
+                {t("common.save")}
+              </button>
+            </div>
           )
         }
       />
@@ -552,6 +636,14 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
                 <ShieldCheck size={14} />
               </div>
             )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              accept="image/*"
+              onChange={handleAvatarFileSelect}
+            />
           </div>
 
           <div className="flex-1 min-w-0">
@@ -565,36 +657,11 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
               {t("profile_hub.account_number")} {user.accountNumber}
             </p>
           </div>
-
-          {/* Boutons d'édition sous l'avatar - visibles uniquement en mode édition */}
-          {isEditing && (
-            <div className="flex gap-1 shrink-0">
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="p-2 bg-white dark:bg-gray-800 shadow-lg rounded-full border theme-border theme-primary-text active:scale-90"
-              >
-                <Edit2 size={14} />
-              </button>
-              <button
-                onClick={resetAvatar}
-                className="p-2 bg-white dark:bg-gray-800 shadow-lg rounded-full border theme-border text-red-500 active:scale-90"
-              >
-                <Trash2 size={14} />
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handleAvatarFileSelect}
-              />
-            </div>
-          )}
         </div>
 
         {/* Verification Status Button - Only show when not editing */}
         {!isEditing && (
-          <div className="px-6 mb-8">
+          <div className="px-6 space-y-8 pb-10">
             {user.verificationStatus === "verified" ? (
               <button
                 onClick={() => navigate("/identity-hub")}
@@ -658,12 +725,11 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
           </div>
         )}
 
-        <div className="px-6 space-y-8 pb-10">
+        <div className="px-6 space-y-8 pb-10 mt-8">
           <ProfileSection
             id="personal-info"
             title={t("profile_hub.sections.personal")}
           >
-
             <ProfileField
               icon={<UserIcon size={18} />}
               label={t("profile_hub.fields.name")}
@@ -805,29 +871,39 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
                   {t("profile_hub.fields.phone")}
                 </label>
                 {isEditing ? (
-                  <div className="relative">
-                    <span className="absolute left-0 bottom-0.5 font-bold theme-text-secondary">
-                      +509
+                  <div className="relative flex items-baseline">
+                    <span className="font-bold theme-text-secondary text-sm shrink-0">
+                      +509&nbsp;
                     </span>
                     <input
                       type="tel"
-                      maxLength={8}
-                      value={formData.phone
-                        .replace("+509", "")
-                        .replace(/\D/g, "")}
-                      onChange={(e) =>
-                        handleFieldChange(
-                          "phone",
-                          e.target.value.replace(/\D/g, ""),
-                        )
+                      maxLength={9}
+                      value={
+                        (() => {
+                          const digits = formData.phone
+                            .replace("+509", "")
+                            .replace(/\D/g, "");
+                          if (digits.length <= 4) return digits;
+                          return `${digits.slice(0, 4)} ${digits.slice(4)}`;
+                        })()
                       }
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/[\s\D]/g, "");
+                        handleFieldChange("phone", raw);
+                      }}
                       onBlur={handlePhoneBlur}
-                      className="w-full bg-transparent theme-text-main font-bold text-sm outline-none border-b border-(--primary-color) pb-0.5 pl-10"
+                      className="flex-1 bg-transparent theme-text-main font-bold text-sm outline-none border-b border-(--primary-color) pb-0.5 tracking-wider min-w-0"
                     />
                   </div>
                 ) : (
-                  <p className="text-sm font-bold theme-text-main">
-                    {formData.phone ? `+509 ${formData.phone}` : "---"}
+                  <p className="text-sm font-bold theme-text-main tracking-wider">
+                    {formData.phone
+                      ? (() => {
+                        const digits = formData.phone.replace("+509", "").replace(/\D/g, "");
+                        if (digits.length <= 4) return `+509 ${digits}`;
+                        return `+509 ${digits.slice(0, 4)} ${digits.slice(4)}`;
+                      })()
+                      : "---"}
                   </p>
                 )}
                 {/* Bandeau OTP phone inline */}
@@ -886,15 +962,17 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
             id="identity-docs"
             title={t("profile_hub.sections.identity")}
           >
-            <ProfileField
-              icon={<Globe size={18} />}
-              label={t("profile_hub.fields.nationality")}
-              value={formData.nationality}
-              name="nationality"
-              disabled={true}
-              isEditing={isEditing}
-              onChange={handleFieldChange}
-            />
+            {!isEditing && (
+              <ProfileField
+                icon={<Globe size={18} />}
+                label={t("profile_hub.fields.nationality")}
+                value={formData.nationality}
+                name="nationality"
+                disabled={true}
+                isEditing={false}
+                onChange={handleFieldChange}
+              />
+            )}
             <ProfileField
               icon={<CreditCard size={18} />}
               label={t("profile_hub.fields.id_number")}
@@ -917,70 +995,63 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
               isEditing={isEditing}
               onChange={handleFieldChange}
             />
-            <ProfileField
-              icon={<Clock size={18} />}
-              label={t("profile_hub.fields.timezone")}
-              value={formData.timezone}
-              name="timezone"
-              disabled={true}
-              isEditing={isEditing}
-              onChange={handleFieldChange}
-            />
+            {!isEditing && (
+              <ProfileField
+                icon={<Clock size={18} />}
+                label={t("profile_hub.fields.timezone")}
+                value={formData.timezone}
+                name="timezone"
+                disabled={true}
+                isEditing={false}
+                onChange={handleFieldChange}
+              />
+            )}
           </ProfileSection>
 
-          <ProfileSection
-            id="security-hub"
-            title={t("profile_hub.sections.security")}
-          >
-            <button
-              onClick={() => navigate("/security")}
-              className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-left group"
+          {!isEditing && (
+            <ProfileSection
+              id="security-hub"
+              title={t("profile_hub.sections.security")}
             >
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl theme-bubble-bg flex items-center justify-center theme-primary-text group-hover:scale-110 transition-transform">
-                  <Shield size={18} />
+              <button
+                onClick={() => navigate("/security")}
+                className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-left group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl theme-bubble-bg flex items-center justify-center theme-primary-text group-hover:scale-110 transition-transform">
+                    <Shield size={18} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold theme-text-main">
+                      {t("profile_hub.security_items.history.label")}
+                    </p>
+                    <p className="text-[10px] theme-text-secondary">
+                      {t("profile_hub.security_items.history.sub")}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-bold theme-text-main">
-                    {t("profile_hub.security_items.history.label")}
-                  </p>
-                  <p className="text-[10px] theme-text-secondary">
-                    {t("profile_hub.security_items.history.sub")}
-                  </p>
+                <ChevronRight
+                  size={18}
+                  className="theme-text-secondary opacity-30"
+                />
+              </button>
+              <button
+                onClick={() => setShowLogoutConfirm(true)}
+                className="w-full flex items-center gap-4 p-4 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all border-t theme-border"
+              >
+                <div className="w-10 h-10 rounded-xl theme-bubble-bg flex items-center justify-center shrink-0">
+                  <LogOut size={18} />
                 </div>
-              </div>
-              <ChevronRight
-                size={18}
-                className="theme-text-secondary opacity-30"
-              />
-            </button>
-            <button
-              onClick={() => setShowLogoutConfirm(true)}
-              className="w-full flex items-center gap-4 p-4 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all border-t theme-border"
-            >
-              <LogOut size={18} />
-              <span className="text-sm font-bold">
-                {t("profile_hub.logout_btn")}
-              </span>
-            </button>
-          </ProfileSection>
+                <span className="text-sm font-bold">
+                  {t("profile_hub.logout_btn")}
+                </span>
+              </button>
+            </ProfileSection>
+          )}
         </div>
       </div>
 
-      {isEditing && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[90%] max-w-sm animate-in slide-in-from-bottom duration-300">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="w-full theme-primary-bg text-white py-4 rounded-full font-bold shadow-2xl flex items-center justify-center gap-3 active:scale-95 transition-all"
-          >
-            {saving ? <Loader2 className="animate-spin" /> : <Save />}
-            {t("profile_hub.save_btn")}
-          </button>
-        </div>
-      )}
-
-      {/* Modal crop d'image - avec drag & zoom */}
+      {/* Modal crop d'image */}
       {showCropModal && rawImageSrc && (
         <div className="fixed inset-0 z-200 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
           <div className="w-full max-w-sm theme-card-bg rounded-4xl p-6 space-y-5 shadow-2xl">
@@ -1000,7 +1071,6 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
               </button>
             </div>
 
-            {/* Zone de crop avec drag & zoom */}
             <div
               ref={imageContainerRef}
               className="relative w-64 h-64 mx-auto rounded-full overflow-hidden border-4 border-(--primary-color) shadow-xl bg-gray-900"
@@ -1028,40 +1098,26 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
                   transformOrigin: 'center center',
                   transition: isDragging ? 'none' : 'transform 0.1s ease-out',
                 }}
-                // Force un zoom minimum pour remplir le cercle
                 onLoad={(e) => {
                   const img = e.currentTarget as HTMLImageElement;
                   setCropImg(img);
                   const containerSize = 256;
                   const imgSize = Math.min(img.naturalWidth, img.naturalHeight);
-
-                  // Calculer l'échelle pour que l'image remplisse EXACTEMENT le cercle
                   const fillScale = containerSize / imgSize;
-
-                  // Échelle minimale = celle qui remplit le cercle (pas moins)
                   const minScaleValue = fillScale;
-
-                  // Échelle initiale = fillScale + 10% pour être sûr que ça déborde un peu
                   const initialScale = fillScale * 1.1;
-
                   setMinScale(minScaleValue);
                   setMaxScale(Math.max(minScaleValue * 3, 2.5));
                   setCropScale(initialScale);
-
-                  // Centrer l'image
                   setCropPosition({ x: 0, y: 0 });
                 }}
                 draggable={false}
               />
             </div>
 
-            {/* Slider de zoom */}
             <div className="space-y-2">
               <div className="flex items-center gap-3">
-                <button
-                  onClick={() => handleZoom(-0.1)}
-                  className="w-8 h-8 theme-bubble-bg rounded-full flex items-center justify-center theme-text-secondary active:scale-90 transition-all"
-                >
+                <button onClick={() => handleZoom(-0.1)} className="w-8 h-8 theme-bubble-bg rounded-full flex items-center justify-center theme-text-secondary active:scale-90 transition-all">
                   <span className="text-lg font-bold">−</span>
                 </button>
                 <input
@@ -1072,73 +1128,42 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
                   onChange={(e) => handleSliderChange(Number(e.target.value))}
                   className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer accent-(--primary-color)"
                 />
-                <button
-                  onClick={() => handleZoom(0.1)}
-                  className="w-8 h-8 theme-bubble-bg rounded-full flex items-center justify-center theme-text-secondary active:scale-90 transition-all"
-                >
+                <button onClick={() => handleZoom(0.1)} className="w-8 h-8 theme-bubble-bg rounded-full flex items-center justify-center theme-text-secondary active:scale-90 transition-all">
                   <span className="text-lg font-bold">+</span>
                 </button>
               </div>
-              <p className="text-[9px] theme-text-secondary text-center">
-                {t("profile_hub.crop_hint")}
-              </p>
+              <p className="text-[9px] theme-text-secondary text-center">{t("profile_hub.crop_hint")}</p>
             </div>
 
-            {/* Boutons d'action */}
             <div className="flex gap-3 pt-2">
-              <button
-                onClick={resetCropPosition}
-                className="px-4 py-3 theme-bubble-bg theme-text-secondary rounded-2xl font-bold text-sm border theme-border active:scale-95 transition-all"
-              >
+              <button onClick={resetCropPosition} className="px-4 py-3 theme-bubble-bg theme-text-secondary rounded-2xl font-bold text-sm border theme-border active:scale-95 transition-all">
                 {t("common.reset")}
               </button>
-              <button
-                onClick={() => {
-                  setShowCropModal(false);
-                  setRawImageSrc(null);
-                  resetCropPosition();
-                }}
-                className="flex-1 py-3 theme-bubble-bg theme-text-secondary rounded-2xl font-bold text-sm border theme-border active:scale-95"
-              >
+              <button onClick={() => { setShowCropModal(false); setRawImageSrc(null); resetCropPosition(); }} className="flex-1 py-3 theme-bubble-bg theme-text-secondary rounded-2xl font-bold text-sm border theme-border active:scale-95">
                 {t("common.cancel")}
               </button>
               <button
                 onClick={() => {
                   if (cropImg && imageContainerRef.current) {
-                    // Calculer la zone cropée avec le scale et la position
                     const canvas = cropCanvasRef.current;
                     if (!canvas) return;
-
                     const size = 256;
                     canvas.width = size;
                     canvas.height = size;
                     const ctx = canvas.getContext('2d');
                     if (!ctx) return;
-
-                    // Fond blanc
                     ctx.fillStyle = '#FFFFFF';
                     ctx.fillRect(0, 0, size, size);
-
-                    // Calculer les coordonnées de source en fonction du scale et de la position
                     const imgSize = Math.min(cropImg.naturalWidth, cropImg.naturalHeight);
                     const scaleFactor = imgSize / size;
-                    const effectiveScale = cropScale * scaleFactor;
-
                     const centerX = cropImg.naturalWidth / 2;
                     const centerY = cropImg.naturalHeight / 2;
                     const offsetX = -cropPosition.x * scaleFactor / cropScale;
                     const offsetY = -cropPosition.y * scaleFactor / cropScale;
-
                     const sourceSize = size / cropScale;
                     const sx = centerX - sourceSize / 2 + offsetX;
                     const sy = centerY - sourceSize / 2 + offsetY;
-
-                    ctx.drawImage(
-                      cropImg,
-                      sx, sy, sourceSize, sourceSize,
-                      0, 0, size, size
-                    );
-
+                    ctx.drawImage(cropImg, sx, sy, sourceSize, sourceSize, 0, 0, size, size);
                     const croppedUrl = canvas.toDataURL("image/jpeg", 0.85);
                     setFormData((prev) => ({ ...prev, avatarUrl: croppedUrl }));
                   }
@@ -1155,166 +1180,46 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
         </div>
       )}
 
-      {/* MODAL PLEIN ÉCRAN - Format mobile avec animation vers/depuis l'avatar */}
-      <AnimatePresence>
-        {showFullscreenAvatar && formData.avatarUrl && (
-          <motion.div
-            className="fixed inset-0 z-250 flex items-center justify-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={closeFullscreenAvatar}
-          >
-            {/* Backdrop identique aux autres modals */}
-            <motion.div
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            />
-
-            {/* Conteneur limité au format mobile */}
-            <div className="relative w-full max-w-md h-full flex items-center justify-center p-4">
-              <motion.div
-                className="relative w-full flex items-center justify-center overflow-hidden"
-                style={{ maxHeight: '85vh' }}
-                initial={avatarRect ? {
-                  scale: avatarRect.width / 300,
-                  x: avatarRect.left + avatarRect.width / 2 - window.innerWidth / 2,
-                  y: avatarRect.top + avatarRect.height / 2 - window.innerHeight / 2,
-                  opacity: 0
-                } : { opacity: 0 }}
-                animate={{
-                  scale: 1,
-                  x: 0,
-                  y: fullscreenPosition.y,
-                  opacity: 1
-                }}
-                exit={avatarRect ? {
-                  scale: avatarRect.width / 300,
-                  x: avatarRect.left + avatarRect.width / 2 - window.innerWidth / 2,
-                  y: avatarRect.top + avatarRect.height / 2 - window.innerHeight / 2,
-                  opacity: 0
-                } : { opacity: 0 }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 350,
-                  damping: 30,
-                  mass: 0.9
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Indicateur de fermeture */}
-                <button
-                  onClick={closeFullscreenAvatar}
-                  className="absolute top-2 right-2 z-20 p-2 bg-black/30 backdrop-blur-md rounded-full text-white active:scale-90 transition-all"
-                >
-                  <X size={20} />
-                </button>
-
-                {/* Conteneur de l'image avec drag vertical et zoom */}
-                <div
-                  className="relative w-full flex items-center justify-center overflow-hidden"
-                  onMouseDown={handleFullscreenDragStart}
-                  onMouseMove={handleFullscreenDragMove}
-                  onMouseUp={handleFullscreenDragEnd}
-                  onMouseLeave={handleFullscreenDragEnd}
-                  onTouchStart={handleFullscreenDragStart}
-                  onTouchMove={handleFullscreenDragMove}
-                  onTouchEnd={handleFullscreenDragEnd}
-                  onWheel={handleFullscreenWheel}
-                  onDoubleClick={handleFullscreenDoubleClick}
-                  style={{
-                    cursor: isFullscreenDragging
-                      ? (fullscreenPosition.y > 50 ? 'grabbing' : 'ns-resize')
-                      : 'default',
-                    touchAction: 'pan-y'
-                  }}
-                >
-                  <motion.img
-                    src={formData.avatarUrl}
-                    alt="Avatar plein écran"
-                    className="w-full h-auto object-contain select-none rounded-2xl"
-                    style={{
-                      transform: `scale(${fullscreenScale})`,
-                      maxWidth: '100%',
-                      maxHeight: '85vh',
-                    }}
-                    animate={{
-                      scale: fullscreenScale
-                    }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                    draggable={false}
-                  />
-                </div>
-
-                {/* Indicateur "Tirer pour fermer" */}
-                <AnimatePresence>
-                  {fullscreenPosition.y > 30 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="absolute top-16 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-md text-white text-xs font-bold px-4 py-2 rounded-full"
-                    >
-                      {fullscreenPosition.y > 120 ? "Relâcher pour fermer" : "Tirer vers le bas pour fermer"}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Indicateur de zoom */}
-                <AnimatePresence>
-                  {fullscreenScale > 1 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full"
-                    >
-                      {Math.round(fullscreenScale * 100)}%
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Logout Confirmation Modal */}
-      <Modal
-        isOpen={showLogoutConfirm}
-        onClose={() => setShowLogoutConfirm(false)}
-      >
+      <Modal isOpen={showLogoutConfirm} onClose={() => setShowLogoutConfirm(false)}>
         <div className="p-8 space-y-6">
           <div className="w-16 h-16 bg-red-50 dark:bg-red-900/10 rounded-full flex items-center justify-center text-red-500 mx-auto">
             <LogOut size={32} />
           </div>
           <div className="text-center space-y-2">
-            <h2 className="text-2xl font-black theme-text-main">
-              {t("settings.logout_confirm_title")}
-            </h2>
-            <p className="text-sm theme-text-secondary">
-              {t("settings.logout_confirm_desc")}
-            </p>
+            <h2 className="text-2xl font-black theme-text-main">{t("settings.logout_confirm_title")}</h2>
+            <p className="text-sm theme-text-secondary">{t("settings.logout_confirm_desc")}</p>
           </div>
           <div className="flex gap-3">
-            <button
-              onClick={() => setShowLogoutConfirm(false)}
-              className="flex-1 p-4 rounded-2xl theme-bubble-bg theme-text-main font-bold active:scale-95 transition-all"
-            >
+            <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 p-4 rounded-2xl theme-bubble-bg theme-text-main font-bold active:scale-95 transition-all">
               {t("common.cancel")}
             </button>
-            <button
-              onClick={async () => {
-                setShowLogoutConfirm(false);
-                await api.logoutAllSessions();
-                onLogout();
-              }}
-              className="flex-1 p-4 rounded-2xl bg-red-500 text-white font-bold active:scale-95 transition-all shadow-lg shadow-red-500/20"
-            >
+            <button onClick={async () => { setShowLogoutConfirm(false); await api.logoutAllSessions(); onLogout(); }} className="flex-1 p-4 rounded-2xl bg-red-500 text-white font-bold active:scale-95 transition-all shadow-lg shadow-red-500/20">
               {t("settings.logout")}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Exit Without Saving Modal */}
+      <Modal isOpen={showExitConfirm} onClose={() => setShowExitConfirm(false)} type="centered">
+        <div className="p-8 space-y-6 text-center">
+          <div className="w-16 h-16 bg-amber-50 dark:bg-amber-900/10 text-amber-500 rounded-3xl flex items-center justify-center mx-auto shadow-sm">
+            <AlertCircle size={32} />
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-xl font-black theme-text-main tracking-tight">Modifications non sauvegardées</h3>
+            <p className="text-sm theme-text-secondary">Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter sans sauvegarder ?</p>
+          </div>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => { setShowExitConfirm(false); if (pendingExitAction) pendingExitAction(); setPendingExitAction(null); }}
+              className="w-full py-4 bg-red-500 text-white rounded-2xl font-bold active:scale-95 transition-all shadow-lg"
+            >
+              Quitter sans sauvegarder
+            </button>
+            <button onClick={() => { setShowExitConfirm(false); setPendingExitAction(null); }} className="w-full py-4 theme-primary-bg text-white rounded-2xl font-bold active:scale-95 transition-all">
+              Rester
             </button>
           </div>
         </div>
@@ -1324,3 +1229,4 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
 };
 
 export default Profile;
+

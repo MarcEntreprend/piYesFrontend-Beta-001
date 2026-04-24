@@ -689,7 +689,7 @@ export const translations = {
         sub: "Débloquez toutes les fonctionnalités piYès.",
         process:
           "Processus Persona : Capture de pièce d'identité + Selfie. Validation automatique en moins de 2 minutes.",
-        btn: "Vérifier maintenant",
+        btn: "Vérifier",
       },
       verified_box: {
         title: "Vérification Persona",
