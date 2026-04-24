@@ -130,7 +130,7 @@ const MobileRecharge: React.FC = () => {
       const res = await api.recharge({
         phoneNumber,
         amount: finalAmount!,
-        operatorId: selectedOperator?.id || "Unknown",
+        operatorId: selectedOperator?.id || "Mobile",
         accountId: selectedAccountId,
         pin,
       });

@@ -34,6 +34,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [comingSoonModal, setComingSoonModal] = useState(false);
     const [highlightForgot, setHighlightForgot] = useState(false);
+    const [isOffline, setIsOffline] = useState(!navigator.onLine);
     const navigate = useNavigate();
 
 
@@ -47,6 +48,18 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         window.addEventListener("piyes:highlight_forgot_password", handleHighlight);
         return () => {
             window.removeEventListener("piyes:highlight_forgot_password", handleHighlight);
+        };
+    }, []);
+
+    // connectivité 
+    useEffect(() => {
+        const handleOnline = () => setIsOffline(false);
+        const handleOffline = () => setIsOffline(true);
+        window.addEventListener("online", handleOnline);
+        window.addEventListener("offline", handleOffline);
+        return () => {
+            window.removeEventListener("online", handleOnline);
+            window.removeEventListener("offline", handleOffline);
         };
     }, []);
 
@@ -70,14 +83,24 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (isSubmitting) return;
+
+        // Vérifier la connectivité avant tout
+        if (!navigator.onLine) {
+            showToast(t("common.offline_msg"), "error");
+            return;
+        }
+
+        if (isSubmitting) {
+            // Force reset si bloqué plus de 10 secondes (sécurité)
+            setIsSubmitting(false);
+            return;
+        }
 
         if (step === 1) {
             if (validateIdentifier(identifier)) {
                 setError("");
                 setStep(2);
             } else {
-                // Message plus précis selon le type d'identifiant saisi
                 const hasAt = identifier.includes("@");
                 setError(
                     hasAt
@@ -89,13 +112,21 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             setIsSubmitting(true);
             const normalized = normalizeIdentifier(identifier);
             const isEmail = identifier.includes("@");
+
+            // Timeout de sécurité : reset après 15 secondes si pas de réponse
+            const safetyTimeout = setTimeout(() => {
+                setIsSubmitting(false);
+                showToast(t("auth.login_timeout") || "Délai de connexion dépassé. Vérifiez votre connexion internet.", "error");
+            }, 15000);
+
+            // Stocker le timeout pour le nettoyer dans le parent si besoin
+            (window as any).__loginSafetyTimeout = safetyTimeout;
+
             onLogin({
                 [isEmail ? "email" : "phone"]: normalized,
                 password,
                 device: navigator.userAgent,
             });
-            // Note: setIsSubmitting(false) handled by parent on failure
-            setTimeout(() => setIsSubmitting(false), 5000);
         }
     };
 
@@ -151,6 +182,12 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 <h3 className="text-xl font-black theme-text-main mb-6 animate-in slide-in-from-left duration-300 tracking-tight">
                     {step === 1 ? t("auth.login_greeting") : t("auth.password_prompt")}
                 </h3>
+                {isOffline && (
+                    <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-2xl flex items-center gap-2 text-red-600">
+                        <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shrink-0" />
+                        <p className="text-xs font-bold">{t("common.no_internet")}</p>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {step === 1 ? (
@@ -162,6 +199,31 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                             onChange={(e) => {
                                 setIdentifier(e.target.value);
                                 if (error) setError("");
+                            }}
+                            onPaste={(e) => {
+                                // Valider après collage (délai pour laisser la valeur se mettre à jour)
+                                const pastedValue = e.clipboardData?.getData('text') || '';
+                                setTimeout(() => {
+                                    const currentValue = (e.target as HTMLInputElement).value || pastedValue;
+                                    if (currentValue && !validateIdentifier(currentValue)) {
+                                        const hasAt = currentValue.includes("@");
+                                        setError(
+                                            hasAt
+                                                ? "Adresse email invalide. Vérifiez le format (ex: nom@domaine.com)."
+                                                : "Numéro de téléphone invalide. Format attendu : 8 chiffres haïtiens."
+                                        );
+                                    }
+                                }, 50);
+                            }}
+                            onBlur={() => {
+                                if (identifier.trim() && !validateIdentifier(identifier)) {
+                                    const hasAt = identifier.includes("@");
+                                    setError(
+                                        hasAt
+                                            ? "Adresse email invalide. Vérifiez le format."
+                                            : "Numéro invalide. 8 chiffres attendus."
+                                    );
+                                }
                             }}
                             error={error}
                             required

@@ -39,25 +39,25 @@ class HttpClient {
       (headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
     }
 
+    // Timeout réseau : 15 secondes pour les requêtes critiques (login, signup)
+    const isAuthEndpoint = endpoint.includes("/auth/login") || endpoint.includes("/auth/signup");
+    const timeoutMs = isAuthEndpoint ? 15000 : 30000;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
     const config: RequestInit = {
       ...options,
       headers,
-      credentials: "include", // Nécessaire pour les cookies cross-origin (refreshToken httpOnly)
+      credentials: "include",
+      signal: controller.signal,
     };
 
     try {
       console.log(`[HTTP] ${options.method || "GET"} ${fullUrl}`);
       const response = await fetch(fullUrl, config);
+      clearTimeout(timeoutId);
 
-      // // Gestion globale des erreurs de session
-      // if (response.status === 401 && !endpoint.includes('/auth/login')) {
-      //   window.dispatchEvent(new CustomEvent('piyes:auth_expired'));
-      //   throw new Error('Session expirée');
-      // }
-
-      // Gestion globale des erreurs de session
-      // Logout uniquement si c'est /user/sync ou /auth/* (hors login) qui retourne 401
-      // Les routes PIN, OTP et autres ne doivent PAS déclencher un logout — ce n'est pas une session expirée
       const is401FromSync =
         response.status === 401 && endpoint.includes("/user/sync");
       const is401FromAuth =
@@ -84,11 +84,19 @@ class HttpClient {
         };
       }
 
-      // Pour les DELETE ou les réponses vides
       if (response.status === 204) return {} as T;
 
       return await response.json();
-    } catch (error) {
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        console.error(`[HTTP Timeout] ${options.method || "GET"} ${endpoint}`);
+        throw {
+          status: 0,
+          message: "La requête a expiré. Vérifiez votre connexion internet.",
+          data: { error: { code: "NETWORK_TIMEOUT" } },
+        };
+      }
       console.error(
         `[HTTP Error] ${options.method || "GET"} ${endpoint}:`,
         error,

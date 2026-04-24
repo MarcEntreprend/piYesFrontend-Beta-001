@@ -620,6 +620,11 @@ const App: React.FC = () => {
         showToast(msg || t("auth.login_error"), "error");
       }
     } finally {
+      // Nettoyer le timeout de sécurité du login
+      if ((window as any).__loginSafetyTimeout) {
+        clearTimeout((window as any).__loginSafetyTimeout);
+        delete (window as any).__loginSafetyTimeout;
+      }
       setIsAuthLoading(false);
     }
   };
