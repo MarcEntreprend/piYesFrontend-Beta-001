@@ -19,6 +19,7 @@ piyes-wallet-frontend/
 ├── metadata.json               # Métadonnées de l'app
 ├── package-lock.json           # Versions exactes des dépendances
 ├── package.json                # Dépendances et scripts npm
+├── README.md                   # Readme du projet
 ├── translations.ts             # Fichier de traductions i18n
 ├── tsconfig.json               # Configuration TypeScript
 ├── vite.config.ts              # Configuration Vite
@@ -29,29 +30,34 @@ piyes-wallet-frontend/
 │   ├── gradle/
 │   └── ...
 │
-├── components/                 # Composants réutilisables
-│   ├── AiSupportChat.tsx
-│   ├── AnimatedButton.tsx
-│   ├── BankIcon.tsx
-│   ├── BottomNav.tsx
-│   ├── Button.tsx
-│   ├── ContactComponents.tsx
-│   ├── ContactSearch.tsx
-│   ├── Input.tsx
-│   ├── Modal.tsx
-│   ├── OperationResult.tsx
-│   ├── OtpOverlay.tsx
-│   ├── PageHeader.tsx
-│   ├── PageTransition.tsx
-│   ├── PinOverlay.tsx
-│   ├── QrScanner.tsx
-│   ├── RotatingText.tsx
-│   ├── ScheduledPaymentItem.tsx
-│   ├── SearchInput.tsx
-│   ├── SearchResultsPanel.tsx
-│   ├── SegmentedControl.tsx
-│   ├── Splash.tsx
-│   └── StepIndicator.tsx
+├── components (count : 27)                  # Composants réutilisables
+│   ├── 1- AccountSummary.tsx
+│   ├── 2- AiSupportChat.tsx
+│   ├── 3- AnimatedButton.tsx
+│   ├── 4- AvatarViewer.tsx
+│   ├── 5- BankIcon.tsx
+│   ├── 6- BottomNav.tsx
+│   ├── 7- Button.tsx
+│   ├── 8- ContactComponents.tsx
+│   ├── 9- ContactSearch.tsx
+│   ├── 10- Input.tsx
+│   ├── 11- InputFloating.tsx
+│   ├── 12- LanguageSelector.tsx
+│   ├── 13- Modal.tsx
+│   ├── 14- OperationResult.tsx
+│   ├── 15- OtpOverlay.tsx
+│   ├── 16- PageHeader.tsx
+│   ├── 17- PageTransition.tsx
+│   ├── 18- PinOverlay.tsx
+│   ├── 19- QrScanner.tsx
+│   ├── 20- RotatingText.tsx
+│   ├── 21- ScheduledPaymentItem.tsx
+│   ├── 22- SearchInput.tsx
+│   ├── 23- SearchResultsPanel.tsx
+│   ├── 24- SegmentedControl.tsx
+│   ├── 25- Splash.tsx
+│   ├── 26- StepIndicator.tsx
+│   └── 27- ThemeSelector.tsx
 │
 ├── contexts/                   # Contextes React (état global)
 │   └── NotificationContext.tsx
@@ -66,75 +72,76 @@ piyes-wallet-frontend/
 │   ├── useNotifications.ts
 │   └── useSync.ts
 │
-├── pages/                      # Pages de l'application
-│   ├── AdDetail.tsx
-│   ├── Advanced.tsx
-│   ├── BankHistory.tsx
-│   ├── CardsHub.tsx
-│   ├── ChatDetail.tsx
-│   ├── ContactDetail.tsx
-│   ├── Contacts.tsx
-│   ├── Dashboard.tsx
-│   ├── DepositFlow.tsx
-│   ├── Feedback.tsx
-│   ├── FinancialTools.tsx
-│   ├── ForgotPassword.tsx
-│   ├── HelpCenter.tsx
-│   ├── History.tsx
-│   ├── IdentityHub.tsx
-│   ├── IdentityVerification.tsx
-│   ├── InterBankTransfer.tsx
-│   ├── InternationalProviders.tsx
-│   ├── InternationalTransfer.tsx
-│   ├── KeysManagement.tsx
-│   ├── Legal.tsx
-│   ├── Login.tsx
-│   ├── MarketplaceDashboard.tsx
-│   ├── MarketplaceSearch.tsx
-│   ├── MessagingHub.tsx
-│   ├── MobileRecharge.tsx
-│   ├── Notifications.tsx
-│   ├── NotificationsSettings.tsx
-│   ├── Onboarding.tsx
-│   ├── Plans.tsx
-│   ├── PrivacySettings.tsx
-│   ├── Profile.tsx
-│   ├── Promotions.tsx
-│   ├── ReceiptDetail.tsx
-│   ├── Report.tsx
-│   ├── RequestPayment.tsx
-│   ├── ScheduledPayments.tsx
-│   ├── SchedulerCreate.tsx
-│   ├── Security.tsx
-│   ├── ServicesMarket.tsx
-│   ├── Settings.tsx
-│   ├── Signup.tsx
-│   ├── Support.tsx
-│   ├── TransferFlow.tsx
-│   ├── TransferInteractions.tsx
-│   ├── Verification.tsx
-│   └── WithdrawFlow.tsx
+├── pages (count : 46)                  # Pages de l'application
+│   ├── 1- AdDetail.tsx
+│   ├── 2- Advanced.tsx
+│   ├── 3- BankHistory.tsx
+│   ├── 4- CardsHub.tsx
+│   ├── 5- ChatDetail.tsx
+│   ├── 6- ContactDetail.tsx
+│   ├── 7- Contacts.tsx
+│   ├── 8- Dashboard.tsx
+│   ├── 9- DepositFlow.tsx
+│   ├── 10- Feedback.tsx
+│   ├── 11- FinancialTools.tsx
+│   ├── 12- ForgotPassword.tsx
+│   ├── 13- HelpCenter.tsx
+│   ├── 14- History.tsx
+│   ├── 15- IdentityVerification.tsx
+│   ├── 16- InterBankTransfer.tsx
+│   ├── 17- InternationalProviders.tsx
+│   ├── 18- InternationalTransfer.tsx
+│   ├── 19- KeysManagement.tsx
+│   ├── 20- Legal.tsx
+│   ├── 21- Login.tsx
+│   ├── 22- MarketplaceDashboard.tsx
+│   ├── 23- MarketplaceSearch.tsx
+│   ├── 24- MessagingHub.tsx
+│   ├── 25- MobileRecharge.tsx
+│   ├── 26- Notifications.tsx
+│   ├── 27- NotificationsSettings.tsx
+│   ├── 28- Onboarding.tsx
+│   ├── 29- Plans.tsx
+│   ├── 30- PrivacySettings.tsx
+│   ├── 31- Profile.tsx
+│   ├── 32- Promotions.tsx
+│   ├── 33- ReceiptDetail.tsx
+│   ├── 34- Report.tsx
+│   ├── 35- RequestPayment.tsx
+│   ├── 36- ScheduledPayments.tsx
+│   ├── 37- SchedulerCreate.tsx
+│   ├── 38- Security.tsx
+│   ├── 39- ServicesMarket.tsx
+│   ├── 40- Settings.tsx
+│   ├── 41- Signup.tsx
+│   ├── 42- Support.tsx
+│   ├── 43- TransferFlow.tsx
+│   ├── 44- TransferInteractions.tsx
+│   ├── 45- Verification.tsx
+│   └── 46- WithdrawFlow.tsx
 │
-├── services/                   # Services API et logique métier
-│   ├── aiService.ts
-│   ├── apiService.ts
-│   ├── beneficiaryService.ts
-│   ├── cacheService.ts
-│   ├── capitalService.ts
-│   ├── cardService.ts
-│   ├── documentService.ts
-│   ├── externalBankService.ts
-│   ├── financeService.ts
-│   ├── httpClient.ts
-│   ├── messagingService.ts
-│   ├── notificationService.ts
-│   ├── receiptService.ts
-│   ├── receivingService.ts
-│   ├── rechargeService.ts
-│   ├── schedulerService.ts
-│   └── searchService.ts
+├── services (count : 18)                  # Services API et logique métier
+│   ├── 1- aiService.ts
+│   ├── 2- apiService.ts
+│   ├── 3- beneficiaryService.ts
+│   ├── 4- cacheService.ts
+│   ├── 5- capitalService.ts
+│   ├── 6- cardService.ts
+│   ├── 7- documentService.ts
+│   ├── 8- externalBankService.ts
+│   ├── 9- financeService.ts
+│   ├── 10- httpClient.ts
+│   ├── 11- messagingService.ts
+│   ├── 12- notificationService.ts
+│   ├── 13- receiptService.ts
+│   ├── 14- receivingService.ts
+│   ├── 15- rechargeService.ts
+│   ├── 16- schedulerService.ts
+│   ├── 17- searchService.ts
+│   └── 18- supabaseService.ts
 │
 ├── shared/                     # Code partagé (types, utils)
+│   ├── phoneFormatter.ts
 │   ├── recipientUtils.ts
 │   ├── schemas.ts
 │   └── types.ts
@@ -142,7 +149,9 @@ piyes-wallet-frontend/
 ├── src/                        # Assets et lib internes
 │   ├── assets/
 │   │   └── images/
-│   │       └── logo-piyes-ppl-wh-wh-svg.svg
+│   │           ├── ic_launcher.png
+│   │           ├── logo-animated.svg 
+│   │           └── logo-piyes-ppl-wh-wh-svg.svg
 │   └── lib/
 │       └── utils.ts
 │
@@ -175,3 +184,9 @@ cd C:\Users\mmarc\Documents\Antigravity\piyes-wallet-frontend
 npm run build
 npx cap sync android
 npx cap open android
+
+
+
+
+
+
