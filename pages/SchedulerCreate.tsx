@@ -63,6 +63,7 @@ const SchedulerCreate: React.FC = () => {
   const [payerUserId, setPayerUserId] = useState(
     searchParams.get("payerUserId") || "",
   );
+  const [selectedContactAvatar, setSelectedContactAvatar] = useState<string | null>(null);
   const [amount, setAmount] = useState(searchParams.get("amount") || "");
   const [dueDate, setDueDate] = useState("");
   const [reminders, setReminders] = useState<ReminderSlot[]>([]);
@@ -113,7 +114,8 @@ const SchedulerCreate: React.FC = () => {
   const handleSelectContact = (contact: Partial<Contact>) => {
     setPayerName(contact.name || (contact as any).tag || "");
     setPayerUserId((contact as any).contactUserId || "");
-    setSearchQuery(""); // effacer le champ → afficher le chip
+    setSelectedContactAvatar(contact.avatarUrl || null);
+    setSearchQuery("");
   };
 
   // Toggle cellule grille rappels
@@ -334,22 +336,31 @@ const SchedulerCreate: React.FC = () => {
           {/* Chip contact sélectionné — s'affiche quand payerName est défini et searchQuery vide */}
           {payerName && !searchQuery ? (
             <div className="flex items-center gap-3 theme-primary-bg text-white rounded-full px-4 py-3 w-fit max-w-full">
-              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shrink-0">
-                <span className="text-xs font-black">
-                  {payerName
-                    .split(" ")
-                    .map((w: string) => w[0])
-                    .join("")
-                    .substring(0, 2)
-                    .toUpperCase()}
-                </span>
-              </div>
+              {selectedContactAvatar ? (
+                <img
+                  src={selectedContactAvatar}
+                  alt={payerName}
+                  className="w-8 h-8 rounded-full object-cover border-2 border-white/30 shrink-0"
+                />
+              ) : (
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+                  <span className="text-xs font-black">
+                    {payerName
+                      .split(" ")
+                      .map((w: string) => w[0])
+                      .join("")
+                      .substring(0, 2)
+                      .toUpperCase()}
+                  </span>
+                </div>
+              )}
               <span className="font-bold text-sm truncate">{payerName}</span>
               <button
                 type="button"
                 onClick={() => {
                   setPayerName("");
                   setPayerUserId("");
+                  setSelectedContactAvatar(null);
                   setSearchQuery("");
                   setIsMutualFriend(false);
                 }}
