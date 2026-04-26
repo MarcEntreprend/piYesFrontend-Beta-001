@@ -1,10 +1,10 @@
 // components/HighlightedItem.tsx
 
-import React, { useEffect, useState, useRef, forwardRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 interface HighlightedItemProps {
     id: string;
-    highlightDuration?: number; // ms, défaut 2500
+    highlightDuration?: number;
     scrollBehavior?: 'smooth' | 'auto';
     scrollBlock?: 'start' | 'center' | 'end' | 'nearest';
     onHighlightStart?: () => void;
@@ -13,7 +13,7 @@ interface HighlightedItemProps {
     className?: string;
 }
 
-export const HighlightedItem = forwardRef<HTMLDivElement, HighlightedItemProps>(({
+export const HighlightedItem = ({
     id,
     highlightDuration = 2500,
     scrollBehavior = 'smooth',
@@ -22,14 +22,41 @@ export const HighlightedItem = forwardRef<HTMLDivElement, HighlightedItemProps>(
     onHighlightEnd,
     children,
     className = '',
-}, externalRef) => {
+}: HighlightedItemProps) => {
     const [isHighlighted, setIsHighlighted] = useState(false);
-    const internalRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const childRef = useRef<HTMLElement | null>(null);
+    const hasBeenTriggeredRef = useRef(false); // Clé : ne déclencher qu'une fois
 
-    const ref = (externalRef as React.RefObject<HTMLDivElement>) || internalRef;
+    // Trouver l'enfant
+    useEffect(() => {
+        if (containerRef.current) {
+            const firstChild = containerRef.current.children[0] as HTMLElement;
+            if (firstChild) {
+                childRef.current = firstChild;
+            }
+        }
+    }, [children]);
+
+    // Appliquer/enlever les classes de surbrillance
+    useEffect(() => {
+        const child = childRef.current;
+        if (!child) return;
+
+        if (isHighlighted) {
+            child.classList.add('ring-2', 'ring-(--primary-color)', 'bg-(--primary-color)/10', 'scale-[1.02]', 'z-10');
+            child.style.transition = 'all 0.3s ease-in-out';
+        } else {
+            child.classList.remove('ring-2', 'ring-(--primary-color)', 'bg-(--primary-color)/10', 'scale-[1.02]', 'z-10');
+        }
+    }, [isHighlighted]);
 
     const triggerHighlight = () => {
+        // Ne déclencher qu'une seule fois dans la vie du composant
+        if (hasBeenTriggeredRef.current) return;
+        hasBeenTriggeredRef.current = true;
+
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
@@ -37,11 +64,17 @@ export const HighlightedItem = forwardRef<HTMLDivElement, HighlightedItemProps>(
         setIsHighlighted(true);
         onHighlightStart?.();
 
-        if (ref && 'current' in ref && ref.current) {
-            ref.current.scrollIntoView({
-                behavior: scrollBehavior as ScrollBehavior,
-                block: scrollBlock,
-            });
+        // Scroll uniquement si l'élément n'est pas déjà visible
+        if (childRef.current) {
+            const rect = childRef.current.getBoundingClientRect();
+            const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+
+            if (!isVisible) {
+                childRef.current.scrollIntoView({
+                    behavior: scrollBehavior as ScrollBehavior,
+                    block: scrollBlock,
+                });
+            }
         }
 
         timeoutRef.current = setTimeout(() => {
@@ -71,23 +104,17 @@ export const HighlightedItem = forwardRef<HTMLDivElement, HighlightedItemProps>(
 
     return (
         <div
-            ref={ref as React.Ref<HTMLDivElement>}
+            ref={containerRef}
             id={id}
-            className={`transition-all duration-300 ${isHighlighted
-                ? 'ring-2 ring-(--primary-color) bg-(--primary-color)/10 scale-[1.01] z-10 ' + className
-                : className}`}
-            style={{
-                boxShadow: isHighlighted ? '0 0 0 4px rgba(131, 10, 209, 0.2)' : undefined,
-            }}
+            className={className}
+            style={{ display: 'contents' }}
         >
             {children}
         </div>
     );
-});
+};
 
-HighlightedItem.displayName = 'HighlightedItem';
-
-// Hook utilitaire pour déclencher la surbrillance
+// Hook utilitaire
 export const useHighlight = () => {
     const highlight = (id: string) => {
         window.dispatchEvent(new CustomEvent('piyes:highlight', { detail: id }));

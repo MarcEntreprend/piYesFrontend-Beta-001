@@ -31,6 +31,7 @@ import {
 import SearchInput from "../components/SearchInput";
 import ScheduledPaymentItem from "../components/ScheduledPaymentItem";
 import SegmentedControl from "../components/SegmentedControl";
+import { HighlightedItem, useHighlight } from '../components/HighlightedItem';
 // Après les imports
 type SchedulerTab = "outgoing" | "incoming";
 
@@ -46,6 +47,7 @@ export interface ScheduledPayment {
 
 const ScheduledPayments: React.FC = () => {
   const { t, language } = useTranslation();
+  const { highlight } = useHighlight();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -157,14 +159,11 @@ const ScheduledPayments: React.FC = () => {
     const targetId = searchParams.get("highlight");
     if (targetId) {
       setHighlightedId(targetId);
-      // Scroll vers l'élément
       setTimeout(() => {
-        const el = document.getElementById(`schedule-item-${targetId}`);
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-        setTimeout(() => setHighlightedId(null), 2500);
+        highlight(`schedule-item-${targetId}`);
       }, 400);
     }
-  }, [searchParams]);
+  }, [searchParams, highlight]);
 
   // Ouvrir un item spécifique depuis l'URL (ex: retour depuis TransferFlow)
   useEffect(() => {
@@ -419,8 +418,8 @@ const ScheduledPayments: React.FC = () => {
             <h1 className="text-xl font-bold theme-text-main">
               {isSelectionMode
                 ? t("scheduler.list.selected_count", {
-                    count: selectedIds.size,
-                  })
+                  count: selectedIds.size,
+                })
                 : t("scheduler.title")}
             </h1>
           </div>
@@ -518,28 +517,30 @@ const ScheduledPayments: React.FC = () => {
 
           <div className="space-y-4">
             {filteredPayments.map((payment) => (
-              <div
-                id={`schedule-item-${payment.id}`}
+              <HighlightedItem
                 key={payment.id}
-                className={
-                  fadingOutIds.has(payment.id)
-                    ? "opacity-40 pointer-events-none transition-opacity duration-1000"
-                    : ""
-                }
+                id={`schedule-item-${payment.id}`}
+                highlightDuration={2500}
+                scrollBehavior="smooth"
+                scrollBlock="center"
               >
-                <ScheduledPaymentItem
-                  payment={payment}
-                  currentUserId={currentUserId}
-                  onCancel={handleCancelPayment}
-                  onRemindersUpdate={handleRemindersUpdate}
-                  isSelected={selectedIds.has(payment.id)}
-                  isSelectionMode={isSelectionMode}
-                  onSelect={toggleSelection}
-                  onLongPress={handleLongPress}
-                  highlighted={highlightedId === payment.id}
-                  defaultExpanded={expandedId === payment.id}
-                />
-              </div>
+                <div
+                  className={fadingOutIds.has(payment.id) ? "opacity-40 pointer-events-none transition-opacity duration-1000" : ""}
+                >
+                  <ScheduledPaymentItem
+                    payment={payment}
+                    currentUserId={currentUserId}
+                    onCancel={handleCancelPayment}
+                    onRemindersUpdate={handleRemindersUpdate}
+                    isSelected={selectedIds.has(payment.id)}
+                    isSelectionMode={isSelectionMode}
+                    onSelect={toggleSelection}
+                    onLongPress={handleLongPress}
+                    highlighted={highlightedId === payment.id}
+                    defaultExpanded={expandedId === payment.id}
+                  />
+                </div>
+              </HighlightedItem>
             ))}
 
             {filteredPayments.length === 0 && (
@@ -717,9 +718,9 @@ const ScheduledPayments: React.FC = () => {
                 <span className="text-sm font-bold theme-text-main">
                   {confirmSchedule.dueDate
                     ? new Date(confirmSchedule.dueDate).toLocaleDateString(
-                        "fr-HT",
-                        { day: "numeric", month: "long" },
-                      )
+                      "fr-HT",
+                      { day: "numeric", month: "long" },
+                    )
                     : "—"}
                 </span>
               </div>

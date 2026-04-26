@@ -81,15 +81,17 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           const formattedNotif: Notification = {
             ...rawNotif,
             data: {
-              route: rawNotif.route || (
+              // Force la route calculée, pas celle de la BDD
+              route: (
                 rawNotif.type === 'transfer_received' ? '/history' :
                   rawNotif.type === 'transfer_out' ? '/history' :
                     rawNotif.type === 'request' ? '/request-payment' :
-                      rawNotif.type === 'scheduled_request' ? '/scheduler' :
-                        rawNotif.type === 'scheduled_confirmed' ? '/scheduler' :
-                          rawNotif.type === 'scheduled_created' ? '/scheduler' :
-                            rawNotif.type === 'FRIEND_REQUEST' ? '/contacts' :
-                              rawNotif.type === 'FRIEND_ACCEPTED' ? '/contacts' : '/'
+                      rawNotif.type === 'scheduled_request' ? '/scheduler?tab=outgoing' :
+                        rawNotif.type === 'scheduled_confirmed' ? '/scheduler?tab=outgoing' :
+                          rawNotif.type === 'scheduled_created' ? '/scheduler?tab=incoming' :
+                            rawNotif.type === 'scheduled_cancelled' ? '/scheduler?tab=outgoing' :
+                              rawNotif.type === 'FRIEND_REQUEST' ? '/contacts' :
+                                rawNotif.type === 'FRIEND_ACCEPTED' ? '/contacts' : '/'
               ),
               targetId: rawNotif.targetId || rawNotif.id,
               ...rawNotif.data,

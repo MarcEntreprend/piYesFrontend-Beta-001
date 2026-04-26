@@ -24,6 +24,7 @@ import { ContactSearch } from "@/components/ContactSearch";
 import OperationResult from "../components/OperationResult";
 import { useToast } from "../App";
 import PageHeader from "../components/PageHeader";
+import { HighlightedItem, useHighlight } from '../components/HighlightedItem';
 
 interface RequestPaymentProps {
   user: User;

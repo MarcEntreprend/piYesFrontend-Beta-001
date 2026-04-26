@@ -32,6 +32,7 @@ import { useTranslation } from "../App";
 import { useGroupedTransactions } from "../hooks/useGroupedTransactions";
 import { motion, AnimatePresence } from "framer-motion";
 import AnimatedButton from "../components/AnimatedButton";
+import { HighlightedItem, useHighlight } from '../components/HighlightedItem';
 import PageHeader from "../components/PageHeader";
 import { App as CapacitorApp } from "@capacitor/app";
 import { useRealtimeHistory } from '../hooks/useRealtimeHistory';
@@ -52,7 +53,7 @@ const History: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
   const isFetching = useRef(false);
-  const [highlightedTxId, setHighlightedTxId] = useState<string | null>(null);
+  const { highlight } = useHighlight(); //  hook useHighlight 
 
   // États pour le swipe et la persistance
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -229,15 +230,10 @@ const History: React.FC = () => {
     const targetId = searchParams.get("scroll");
     if (targetId && filtered.length > 0) {
       setTimeout(() => {
-        const el = document.getElementById(targetId);
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-        setHighlightedTxId(targetId);
-        setTimeout(() => setHighlightedTxId(null), 2500);
+        highlight(targetId);
       }, 500);
     }
-  }, [searchParams, filtered]);
+  }, [searchParams, filtered, highlight]);
 
   // Restaurer l'état sauvegardé au montage (filtre, scroll ET transactions)
   useEffect(() => {
@@ -502,68 +498,71 @@ const History: React.FC = () => {
                 {!collapsedGroups[group.key] && (
                   <div className="space-y-4">
                     {group.transactions.map((tx) => (
-                      <motion.div
-                        layoutId={tx.id}
-                        id={tx.id}
+                      <HighlightedItem
                         key={tx.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className={`flex items-start gap-4 cursor-pointer p-3 -mx-3 rounded-2xl transition-all duration-700 relative overflow-hidden group ${highlightedTxId === tx.id
-                          ? "ring-2 ring-(--primary-color) bg-(--primary-color)/10 scale-[1.02] z-10"
-                          : "active:bg-gray-50 dark:active:bg-white/5"
-                          }`}
-                        onClick={() =>
-                          navigate(
-                            `/receipt/${tx.id}?type=${tx.type}&role=${tx.role}`,
-                          )
-                        }
+                        id={tx.id}
+                        highlightDuration={2500}
+                        scrollBehavior="smooth"
+                        scrollBlock="center"
                       >
-                        <div className="w-12 h-12 theme-bubble-bg rounded-full flex items-center justify-center theme-text-secondary border theme-border group-hover:scale-110 transition-transform shrink-0">
-                          {getTransactionIcon(tx)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex justify-between items-baseline gap-2">
-                            <p className="font-bold theme-text-main text-sm truncate">
-                              {tx.counterpartyName}
-                            </p>
-                            <div className="shrink-0 text-right w-25">
-                              <span
-                                className={`font-black whitespace-nowrap block ${tx.role === TransactionRole.PAYER ? "theme-text-main" : "text-green-600"} ${tx.amount.toString().split(".")[0].length > 5 ? "text-[10px]" : "text-sm"}`}
-                              >
-                                {tx.role === TransactionRole.PAYER ? "-" : "+"}{" "}
-                                {tx.amount.toLocaleString(
-                                  language === "ht" ? "ht-HT" : "fr-HT",
-                                )}{" "}
-                                {t("currency.symbol")}
-                              </span>
-                            </div>
+                        <motion.div
+                          layoutId={tx.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className={`flex items-start gap-4 cursor-pointer p-3 -mx-3 rounded-2xl transition-all duration-700 relative overflow-hidden group active:bg-gray-50 dark:active:bg-white/5`}
+                          onClick={() =>
+                            navigate(
+                              `/receipt/${tx.id}?type=${tx.type}&role=${tx.role}`,
+                            )
+                          }
+                        >
+                          <div className="w-12 h-12 theme-bubble-bg rounded-full flex items-center justify-center theme-text-secondary border theme-border group-hover:scale-110 transition-transform shrink-0">
+                            {getTransactionIcon(tx)}
                           </div>
-                          <p className="theme-text-secondary text-xs truncate mt-0.5">
-                            {tx.description}
-                          </p>
-                          <p className="theme-text-secondary text-[10px] opacity-60 mt-0.5">
-                            {new Date(tx.date).toLocaleTimeString(
-                              language === "ht" ? "ht-HT" : "fr-HT",
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                second: "2-digit",
-                              },
-                            )}
-                          </p>
-                          {tx.type === TransactionType.INTERNATIONAL && (
-                            <div className="flex items-center gap-1 mt-1">
-                              <CheckCircle2
-                                size={10}
-                                className="text-blue-500"
-                              />
-                              <span className="text-[9px] font-bold text-blue-500 uppercase tracking-tighter">
-                                Verified Intl
-                              </span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-baseline gap-2">
+                              <p className="font-bold theme-text-main text-sm truncate">
+                                {tx.counterpartyName}
+                              </p>
+                              <div className="shrink-0 text-right w-25">
+                                <span
+                                  className={`font-black whitespace-nowrap block ${tx.role === TransactionRole.PAYER ? "theme-text-main" : "text-green-600"} ${tx.amount.toString().split(".")[0].length > 5 ? "text-[10px]" : "text-sm"}`}
+                                >
+                                  {tx.role === TransactionRole.PAYER ? "-" : "+"}{" "}
+                                  {tx.amount.toLocaleString(
+                                    language === "ht" ? "ht-HT" : "fr-HT",
+                                  )}{" "}
+                                  {t("currency.symbol")}
+                                </span>
+                              </div>
                             </div>
-                          )}
-                        </div>
-                      </motion.div>
+                            <p className="theme-text-secondary text-xs truncate mt-0.5">
+                              {tx.description}
+                            </p>
+                            <p className="theme-text-secondary text-[10px] opacity-60 mt-0.5">
+                              {new Date(tx.date).toLocaleTimeString(
+                                language === "ht" ? "ht-HT" : "fr-HT",
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  second: "2-digit",
+                                },
+                              )}
+                            </p>
+                            {tx.type === TransactionType.INTERNATIONAL && (
+                              <div className="flex items-center gap-1 mt-1">
+                                <CheckCircle2
+                                  size={10}
+                                  className="text-blue-500"
+                                />
+                                <span className="text-[9px] font-bold text-blue-500 uppercase tracking-tighter">
+                                  Verified Intl
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      </HighlightedItem>
                     ))}
                   </div>
                 )}
