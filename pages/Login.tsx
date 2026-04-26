@@ -90,7 +90,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         }
 
         if (isSubmitting) {
-            setIsSubmitting(false); // Force reset si bloqué
+            setIsSubmitting(false);
             return;
         }
 
