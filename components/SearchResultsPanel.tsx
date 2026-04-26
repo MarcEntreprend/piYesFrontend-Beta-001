@@ -71,11 +71,10 @@ const SearchResultsPanel: React.FC<SearchResultsPanelProps> = ({
       */}
       <div
         onClick={onClose}
-        className={`fixed inset-0 bg-black/60 backdrop-blur-md z-[120] transition-all duration-500 ease-in-out cursor-pointer ${
-          isOpen
-            ? "opacity-100 visible"
-            : "opacity-0 invisible pointer-events-none"
-        }`}
+        className={`fixed inset-0 bg-black/60 backdrop-blur-md z-120 transition-all duration-500 ease-in-out cursor-pointer ${isOpen
+          ? "opacity-100 visible"
+          : "opacity-0 invisible pointer-events-none"
+          }`}
       ></div>
 
       {/* 
@@ -83,11 +82,10 @@ const SearchResultsPanel: React.FC<SearchResultsPanelProps> = ({
         La largeur est contrainte par max-w-md et centrée horizontalement.
       */}
       <div
-        className={`fixed top-[104px] left-1/2 -translate-x-1/2 w-full max-w-md px-6 z-[130] transition-all duration-500 ease-out ${
-          isOpen
-            ? "opacity-100 translate-y-0 visible scale-100"
-            : "opacity-0 -translate-y-8 invisible scale-[0.98] pointer-events-none"
-        }`}
+        className={`fixed top-[104px] left-1/2 -translate-x-1/2 w-full max-w-md px-6 z-130 transition-all duration-500 ease-out ${isOpen
+          ? "opacity-100 translate-y-0 visible scale-100"
+          : "opacity-0 -translate-y-8 invisible scale-[0.98] pointer-events-none"
+          }`}
       >
         <div
           ref={panelRef}
