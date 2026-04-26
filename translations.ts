@@ -969,8 +969,8 @@ export const translations = {
           body: "Vous avez confirmé un paiement de {{amount}} pour {{name}} Échéance",
         },
         scheduled_cancelled: {
-          title: "Rappel supprimé",
-          body: "Vous avez supprimé le rappel de {{amount}} pour {{name}}",
+          title: "Rappel annulé",
+          body: "Le rappel de {{amount}} pour {{name}} a été annulé",
         },
         scheduled_request: {
           title: "Demande de paiement",
@@ -2692,7 +2692,7 @@ export const translations = {
         },
         scheduled_cancelled: {
           title: "Rapèl anile",
-          desc: "Ou anile rapèl {{amount}} pou {{name}} an.",
+          desc: "Rapèl {{amount}} pou {{name}} an anile.",
         },
         scheduled_request: {
           title: "Demann peman",
@@ -4357,7 +4357,7 @@ export const translations = {
         },
         scheduled_cancelled: {
           title: "Reminder Deleted",
-          body: "You deleted the {{amount}} reminder for {{name}}",
+          body: "The {{amount}} reminder for {{name}} has been deleted",
         },
         scheduled_request: {
           title: "Payment Request",
