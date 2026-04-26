@@ -34,6 +34,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import AnimatedButton from "../components/AnimatedButton";
 import PageHeader from "../components/PageHeader";
 import { App as CapacitorApp } from "@capacitor/app";
+import { useRealtimeHistory } from '../hooks/useRealtimeHistory';
 
 const History: React.FC = () => {
   const { t, language } = useTranslation();
@@ -105,6 +106,30 @@ const History: React.FC = () => {
     },
     [offset, hasMore],
   );
+
+  // Realtime: écoute les nouvelles transactions et recharge
+  const handleNewTransaction = useCallback(() => {
+    console.log('[History] New transaction detected, reloading...');
+    // Reset offset et recharger depuis le début
+    setOffset(0);
+    setHasMore(true);
+    setAllTransactions([]);
+    loadTransactions(true);
+  }, [loadTransactions]);
+
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('piyes-user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setUserId(user.id);
+      } catch (e) { }
+    }
+  }, []);
+
+  useRealtimeHistory(userId, handleNewTransaction);
 
   const [searchTerm, setSearchTerm] = useState("");
 

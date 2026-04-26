@@ -71,6 +71,7 @@ import AnimatedButton from "../components/AnimatedButton";
 import BankIcon from "../components/BankIcon";
 import AiSupportChat from "../components/AiSupportChat";
 import Button from "../components/Button";
+import { useRealtimeHistory } from '../hooks/useRealtimeHistory';
 
 interface DashboardProps {
   user: User;
@@ -87,6 +88,39 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
 
   // Synchronisation globale via Context
   const { syncData, syncLoading, isDataStale, isRefreshing, refresh } = useGlobalSync();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('piyes-user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setUserId(user.id);
+      } catch (e) { }
+    }
+  }, []);
+
+  // 🔥 Écouter les notifications Realtime pour rafraîchir le Dashboard
+  useRealtimeHistory(userId, () => {
+    console.log('[Dashboard] New transaction, refreshing...');
+    refresh();
+  });
+
+  // Écouter l'événement personnalisé pour naviguer depuis les notifs
+  useEffect(() => {
+    const handleRealtimeNotif = (e: CustomEvent<Notification>) => {
+      const notif = e.detail;
+      console.log('[Dashboard] Realtime notification clicked intent:', notif);
+
+      // Optionnel : afficher un toast rapide
+      if ('vibrate' in navigator) {
+        navigator.vibrate(200);
+      }
+    };
+
+    window.addEventListener('piyes:realtime_notification', handleRealtimeNotif as EventListener);
+    return () => window.removeEventListener('piyes:realtime_notification', handleRealtimeNotif as EventListener);
+  }, []);
 
   const [showBalance, setShowBalance] = useState(() => {
     const saved = localStorage.getItem("piyes_show_balance");
@@ -850,12 +884,12 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         <div
           onClick={() => refresh()}
           className={`mt-4 rounded-[28px] p-6 space-y-6 transition-all duration-500 cursor-pointer active:scale-[0.99] ${isSearchFocused
-              ? "opacity-10 translate-y-2"
-              : isRefreshing
-                ? "opacity-40 scale-[0.98]"
-                : isDataStale && selectedAccountId !== "all"
-                  ? "opacity-70"
-                  : "opacity-100"
+            ? "opacity-10 translate-y-2"
+            : isRefreshing
+              ? "opacity-40 scale-[0.98]"
+              : isDataStale && selectedAccountId !== "all"
+                ? "opacity-70"
+                : "opacity-100"
             } ${selectedAccountId === "all" ? "bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700" : "bg-white/5 backdrop-blur-md border border-white/10"}`}
         >
           <div className="flex justify-between items-center">

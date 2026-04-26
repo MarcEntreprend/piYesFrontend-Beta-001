@@ -1,7 +1,9 @@
 // contexts/NotificationContext.tsx
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { Notification, notificationService } from '../services/notificationService';
-import { useTranslation, useGlobalSync } from '../App';
+import { useTranslation } from '../App';
+import { supabase } from '../services/supabaseClient';
 
 interface NotificationContextType {
   notifications: Notification[];
@@ -27,6 +29,21 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
 
+  // Référence pour suivre l'utilisateur courant (pour Realtime)
+  const [userId, setUserId] = useState<string | null>(null);
+  const channelRef = useRef<any>(null);
+
+  // Récupérer l'userId depuis localStorage au montage
+  useEffect(() => {
+    const userStr = localStorage.getItem('piyes-user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setUserId(user.id);
+      } catch (e) { }
+    }
+  }, []);
+
   const fetchNotifications = useCallback(async () => {
     setLoading(true);
     try {
@@ -38,10 +55,81 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
+  //  Realtime: écoute les nouvelles notifications (UNIQUEMENT si userId présent)
   useEffect(() => {
-    //  Vérifier si un token existe avant de charger les notifications
+    if (!userId) return;
+
+    console.log('[Realtime] Setting up listener for user:', userId);
+
+    const channel = supabase
+      .channel(`notifications:${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'Notification',
+          filter: `userId=eq.${userId}`,
+        },
+        (payload) => {
+          const rawNotif = payload.new as Notification;
+          console.log('[Realtime] New notification received:', rawNotif);
+
+          // 🔧 FORMATAGE : Ajouter data.route et data.targetId pour la navigation
+          const formattedNotif: Notification = {
+            ...rawNotif,
+            data: {
+              route: rawNotif.route || (
+                rawNotif.type === 'transfer_received' ? '/history' :
+                  rawNotif.type === 'transfer_out' ? '/history' :
+                    rawNotif.type === 'request' ? '/request-payment' :
+                      rawNotif.type === 'scheduled_request' ? '/scheduler' :
+                        rawNotif.type === 'scheduled_confirmed' ? '/scheduler' :
+                          rawNotif.type === 'scheduled_created' ? '/scheduler' :
+                            rawNotif.type === 'FRIEND_REQUEST' ? '/contacts' :
+                              rawNotif.type === 'FRIEND_ACCEPTED' ? '/contacts' : '/'
+              ),
+              targetId: rawNotif.targetId || rawNotif.id,
+              ...rawNotif.data,
+            },
+          };
+
+          // Ajouter la notification en tête de liste
+          setNotifications(prev => {
+            if (prev.some(n => n.id === formattedNotif.id)) return prev;
+            return [formattedNotif, ...prev];
+          });
+          setUnreadCount(prev => prev + 1);
+
+          // Vibration courte
+          if ('vibrate' in navigator) {
+            navigator.vibrate(100);
+          }
+
+          // Émettre un événement pour les autres composants
+          window.dispatchEvent(new CustomEvent('piyes:realtime_notification', {
+            detail: formattedNotif
+          }));
+        }
+      )
+      .subscribe((status) => {
+        console.log('[Realtime] Subscription status:', status);
+      });
+
+    channelRef.current = channel;
+
+    return () => {
+      if (channelRef.current) {
+        channelRef.current.unsubscribe();
+        channelRef.current = null;
+      }
+    };
+  }, [userId]);
+
+  // Chargement initial des notifications
+  useEffect(() => {
     const token = localStorage.getItem('piyes-auth-token');
     if (!token) {
       setLoading(false);
@@ -50,9 +138,13 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     fetchNotifications();
 
+    // Écouter l'événement existant pour les notifs simulées ou legacy
     const handleNewNotif = (e: any) => {
       const newNotif = e.detail;
-      setNotifications(prev => [newNotif, ...prev]);
+      setNotifications(prev => {
+        if (prev.some(n => n.id === newNotif.id)) return prev;
+        return [newNotif, ...prev];
+      });
       setUnreadCount(prev => prev + 1);
     };
 
