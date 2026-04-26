@@ -116,7 +116,7 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({
   };
 
   return (
-    <div className={`space-y-4 animate-in fade-in duration-300 transition-all duration-500 ${isDataStale ? "opacity-60 grayscale-[30%]" : "opacity-100 grayscale-0"
+    <div className={`space-y-4 animate-in fade-in transition-all duration-500 ${isDataStale ? "opacity-60 grayscale-30" : "opacity-100 grayscale-0"
       }`}>
       <div className="flex items-center justify-between px-1">
         <h3 className="text-[10px] font-black theme-text-secondary uppercase tracking-widest">
@@ -134,8 +134,8 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({
       </div>
 
       <div className={`p-5 border-2 rounded-[28px] space-y-4 shadow-sm transition-all duration-500 ${isDataStale
-          ? "bg-gray-100 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700"
-          : "theme-bubble-bg border-purple-100 dark:border-purple-900/30"
+        ? "bg-gray-100 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700"
+        : "theme-bubble-bg border-purple-100 dark:border-purple-900/30"
         }`}>
         {/* Account Header */}
         <div className="flex items-center gap-4">
