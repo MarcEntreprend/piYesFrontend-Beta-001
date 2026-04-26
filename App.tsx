@@ -564,11 +564,9 @@ const App: React.FC = () => {
             mode: "login",
           },
           resolve: async (verifyResponse: any) => {
-            // verifyResponse = { user: {...}, token: "..." } retourné par verify-session-otp
             const userData = verifyResponse?.user || verifyResponse;
             const newToken = verifyResponse?.token;
 
-            // Sauvegarder le nouveau token JWT (session du nouveau device)
             if (newToken) {
               localStorage.setItem("piyes-auth-token", newToken);
             }
@@ -583,6 +581,10 @@ const App: React.FC = () => {
             await refresh();
           },
         });
+        //  Succès : notifier Login que l'opération est terminée
+        if ((window as any).__loginResolve) {
+          (window as any).__loginResolve();
+        }
         return;
       }
 
@@ -596,6 +598,11 @@ const App: React.FC = () => {
       }
 
       await refresh();
+
+      //  Succès : notifier Login que l'opération est terminée
+      if ((window as any).__loginResolve) {
+        (window as any).__loginResolve();
+      }
 
       if (!res.user.isDeviceVerified) {
         setSecurityQueue({
@@ -614,7 +621,6 @@ const App: React.FC = () => {
           t("auth.login_error_wrong_password"),
           "error",
         );
-        // Émettre un événement pour highlight le bouton "Mot de passe oublié"
         window.dispatchEvent(new CustomEvent("piyes:highlight_forgot_password"));
       } else if (
         code === "INVALID_CREDENTIALS" ||
@@ -634,6 +640,11 @@ const App: React.FC = () => {
         showToast(t("auth.login_error_network"), "error");
       } else {
         showToast(msg || t("auth.login_error"), "error");
+      }
+
+      //  Échec : notifier Login que l'opération est terminée (pour réactiver le bouton)
+      if ((window as any).__loginReject) {
+        (window as any).__loginReject(e);
       }
     } finally {
       // Nettoyer le timeout de sécurité du login

@@ -81,21 +81,20 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         return val.trim();
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Vérifier la connectivité avant tout
         if (!navigator.onLine) {
             showToast(t("common.offline_msg"), "error");
             return;
         }
 
         if (isSubmitting) {
-            // Force reset si bloqué plus de 10 secondes (sécurité)
-            setIsSubmitting(false);
+            setIsSubmitting(false); // Force reset si bloqué
             return;
         }
 
+        // Step 1 : validation de l'identifiant → passage au step 2
         if (step === 1) {
             if (validateIdentifier(identifier)) {
                 setError("");
@@ -108,25 +107,55 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                         : "Numéro de téléphone invalide. Format attendu : 8 chiffres haïtiens.",
                 );
             }
-        } else if (step === 2 && password.length >= 6) {
+            return;
+        }
+
+        // Step 2 : soumission
+        if (step === 2 && password.length >= 6) {
             setIsSubmitting(true);
-            const normalized = normalizeIdentifier(identifier);
-            const isEmail = identifier.includes("@");
 
-            // Timeout de sécurité : reset après 15 secondes si pas de réponse
-            const safetyTimeout = setTimeout(() => {
+            try {
+                // Appeler onLogin et attendre qu'il termine (ou échoue)
+                // On fait un wrapper Promise pour capturer la fin
+                const normalized = normalizeIdentifier(identifier);
+                const isEmail = identifier.includes("@");
+
+                // Utiliser un pattern "fire and forget with timeout safety"
+                const loginPromise = new Promise<void>((resolve, reject) => {
+                    const safetyTimeout = setTimeout(() => {
+                        reject(new Error("timeout"));
+                    }, 15000);
+
+                    (window as any).__loginResolve = () => {
+                        clearTimeout(safetyTimeout);
+                        resolve();
+                    };
+                    (window as any).__loginReject = (err: any) => {
+                        clearTimeout(safetyTimeout);
+                        reject(err);
+                    };
+
+                    onLogin({
+                        [isEmail ? "email" : "phone"]: normalized,
+                        password,
+                        device: navigator.userAgent,
+                    });
+                });
+
+                await loginPromise;
+            } catch (err: any) {
+                // L'erreur est déjà gérée par le toast dans App.tsx
+                // On reset juste l'état local
+            } finally {
                 setIsSubmitting(false);
-                showToast(t("auth.login_timeout") || "Délai de connexion dépassé. Vérifiez votre connexion internet.", "error");
-            }, 15000);
-
-            // Stocker le timeout pour le nettoyer dans le parent si besoin
-            (window as any).__loginSafetyTimeout = safetyTimeout;
-
-            onLogin({
-                [isEmail ? "email" : "phone"]: normalized,
-                password,
-                device: navigator.userAgent,
-            });
+                // Nettoyer les callbacks globaux
+                delete (window as any).__loginResolve;
+                delete (window as any).__loginReject;
+                if ((window as any).__loginSafetyTimeout) {
+                    clearTimeout((window as any).__loginSafetyTimeout);
+                    delete (window as any).__loginSafetyTimeout;
+                }
+            }
         }
     };
 
