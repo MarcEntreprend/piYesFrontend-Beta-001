@@ -16,7 +16,7 @@ const Splash: React.FC<SplashProps> = ({ onComplete }) => {
     const timer = setTimeout(() => {
       setIsAnimating(false);
       onComplete?.();
-    }, 3000); // wait time before the splash screen disappears
+    }, 1500); // wait time before the splash screen disappears
 
     return () => clearTimeout(timer);
   }, [onComplete]);
