@@ -471,35 +471,52 @@ const ScheduledPayments: React.FC = () => {
 
       <div className="flex-1 animate-in fade-in duration-500 overflow-y-auto no-scrollbar">
         {!isSelectionMode && (
-          <div className="p-6 bg-gray-50 dark:bg-gray-800/50 space-y-4">
-            <div className="flex justify-between items-end">
-              <div>
-                <p className="text-[10px] font-bold theme-text-secondary uppercase tracking-widest mb-1">
-                  {activeTab === "outgoing"
-                    ? t("scheduler.stats.to_pay")
-                    : t("scheduler.stats.to_receive")}
-                </p>
-                <h2 className="text-2xl font-bold theme-text-main">
-                  {stats.total.toLocaleString("fr-HT")} {t("currency.symbol")}
-                </h2>
+          <div className="mx-4 mt-4 mb-6 rounded-3xl theme-card-bg border theme-border overflow-hidden shadow-sm">
+            <div className="p-5 space-y-5">
+              {/* Ligne des montants */}
+              <div className="flex justify-between items-end">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black theme-text-secondary uppercase tracking-widest">
+                    {activeTab === "outgoing"
+                      ? t("scheduler.stats.to_pay")
+                      : t("scheduler.stats.to_receive")}
+                  </p>
+                  <h2 className="text-3xl font-black theme-text-main tracking-tight">
+                    {stats.total.toLocaleString("fr-HT")}
+                    <span className="text-sm font-bold theme-text-secondary ml-1">
+                      {t("currency.symbol")}
+                    </span>
+                  </h2>
+                </div>
+                <div className="text-right space-y-1">
+                  <p className="text-[10px] font-black theme-text-secondary uppercase tracking-widest">
+                    {t("scheduler.stats.confirmed")}
+                  </p>
+                  <p className="text-xl font-black text-green-600">
+                    {stats.confirmedAmount.toLocaleString("fr-HT")}
+                    <span className="text-xs font-bold text-green-400 ml-1">
+                      {t("currency.symbol")}
+                    </span>
+                  </p>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-[10px] font-bold theme-text-secondary uppercase tracking-widest mb-1">
-                  {t("scheduler.stats.confirmed")}
-                </p>
-                <p className="text-sm font-bold text-green-600">
-                  {stats.confirmedAmount.toLocaleString("fr-HT")}{" "}
-                  {t("currency.symbol")}
-                </p>
+
+              {/* Barre de progression */}
+              <div className="relative">
+                <div className="h-2 w-full theme-bubble-bg rounded-full overflow-hidden">
+                  <div
+                    className="h-full theme-primary-bg rounded-full transition-all duration-700 ease-out shadow-[0_0_8px_rgba(131,10,209,0.5)]"
+                    style={{
+                      width: `${(stats.confirmedAmount / (stats.total || 1)) * 100}%`,
+                    }}
+                  />
+                </div>
+                <div className="absolute -top-5 right-0">
+                  <span className="text-[9px] font-black theme-primary-text opacity-70">
+                    {Math.round((stats.confirmedAmount / (stats.total || 1)) * 100)}%
+                  </span>
+                </div>
               </div>
-            </div>
-            <div className="h-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-              <div
-                className="h-full theme-primary-bg transition-all duration-1000"
-                style={{
-                  width: `${(stats.confirmedAmount / (stats.total || 1)) * 100}%`,
-                }}
-              ></div>
             </div>
           </div>
         )}
