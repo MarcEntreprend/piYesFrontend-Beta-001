@@ -94,7 +94,6 @@ const KeysManagement: React.FC = () => {
   const [isAnalyzingLink, setIsAnalyzingLink] = useState(false);
 
   const [newKeyType, setNewKeyType] = useState<KeyType>("email");
-  const [copyFeedback, setCopyFeedback] = useState(false);
   const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null);
   const [isRegenerating, setIsRegenerating] = useState(false);
 
@@ -431,45 +430,47 @@ const KeysManagement: React.FC = () => {
 
   // Random key generation
   const generateRandomKey = () => {
-    setIsRegenerating(true);
-    setTimeout(() => {
-      const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-      let result = "";
-      for (let i = 0; i < 25; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      setRandomValue(result);
-      setIsRegenerating(false);
-    }, 400);
-  };
-
-  const handleCopyRandomKey = async () => {
-    if (!randomValue) return;
-    try {
-      await navigator.clipboard.writeText(randomValue);
-      setCopyFeedback(true);
-      showToast(t("common.copied"), "success");
-      setTimeout(() => setCopyFeedback(false), 2000);
-    } catch (err) {
-      showToast(t("common.error"), "error");
+    const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    for (let i = 0; i < 25; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
+    setRandomValue(result);
+    setIsRegenerating(true);
+    setTimeout(() => setIsRegenerating(false), 300);
   };
 
   const handleCopyKey = async (keyValue: string, keyId: string) => {
     if (!keyValue) return;
     try {
       await navigator.clipboard.writeText(keyValue);
-      setCopiedKeyId(keyId);
-      showToast(t("common.copied"), "success");
-      setTimeout(() => setCopiedKeyId(null), 2000);
-    } catch (err) {
-      showToast(t("common.error"), "error");
+    } catch {
+      // Fallback quand l'API clipboard n'est pas disponible (ex: http://localhost)
+      const textarea = document.createElement('textarea');
+      textarea.value = keyValue;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
     }
+    setCopiedKeyId(keyId);
+    showToast(t("common.copied"), "success");
+    setTimeout(() => setCopiedKeyId(null), 2000);
   };
 
+  // Generate random key when tab opens and auto-regenerate every 5 seconds
   useEffect(() => {
-    if (newKeyType === "random" && !randomValue) {
-      generateRandomKey();
+    if (newKeyType === "random") {
+      if (!randomValue) {
+        generateRandomKey();
+      }
+      // Auto-regenerate every 5 seconds
+      const interval = setInterval(() => {
+        generateRandomKey();
+      }, 5000);
+      return () => clearInterval(interval);
     }
   }, [newKeyType]);
 
@@ -1124,7 +1125,7 @@ const KeysManagement: React.FC = () => {
                         const raw = e.target.value.replace(/[\s\D]/g, "");
                         setPhoneValue(raw);
                       }}
-                      className="w-full theme-bubble-bg p-4 pl-[4.25rem] rounded-2xl outline-none theme-text-main border theme-border focus:theme-card-bg focus:border-(--primary-color) transition-all font-bold tracking-wider"
+                      className="w-full theme-bubble-bg p-4 pl-17 rounded-2xl outline-none theme-text-main border theme-border focus:theme-card-bg focus:border-(--primary-color) transition-all font-bold tracking-wider"
                     />
                   </div>
                 </div>
@@ -1187,19 +1188,9 @@ const KeysManagement: React.FC = () => {
                         type="text"
                         readOnly
                         value={randomValue}
-                        className="w-full theme-bubble-bg p-4 pr-24 rounded-2xl outline-none theme-text-main border theme-border font-mono text-xs font-bold"
+                        className="w-full theme-bubble-bg p-4 pr-12 rounded-2xl outline-none theme-text-main border theme-border font-mono text-xs font-bold"
                       />
-                      <button
-                        onClick={handleCopyRandomKey}
-                        className="absolute right-12 top-1/2 -translate-y-1/2 theme-text-secondary hover:theme-primary-text active:scale-90 transition-all p-1"
-                        aria-label={t("common.copy")}
-                      >
-                        {copyFeedback ? (
-                          <Check size={18} className="text-green-500" />
-                        ) : (
-                          <Copy size={18} />
-                        )}
-                      </button>
+
                       <button
                         onClick={generateRandomKey}
                         disabled={isRegenerating}
