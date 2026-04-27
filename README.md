@@ -30,7 +30,7 @@ piyes-wallet-frontend/
 │   ├── gradle/
 │   └── ...
 │
-├── components (count : 27)                  # Composants réutilisables
+├── components (count : 28)                  # Composants réutilisables
 │   ├── 1- AccountSummary.tsx
 │   ├── 2- AiSupportChat.tsx
 │   ├── 3- AnimatedButton.tsx
@@ -40,24 +40,25 @@ piyes-wallet-frontend/
 │   ├── 7- Button.tsx
 │   ├── 8- ContactComponents.tsx
 │   ├── 9- ContactSearch.tsx
-│   ├── 10- Input.tsx
-│   ├── 11- InputFloating.tsx
-│   ├── 12- LanguageSelector.tsx
-│   ├── 13- Modal.tsx
-│   ├── 14- OperationResult.tsx
-│   ├── 15- OtpOverlay.tsx
-│   ├── 16- PageHeader.tsx
-│   ├── 17- PageTransition.tsx
-│   ├── 18- PinOverlay.tsx
-│   ├── 19- QrScanner.tsx
-│   ├── 20- RotatingText.tsx
-│   ├── 21- ScheduledPaymentItem.tsx
-│   ├── 22- SearchInput.tsx
-│   ├── 23- SearchResultsPanel.tsx
-│   ├── 24- SegmentedControl.tsx
-│   ├── 25- Splash.tsx
-│   ├── 26- StepIndicator.tsx
-│   └── 27- ThemeSelector.tsx
+│   ├── 10- HighlightedItem.tsx
+│   ├── 11- Input.tsx
+│   ├── 12- InputFloating.tsx
+│   ├── 13- LanguageSelector.tsx
+│   ├── 14- Modal.tsx
+│   ├── 15- OperationResult.tsx
+│   ├── 16- OtpOverlay.tsx
+│   ├── 17- PageHeader.tsx
+│   ├── 18- PageTransition.tsx
+│   ├── 19- PinOverlay.tsx
+│   ├── 20- QrScanner.tsx
+│   ├── 21- RotatingText.tsx
+│   ├── 22- ScheduledPaymentItem.tsx
+│   ├── 23- SearchInput.tsx
+│   ├── 24- SearchResultsPanel.tsx
+│   ├── 25- SegmentedControl.tsx
+│   ├── 26- Splash.tsx
+│   ├── 27- StepIndicator.tsx
+│   └── 28- ThemeSelector.tsx
 │
 ├── contexts/                   # Contextes React (état global)
 │   └── NotificationContext.tsx
@@ -70,6 +71,7 @@ piyes-wallet-frontend/
 │   ├── useGroupedTransactions.ts
 │   ├── useMarketplaceBadges.ts
 │   ├── useNotifications.ts
+│   ├── useRealtimeHistory.ts
 │   └── useSync.ts
 │
 ├── pages (count : 46)                  # Pages de l'application
@@ -132,13 +134,14 @@ piyes-wallet-frontend/
 │   ├── 9- financeService.ts
 │   ├── 10- httpClient.ts
 │   ├── 11- messagingService.ts
-│   ├── 12- notificationService.ts
-│   ├── 13- receiptService.ts
-│   ├── 14- receivingService.ts
-│   ├── 15- rechargeService.ts
-│   ├── 16- schedulerService.ts
-│   ├── 17- searchService.ts
-│   └── 18- supabaseService.ts
+│   ├── 12- nativeContactsService.ts
+│   ├── 13- notificationService.ts
+│   ├── 14- receiptService.ts
+│   ├── 15- receivingService.ts
+│   ├── 16- rechargeService.ts
+│   ├── 17- schedulerService.ts
+│   ├── 18- searchService.ts
+│   └── 19- supabaseService.ts
 │
 ├── shared/                     # Code partagé (types, utils)
 │   ├── phoneFormatter.ts
@@ -179,14 +182,18 @@ npx cap sync android
 npx cap open android
 ```
 
+
+
 ---
 cd C:\Users\mmarc\Documents\Antigravity\piyes-wallet-frontend
 npm run build
 npx cap sync android
 npx cap open android
 
+---
 
-
-
+npm run build
+npx cap copy
+npx cap sync
 
 
