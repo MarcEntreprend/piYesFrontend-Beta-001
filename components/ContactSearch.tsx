@@ -1,4 +1,4 @@
-// components/ContactSearch.tsx 
+// components/ContactSearch.tsx
 
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "@/App";
@@ -64,10 +64,9 @@ export const ContactSearch: React.FC<ContactSearchProps> = ({
 
   const isNewRecipient = query.trim().length > 0 && results.length === 0;
   const showResults = query.trim().length > 0;
-  const isSelf = isOwnKey(query, currentUser);
-  const recipientType = getRecipientType(query);
-  const hasSpace = query.trim().includes(" ");
-  const isInvalidWithSpace = isNewRecipient && hasSpace;
+  const cleanQuery = query.trim().replace(/\s/g, '');
+  const isSelf = isOwnKey(cleanQuery, currentUser);
+  const recipientType = getRecipientType(cleanQuery);
 
   return (
     <div className="relative w-full px-6 mb-6">
@@ -78,7 +77,12 @@ export const ContactSearch: React.FC<ContactSearchProps> = ({
         <input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            const raw = e.target.value;
+            // Remove internal spaces silently (keep leading/trailing for UX, trimmed on validation)
+            const cleaned = raw.replace(/\s/g, '');
+            setQuery(cleaned);
+          }}
           placeholder={placeholder || t("contacts.add_info_label")}
           autoFocus={autoFocus}
           className="w-full h-14 pl-12 pr-12 theme-bubble-bg border theme-border rounded-2xl theme-text-main focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all shadow-sm"
@@ -164,46 +168,44 @@ export const ContactSearch: React.FC<ContactSearchProps> = ({
           {isNewRecipient && (
             <div
               onClick={() => {
-                if (!isSelf && !isInvalidWithSpace) {
+                if (!isSelf) {
                   const contactData: Partial<Contact> = {};
-                  const cleanQuery = query.trim();
+                  const finalQuery = cleanQuery; // already trimmed and no spaces
                   if (recipientType === RecipientType.EMAIL)
-                    contactData.email = cleanQuery;
+                    contactData.email = finalQuery;
                   else if (recipientType === RecipientType.PHONE)
-                    contactData.phone = cleanQuery;
+                    contactData.phone = finalQuery;
                   else if (recipientType === RecipientType.TAG)
-                    contactData.tag = cleanQuery;
+                    contactData.tag = finalQuery;
                   else if (recipientType === RecipientType.RANDOM_KEY)
-                    contactData.randomKey = cleanQuery;
-                  else contactData.tag = cleanQuery;
+                    contactData.randomKey = finalQuery;
+                  else contactData.tag = finalQuery;
 
                   onSelect(contactData);
                 }
               }}
-              className={`flex items-center gap-4 p-4 hover:bg-black/5 active:bg-black/10 transition-colors cursor-pointer ${isSelf || isInvalidWithSpace ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`flex items-center gap-4 p-4 hover:bg-black/5 active:bg-black/10 transition-colors cursor-pointer ${isSelf ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${isSelf || isInvalidWithSpace ? "bg-red-100 text-red-500" : "bg-gray-100 dark:bg-gray-800 text-gray-400"}`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${isSelf ? "bg-red-100 text-red-500" : "bg-gray-100 dark:bg-gray-800 text-gray-400"}`}
               >
                 {getInitials(query)}
               </div>
               <div className="flex-1">
                 <p
-                  className={`font-bold text-sm ${isSelf || isInvalidWithSpace ? "text-red-500" : "theme-text-main"}`}
+                  className={`font-bold text-sm ${isSelf ? "text-red-500" : "theme-text-main"}`}
                 >
                   {query}
                 </p>
                 <p
-                  className={`text-xs font-bold uppercase tracking-wider ${isSelf || isInvalidWithSpace ? "text-red-500" : "text-purple-500"}`}
+                  className={`text-xs font-bold uppercase tracking-wider ${isSelf ? "text-red-500" : "text-purple-500"}`}
                 >
                   {isSelf
                     ? t("transfer.is_your_key")
-                    : isInvalidWithSpace
-                      ? t("contacts.check_recipient")
-                      : t("contacts.new_recipient")}
+                    : t("contacts.new_recipient")}
                 </p>
               </div>
-              {isSelf || isInvalidWithSpace ? (
+              {isSelf ? (
                 <AlertCircle size={18} className="text-red-500" />
               ) : (
                 <UserPlus size={18} className="text-purple-500" />
