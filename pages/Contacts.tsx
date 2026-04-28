@@ -43,6 +43,13 @@ import { ContactItem, ContactSection } from "@/components/ContactComponents";
 import { ContactSearch } from "@/components/ContactSearch";
 import PageHeader from "../components/PageHeader";
 import { formatPhoneDisplay } from "../shared/phoneFormatter";
+import {
+  getMatchedNativeContacts,
+  getCachedNativeContacts,
+  clearNativeContactsCache,
+  NativeContact
+} from "../services/nativeContactsService";
+import { Capacitor } from '@capacitor/core';
 
 interface ContactsProps {
   user?: User | null;
@@ -68,22 +75,20 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleImportFromPhone = async () => {
-    // @ts-ignore - Contact Picker API is experimental
-    if ("contacts" in navigator && "select" in navigator.contacts) {
+    // Show the native contacts modal
+    setShowNativeContactsModal(true);
+    // If no contacts loaded yet, trigger a fetch
+    if (nativeAppContacts.length === 0) {
+      setLoadingNative(true);
       try {
-        const props = ["name", "tel", "email"];
-        const opts = { multiple: true };
-        // @ts-ignore
-        const contacts = await navigator.contacts.select(props, opts);
-        if (contacts && contacts.length > 0) {
-          alert(t("contacts.import_success", { count: contacts.length }));
-          // In a real app, sync to backend
-        }
-      } catch (err) {
-        console.error("Contact Picker Error:", err);
+        const contacts = await getMatchedNativeContacts((msg) => {
+          console.log('[ImportFromPhone]', msg);
+        });
+        setNativeAppContacts(contacts);
+      } catch (e) {
+        console.error('handleImportFromPhone error:', e);
       }
-    } else {
-      alert(t("contacts.import_not_supported"));
+      setLoadingNative(false);
     }
   };
 
@@ -95,6 +100,10 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
     null,
   ); // null=pas encore vérifié, true=user trouvé, false=pas user
   const [checkingNewContact, setCheckingNewContact] = useState(false);
+
+  const [nativeAppContacts, setNativeAppContacts] = useState<NativeContact[]>([]);
+  const [loadingNative, setLoadingNative] = useState(false);
+  const [showNativeContactsModal, setShowNativeContactsModal] = useState(false);
 
   //  state pour le modal de confirmation avertissement lors de sauvegarde de contact non-user
   const [showNonUserModal, setShowNonUserModal] = useState(false);
@@ -132,11 +141,32 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
     setLoading(true);
     try {
       const [contactsData, syncData] = await Promise.all([
-        api.getContactsFresh(), // Forcer refresh au chargement de la page
+        api.getContactsFresh(),
         api.syncFresh(),
       ]);
       setContacts(contactsData);
       setFriendships(syncData.friendships || []);
+
+      // Try cache first to avoid re-fetching on every render
+      const cached = getCachedNativeContacts();
+      if (cached && cached.length > 0) {
+        console.log('[Contacts] Native contacts from cache:', cached.length);
+        setNativeAppContacts(cached);
+      } else {
+        // No cache: fetch from device (only if native)
+        setLoadingNative(true);
+        try {
+          const nativeContacts = await getMatchedNativeContacts((msg) => {
+            console.log('[fetchData]', msg);
+            // No toast here to avoid spam on first load — check console only
+          });
+          console.log('[Contacts] Native contacts fetched:', nativeContacts.length);
+          setNativeAppContacts(nativeContacts);
+        } catch (e) {
+          console.error('[Contacts] Native contacts error:', e);
+        }
+        setLoadingNative(false);
+      }
     } catch (error) {
       console.error(t("contacts.errors.fetch_failed"), error);
     }
@@ -262,12 +292,37 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
   const handleSyncContacts = async () => {
     setIsSyncing(true);
     try {
-      await fetchData();
-      alert(t("contacts.sync_success"));
+      // Sync piYès contacts from backend
+      const [contactsData, syncData] = await Promise.all([
+        api.getContactsFresh(),
+        api.syncFresh(),
+      ]);
+      setContacts(contactsData);
+      setFriendships(syncData.friendships || []);
     } catch (e) {
+      console.error('[handleSyncContacts] piYès sync error:', e);
       alert(t("common.error"));
+      setIsSyncing(false);
+      return;
     }
+
+    // Sync native contacts separately (never blocks or throws)
+    try {
+      clearNativeContactsCache();
+      setLoadingNative(true);
+      const nativeContacts = await getMatchedNativeContacts((msg) => {
+        showToast(msg, 'info');
+      });
+      setNativeAppContacts(nativeContacts);
+    } catch (e) {
+      // Should never reach here since getMatchedNativeContacts catches internally
+      console.error('[handleSyncContacts] native contacts error:', e);
+    } finally {
+      setLoadingNative(false);
+    }
+
     setIsSyncing(false);
+    alert(t("contacts.sync_success"));
   };
 
   const handleSelectUser = (user: Partial<Contact>) => {
@@ -491,6 +546,71 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
             onContactClick={(c) => setQuickActionContact(c)}
             onToggleFavorite={handleToggleFavorite}
           />
+
+          {/* Contacts natifs sur piYès */}
+          {nativeAppContacts.length > 0 && (
+            <div className="mb-6">
+              <div className="px-6 mb-3 flex items-center justify-between">
+                <h3 className="text-xs font-bold theme-text-secondary uppercase tracking-wider">
+                  📱 Contacts sur piYès ({nativeAppContacts.length})
+                </h3>
+                <p className="text-[9px] theme-text-secondary">depuis ton répertoire</p>
+              </div>
+              <div className="space-y-1">
+                {nativeAppContacts.map((nativeContact) => (
+                  <div
+                    key={nativeContact.id}
+                    onClick={() => {
+                      // Navigate to contact detail if already saved as contact,
+                      // otherwise go to transfer with the matched phone as key
+                      const existingContact = contacts.find(
+                        c => c.contactUserId === nativeContact.appUserId
+                      );
+                      if (existingContact) {
+                        navigate(`/contact-detail/${existingContact.id}`);
+                      } else {
+                        // Use tag if available, else matched phone number (formatted for piYès)
+                        const key = nativeContact.appUserTag
+                          ? nativeContact.appUserTag
+                          : `+509${nativeContact.matchedPhone}`;
+                        navigate(`/transfer?recipient=${encodeURIComponent(key)}`);
+                      }
+                    }}
+                    className="flex items-center gap-4 px-6 py-3 active:bg-gray-50 dark:active:bg-white/5 transition-all cursor-pointer"
+                  >
+                    <div className="w-12 h-12 theme-bubble-bg rounded-2xl flex items-center justify-center font-bold theme-primary-text text-lg border theme-border shadow-sm overflow-hidden shrink-0">
+                      {nativeContact.appUserAvatar ? (
+                        <img
+                          src={nativeContact.appUserAvatar}
+                          alt={nativeContact.appUserName}
+                          className="w-full h-full object-cover"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        getInitials(nativeContact.appUserName || nativeContact.name)
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-bold theme-text-main truncate">
+                          {nativeContact.appUserName || nativeContact.name}
+                        </p>
+                        <span className="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-[8px] font-bold px-1.5 py-0.5 rounded-full">
+                          piYès
+                        </span>
+                      </div>
+                      <p className="text-[10px] theme-text-secondary truncate">
+                        {nativeContact.phoneNumbers[0] &&
+                          formatPhoneDisplay(`+509${nativeContact.phoneNumbers[0]}`)}
+                      </p>
+                    </div>
+                    <ChevronRight size={18} className="theme-text-secondary shrink-0" />
+                  </div>
+                ))}
+              </div>
+              <div className="h-px theme-border mx-6 my-4" />
+            </div>
+          )}
 
           {/* Tous les contacts */}
           <ContactSection
@@ -1055,9 +1175,113 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
             </div>
           )}
         </Modal>
+        {/* Native Phone Contacts Modal */}
+        <Modal
+          isOpen={showNativeContactsModal}
+          onClose={() => setShowNativeContactsModal(false)}
+        >
+          <div className="p-6 space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Smartphone className="theme-primary-text" size={22} />
+                <h2 className="text-xl font-bold theme-text-main">
+                  Contacts sur piYès
+                </h2>
+              </div>
+              <button
+                onClick={() => setShowNativeContactsModal(false)}
+                className="p-2 theme-bubble-bg rounded-full theme-text-secondary active:scale-90"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {loadingNative ? (
+              <div className="flex flex-col items-center gap-3 py-12">
+                <div className="w-8 h-8 border-4 border-(--primary-color) border-t-transparent rounded-full animate-spin" />
+                <p className="text-sm theme-text-secondary">Lecture du répertoire...</p>
+              </div>
+            ) : nativeAppContacts.length === 0 ? (
+              <div className="flex flex-col items-center gap-3 py-12 text-center">
+                <Smartphone size={40} className="text-gray-300" />
+                <p className="text-sm theme-text-secondary">
+                  Aucun contact de votre répertoire n'est encore sur piYès.
+                </p>
+                <button
+                  onClick={async () => {
+                    clearNativeContactsCache();
+                    setLoadingNative(true);
+                    const contacts = await getMatchedNativeContacts((msg) => showToast(msg, 'info'));
+                    setNativeAppContacts(contacts);
+                    setLoadingNative(false);
+                  }}
+                  className="theme-primary-bg text-white px-6 py-3 rounded-2xl font-bold text-sm active:scale-95 transition-all"
+                >
+                  Réessayer
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-1 max-h-[60vh] overflow-y-auto no-scrollbar">
+                {nativeAppContacts.map((nc) => {
+                  const existingContact = contacts.find(
+                    c => c.contactUserId === nc.appUserId
+                  );
+                  return (
+                    <div
+                      key={nc.id}
+                      onClick={() => {
+                        setShowNativeContactsModal(false);
+                        if (existingContact) {
+                          navigate(`/contact-detail/${existingContact.id}`);
+                        } else {
+                          const key = nc.appUserTag
+                            ? nc.appUserTag
+                            : `+509${nc.matchedPhone}`;
+                          navigate(`/transfer?recipient=${encodeURIComponent(key)}`);
+                        }
+                      }}
+                      className="flex items-center gap-4 p-4 active:bg-gray-50 dark:active:bg-white/5 rounded-2xl transition-all cursor-pointer"
+                    >
+                      <div className="w-12 h-12 theme-bubble-bg rounded-2xl flex items-center justify-center font-bold theme-primary-text border theme-border overflow-hidden shrink-0">
+                        {nc.appUserAvatar ? (
+                          <img
+                            src={nc.appUserAvatar}
+                            alt={nc.appUserName}
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          getInitials(nc.appUserName || nc.name)
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold theme-text-main truncate">
+                            {nc.appUserName || nc.name}
+                          </p>
+                          <span className="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-[8px] font-bold px-1.5 py-0.5 rounded-full shrink-0">
+                            piYès
+                          </span>
+                        </div>
+                        <p className="text-[10px] theme-text-secondary">
+                          {nc.matchedPhone && formatPhoneDisplay(`+509${nc.matchedPhone}`)}
+                        </p>
+                      </div>
+                      <ChevronRight size={16} className="theme-text-secondary shrink-0" />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </Modal>
       </div>
     </div>
   );
 };
 
 export default Contacts;
+function showToast(msg: string, arg1: string) {
+  throw new Error("Function not implemented.");
+}
+
