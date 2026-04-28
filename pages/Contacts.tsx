@@ -50,6 +50,7 @@ import {
   NativeContact
 } from "../services/nativeContactsService";
 import { Capacitor } from '@capacitor/core';
+import { cacheService } from "../services/cacheService";
 
 interface ContactsProps {
   user?: User | null;
@@ -124,7 +125,7 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(true);
   }, []);
 
   useEffect(() => {
@@ -137,8 +138,25 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
     }
   }, [contacts, location.search]);
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (background: boolean = false) => {
+    // Récupérer le cache (asynchrone mais rapide)
+    const cachedContacts = await api.getContacts();
+    const hasCache = cachedContacts.length > 0;
+
+    if (!background && !hasCache) {
+      setLoading(true);
+    }
+
+    // 1. Afficher le cache immédiatement
+    if (hasCache) {
+      setContacts(cachedContacts);
+      const cachedSync = cacheService.get("sync");
+      if (cachedSync?.friendships) {
+        setFriendships(cachedSync.friendships);
+      }
+    }
+
+    // 2. Rafraîchir en arrière-plan ou premier chargement
     try {
       const [contactsData, syncData] = await Promise.all([
         api.getContactsFresh(),
@@ -146,31 +164,32 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
       ]);
       setContacts(contactsData);
       setFriendships(syncData.friendships || []);
-
-      // Try cache first to avoid re-fetching on every render
-      const cached = getCachedNativeContacts();
-      if (cached && cached.length > 0) {
-        console.log('[Contacts] Native contacts from cache:', cached.length);
-        setNativeAppContacts(cached);
-      } else {
-        // No cache: fetch from device (only if native)
-        setLoadingNative(true);
-        try {
-          const nativeContacts = await getMatchedNativeContacts((msg) => {
-            console.log('[fetchData]', msg);
-            // No toast here to avoid spam on first load — check console only
-          });
-          console.log('[Contacts] Native contacts fetched:', nativeContacts.length);
-          setNativeAppContacts(nativeContacts);
-        } catch (e) {
-          console.error('[Contacts] Native contacts error:', e);
-        }
-        setLoadingNative(false);
+      if (!background || !hasCache) {
+        setLoading(false);
       }
     } catch (error) {
       console.error(t("contacts.errors.fetch_failed"), error);
+      setLoading(false);
     }
-    setLoading(false);
+
+    // 3. Contacts natifs
+    const cachedNative = getCachedNativeContacts();
+    if (cachedNative && cachedNative.length > 0) {
+      setNativeAppContacts(cachedNative);
+    }
+    if (!background) {
+      setLoadingNative(true);
+      try {
+        const nativeContacts = await getMatchedNativeContacts();
+        setNativeAppContacts(nativeContacts);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoadingNative(false);
+      }
+    } else {
+      getMatchedNativeContacts().then(setNativeAppContacts).catch(console.error);
+    }
   };
 
   const handleAddContact = async (force = false) => {
@@ -459,6 +478,18 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
     [contacts],
   );
 
+  // Open SMS invite for a native contact not yet on piYès
+  const handleInviteViaSms = (nativeContact: NativeContact) => {
+    const phone = nativeContact.phoneNumbers[0]
+      ? `+509${nativeContact.phoneNumbers[0]}`
+      : '';
+    const message = encodeURIComponent(
+      `Salut ! Je t'invite à rejoindre piYès, l'app de paiement mobile haïtienne. Télécharge-la ici : https://piyes.ht`
+    );
+    // Opens native SMS app with prefilled number and message
+    window.open(`sms:${phone}?body=${message}`, '_self');
+  };
+
   return (
     <div className="theme-card-bg min-h-screen pb-32 flex flex-col">
       <PageHeader
@@ -560,20 +591,37 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
                 {nativeAppContacts.map((nativeContact) => (
                   <div
                     key={nativeContact.id}
-                    onClick={() => {
-                      // Navigate to contact detail if already saved as contact,
-                      // otherwise go to transfer with the matched phone as key
+                    onClick={async () => {
                       const existingContact = contacts.find(
                         c => c.contactUserId === nativeContact.appUserId
                       );
                       if (existingContact) {
+                        // Already saved — go to detail directly
                         navigate(`/contact-detail/${existingContact.id}`);
                       } else {
-                        // Use tag if available, else matched phone number (formatted for piYès)
-                        const key = nativeContact.appUserTag
-                          ? nativeContact.appUserTag
-                          : `+509${nativeContact.matchedPhone}`;
-                        navigate(`/transfer?recipient=${encodeURIComponent(key)}`);
+                        // Not saved yet — sync to DB then navigate to detail
+                        try {
+                          const key = nativeContact.appUserTag
+                            ? nativeContact.appUserTag
+                            : `+509${nativeContact.matchedPhone}`;
+                          const response = await http.post<any[]>('/contacts/sync', {
+                            contacts: [{
+                              name: nativeContact.appUserName || nativeContact.name,
+                              info: key,
+                            }],
+                          });
+                          if (response && response[0]) {
+                            setContacts(prev => {
+                              const exists = prev.find(c => c.id === response[0].id);
+                              return exists ? prev : [response[0], ...prev];
+                            });
+                            navigate(`/contact-detail/${response[0].id}`);
+                          }
+                        } catch (e) {
+                          console.error('[NativeContact] sync error:', e);
+                          // Fallback: invite via SMS
+                          handleInviteViaSms(nativeContact);
+                        }
                       }
                     }}
                     className="flex items-center gap-4 px-6 py-3 active:bg-gray-50 dark:active:bg-white/5 transition-all cursor-pointer"
@@ -1229,15 +1277,43 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
                   return (
                     <div
                       key={nc.id}
-                      onClick={() => {
+                      onClick={async () => {
                         setShowNativeContactsModal(false);
                         if (existingContact) {
+                          // Already saved — go to detail directly
                           navigate(`/contact-detail/${existingContact.id}`);
                         } else {
-                          const key = nc.appUserTag
-                            ? nc.appUserTag
-                            : `+509${nc.matchedPhone}`;
-                          navigate(`/transfer?recipient=${encodeURIComponent(key)}`);
+                          // Not saved yet — sync to DB then navigate to detail
+                          try {
+                            const key = nc.appUserTag
+                              ? nc.appUserTag
+                              : `+509${nc.matchedPhone}`;
+                            const response = await http.post<any[]>('/contacts/sync', {
+                              contacts: [{
+                                name: nc.appUserName || nc.name,
+                                info: key,
+                              }],
+                            });
+                            if (response && response[0]) {
+                              setContacts(prev => {
+                                const exists = prev.find(c => c.id === response[0].id);
+                                return exists ? prev : [response[0], ...prev];
+                              });
+                              navigate(`/contact-detail/${response[0].id}`);
+                            } else {
+                              throw new Error('Sync failed');
+                            }
+                          } catch (e) {
+                            console.error('[NativeContact Modal] sync error:', e);
+                            // Fallback: invite via SMS
+                            const phone = nc.phoneNumbers[0]
+                              ? `+509${nc.phoneNumbers[0]}`
+                              : '';
+                            const message = encodeURIComponent(
+                              `Salut ! Je t'invite à rejoindre piYès, l'app de paiement mobile haïtienne. Télécharge-la ici : https://piyes.ht`
+                            );
+                            window.open(`sms:${phone}?body=${message}`, '_self');
+                          }
                         }
                       }}
                       className="flex items-center gap-4 p-4 active:bg-gray-50 dark:active:bg-white/5 rounded-2xl transition-all cursor-pointer"

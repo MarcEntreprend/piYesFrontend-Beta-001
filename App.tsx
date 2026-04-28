@@ -81,6 +81,7 @@ import MessagingHub from "./pages/MessagingHub";
 import PrivacySettings from "./pages/PrivacySettings";
 import TransferInteractions from "./pages/TransferInteractions";
 import Onboarding from "./pages/Onboarding";
+import { clearNativeContactsCache } from './services/nativeContactsService';
 
 const PayRedirect: React.FC = () => {
   const { search } = useLocation();
@@ -688,6 +689,7 @@ const App: React.FC = () => {
   const handleLogout = () => {
     setUser(null);
     cacheService.clearSensitiveData();
+    clearNativeContactsCache(); // Clear native contacts cache on logout (sensitive data)
     localStorage.removeItem("piyes_show_balance");
     setIsLocked(false);
     setIsDeviceVerified(false);

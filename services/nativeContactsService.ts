@@ -24,9 +24,11 @@ export interface NativeContact {
     appUserAvatar?: string;
     matchedPhone?: string;
 }
-
+// Cache natif lié à la session  → infini tant que l'utilisateur est connecté, et vider au logout.
 const CACHE_KEY = 'piyes-native-contacts-cache';
-const CACHE_TTL = 1000 * 60 * 60 * 4; // 4 hours
+// No TTL expiry — cache lives for the session duration
+// Cleared explicitly on logout via clearNativeContactsCache()
+const CACHE_TTL = 1000 * 60 * 60 * 24 * 365; // effectively permanent (1 year)
 
 // Normalize to bare 8-digit Haitian number
 const normalizePhone = (phone: string): string => {

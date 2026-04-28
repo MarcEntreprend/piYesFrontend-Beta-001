@@ -70,18 +70,22 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      try {
-        const [contacts, syncData] = await Promise.all([
-          api.getContactsFresh(), // Toujours forcer refresh pour avoir le contact fraîchement créé
-          api.syncFresh(),
-        ]);
-        const found = contacts.find(
-          (c) => c.id === contactId || c.contactUserId === contactId,
-        );
-        setContact(found || null);
-        setFriendships(syncData.friendships || []);
+    let isMounted = true;
+
+    const loadContact = async () => {
+      // 1. Charger depuis le cache immédiatement
+      const cachedContacts = await api.getContacts(); // version cache
+      const cachedSync = await api.sync();           // version cache pour friendships
+
+      const found = cachedContacts.find(
+        (c) => c.id === contactId || c.contactUserId === contactId
+      );
+
+      if (found && isMounted) {
+        setContact(found);
+        if (cachedSync?.friendships) {
+          setFriendships(cachedSync.friendships);
+        }
         if (found) {
           setEditForm({
             name: found.name || "",
@@ -91,12 +95,44 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
             randomKey: found.randomKey || "",
           });
         }
-      } catch (e) {
-        console.error("ContactDetail load error:", e);
+        setLoading(false);
       }
-      setLoading(false);
+
+      // 2. Rafraîchir en arrière-plan (réseau)
+      try {
+        const [freshContacts, freshSync] = await Promise.all([
+          api.getContactsFresh(),
+          api.syncFresh(),
+        ]);
+        const freshFound = freshContacts.find(
+          (c) => c.id === contactId || c.contactUserId === contactId
+        );
+        if (freshFound && isMounted) {
+          setContact(freshFound);
+          setFriendships(freshSync.friendships || []);
+          setEditForm({
+            name: freshFound.name || "",
+            tag: freshFound.tag || "",
+            phone: freshFound.phone || "",
+            email: freshFound.email || "",
+            randomKey: freshFound.randomKey || "",
+          });
+        } else if (!found && !freshFound && isMounted) {
+          // contact introuvable
+          setContact(null);
+        }
+      } catch (e) {
+        console.error("ContactDetail background refresh error:", e);
+      } finally {
+        if (isMounted && !found) {
+          // Si pas de cache non plus, on stoppe le loading
+          setLoading(false);
+        }
+      }
     };
-    load();
+
+    loadContact();
+    return () => { isMounted = false; };
   }, [contactId]);
 
   useEffect(() => {
@@ -348,7 +384,7 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
       </div>
 
       {/* Corps */}
-      <div className="flex-1 p-6 -mt-8 theme-card-bg rounded-t-[48px] space-y-5">
+      <div className="flex-1 p-6 -mt-4 theme-card-bg rounded-t-[48px] space-y-5">
         {/* Avertissement non-user */}
         {!isUserContact && (
           <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/10 rounded-2xl border border-red-200 dark:border-red-900/30">
