@@ -604,29 +604,34 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
         title={t("contacts.title")}
         onBack={() => navigate(-1)}
         rightElement={
-          <div className="flex gap-2">
-            <button
-              onClick={() => alert(t("contacts.invite_msg"))}
-              className="theme-bubble-bg theme-primary-text px-4 py-2 rounded-full text-xs font-bold active:scale-95 transition-all flex items-center gap-2"
-            >
-              <Share2 size={16} /> {t("common.invite")}
-            </button>
-            <button
-              onClick={() => navigate("/privacy-settings")}
-              className="theme-bubble-bg theme-text-main p-2 rounded-full active:scale-90 transition-transform border theme-border"
-            >
-              <Shield size={24} />
-            </button>
-          </div>
+          <button
+            onClick={() => navigate("/privacy-settings")}
+            className="theme-bubble-bg theme-text-main p-2 rounded-full active:scale-90 transition-transform border theme-border"
+          >
+            <Shield size={24} />
+          </button>
         }
         className="sticky top-0 theme-card-bg z-30 hover:bg-gray-50/50 dark:hover:bg-white/5 transition-all cursor-pointer group"
       />
 
       {/* Contenu scrollable */}
       <div ref={scrollContainerRef} className="flex-1 overflow-y-auto no-scrollbar">
-        {/* Search Bar */}
+
+
+        {/* Search Bar + Nouveau bouton */}
         <div className="pt-6">
-          <div className="px-6 flex gap-2 mb-4">
+          <div className="px-6 flex items-center gap-3 mb-4">
+            {/* bouton Add Contact */}
+            <Button
+              onClick={() => setShowAddModal(true)}
+              variant="utility"
+              className="shrink-0 h-14"
+              leftIcon={<UserPlus size={16} />}
+            >
+              {t("contacts.new")}
+            </Button>
+
+            {/* Barre de recherche - même hauteur */}
             <div className="flex-1">
               <ContactSearch
                 contacts={contacts}
@@ -637,33 +642,6 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
                 currentUser={user}
               />
             </div>
-            <button
-              onClick={handleImportFromPhone}
-              className="p-3 theme-bubble-bg rounded-2xl theme-text-main border theme-border active:scale-95 transition-transform flex items-center justify-center"
-              title={t("contacts.import_phone")}
-            >
-              <Smartphone size={24} />
-            </button>
-          </div>
-
-          <div className="px-6 flex gap-3 mb-6">
-            <button
-              onClick={handleSyncContacts}
-              disabled={isSyncing}
-              className="flex-1 flex items-center justify-center gap-2 py-4 px-4 theme-bubble-bg theme-text-secondary rounded-2xl text-xs font-bold active:scale-95 transition-all border theme-border"
-            >
-              <RefreshCw
-                size={14}
-                className={isSyncing ? "animate-spin" : ""}
-              />
-              {isSyncing ? t("contacts.syncing") : t("contacts.sync")}
-            </button>
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="theme-primary-bg text-white px-6 py-4 rounded-2xl active:scale-90 transition-transform shadow-lg flex items-center gap-2 font-bold text-xs"
-            >
-              <UserPlus size={18} /> {t("contacts.new")}
-            </button>
           </div>
         </div>
 

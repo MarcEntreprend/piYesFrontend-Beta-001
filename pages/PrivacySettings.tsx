@@ -6,6 +6,9 @@ import {
   UserX,
   EyeOff,
   HelpCircle,
+  Smartphone,
+  RefreshCw,
+  Share2,
   Check,
   Search,
   X,
@@ -25,6 +28,7 @@ import { useTranslation } from "../App";
 import Button from "../components/Button";
 import Modal from "../components/Modal";
 import PageHeader from "../components/PageHeader";
+import { Capacitor } from '@capacitor/core';
 
 const PrivacySettings: React.FC = () => {
   const { t } = useTranslation();
@@ -231,6 +235,49 @@ const PrivacySettings: React.FC = () => {
       />
 
       <div className="animate-in fade-in duration-500 py-6">
+
+        {/* Actions supplémentaires - Invitation + Contacts natifs + Sync */}
+        <div className="px-6 mb-8 grid grid-cols-3 gap-3">
+          <button
+            onClick={() => alert(t("contacts.invite_msg"))}
+            className="flex flex-col items-center gap-2 py-3 theme-bubble-bg rounded-2xl border theme-border active:scale-95 transition-all"
+          >
+            <Share2 size={20} className="theme-primary-text" />
+            <span className="text-[10px] font-bold theme-text-main">Inviter</span>
+          </button>
+
+          <button
+            onClick={() => {
+              if (Capacitor.isNativePlatform()) {
+                // Déclencher l'import des contacts natifs
+                // Pour l'instant alert, ensuite on pourra appeler un service global
+                alert("Ouverture de l'import des contacts...");
+                // TODO: appeler la logique d'import depuis un contexte ou service
+              } else {
+                alert("Fonction disponible uniquement sur l'application mobile");
+              }
+            }}
+            className="flex flex-col items-center gap-2 py-3 theme-bubble-bg rounded-2xl border theme-border active:scale-95 transition-all"
+          >
+            <Smartphone size={20} className="theme-primary-text" />
+            <span className="text-[10px] font-bold theme-text-main">
+              Importer
+            </span>
+          </button>
+
+          <button
+            onClick={() => {
+              // Synchroniser les contacts
+              alert("Synchronisation des contacts...");
+              // TODO: appeler la logique de sync depuis un contexte ou service
+            }}
+            className="flex flex-col items-center gap-2 py-3 theme-bubble-bg rounded-2xl border theme-border active:scale-95 transition-all"
+          >
+            <RefreshCw size={20} className="theme-primary-text" />
+            <span className="text-[10px] font-bold theme-text-main">Sync</span>
+          </button>
+        </div>
+
         <Section title={t("privacy_settings.requests_section")}>
           <Option
             label={
