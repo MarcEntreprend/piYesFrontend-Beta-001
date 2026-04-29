@@ -21,7 +21,6 @@ import { useTranslation, useToast } from "../App";
 import { useNotifications } from "../hooks/useNotifications";
 import { Notification } from "../services/notificationService";
 import PageHeader from "../components/PageHeader";
-import { motion, AnimatePresence } from "framer-motion";
 import { useNotificationContext } from "../contexts/NotificationContext";
 import { displayMoney } from "../shared/money";
 
@@ -37,6 +36,31 @@ const Notifications: React.FC = () => {
     unreadCount,
     refresh,
   } = useNotificationContext();
+
+  // Helper pour obtenir le montant formaté (ou null)
+  const getFormattedAmountForNotif = (notif: Notification): string | null => {
+    let rawAmount = notif.amount ?? notif.data?.amount;
+    if (!rawAmount) return null;
+    let numericAmount: number | null = null;
+    if (typeof rawAmount === 'number') numericAmount = rawAmount;
+    else if (typeof rawAmount === 'string') {
+      if (rawAmount.trim().startsWith('{')) return null;
+      numericAmount = parseFloat(rawAmount);
+    }
+    if (numericAmount === null || isNaN(numericAmount)) return null;
+    return displayMoney(numericAmount * 100);
+  };
+
+  // Helper pour formater les montants dans le texte (ex: "789.98" -> "789,98")
+  const formatAmountInText = (text: string): string => {
+    // Remplacer les nombres comme "789.98" par "789,98"
+    return text.replace(/\b(\d+(?:\.\d+)?)\b/g, (match) => {
+      if (match.includes('.')) {
+        return match.replace('.', ',');
+      }
+      return match;
+    });
+  };
 
   // Local state for cleared notifications (UI only)
   const [clearedIds, setClearedIds] = useState<string[]>(() => {
@@ -249,78 +273,76 @@ const Notifications: React.FC = () => {
           </div>
         ) : (
           <div className="divide-y theme-border">
-            <AnimatePresence mode="popLayout">
-              {visibleNotifications.map((notif) => (
-                <motion.div
-                  layout
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  key={notif.id}
-                  onClick={() => handleNotifClick(notif)}
-                  className={`py-5 flex gap-4 transition-all active:theme-bubble-bg cursor-pointer relative group ${!notif.isRead ? "bg-purple-50/40 dark:bg-purple-900/5 -mx-6 px-6" : ""}`}
-                >
-                  {!notif.isRead && (
-                    <div className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 theme-primary-bg rounded-full shadow-[0_0_8px_var(--primary-color)]"></div>
-                  )}
+            <div className="divide-y theme-border">
+              {visibleNotifications.map((notif) => {
+                const formattedAmount = getFormattedAmountForNotif(notif);
+                return (
+                  <div
+                    key={notif.id}
+                    onClick={() => handleNotifClick(notif)}
+                    className={`py-5 flex gap-4 transition-all active:theme-bubble-bg cursor-pointer relative group ${!notif.isRead ? "bg-purple-50/40 dark:bg-purple-900/5 -mx-6 px-6" : ""}`}
+                  >
+                    {!notif.isRead && (
+                      <div className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 theme-primary-bg rounded-full shadow-[0_0_8px_var(--primary-color)]"></div>
+                    )}
 
-                  <div className="w-11 h-11 theme-bubble-bg rounded-2xl flex items-center justify-center shrink-0 border theme-border shadow-sm group-hover:scale-105 transition-transform">
-                    {getIcon(notif.type)}
-                  </div>
-
-                  <div className="flex-1 min-w-0 space-y-0.5">
-                    <div className="flex justify-between items-start gap-2">
-                      <h3
-                        className={`text-sm leading-tight theme-text-main truncate pr-6 ${!notif.isRead ? "font-black" : "font-bold"}`}
-                      >
-                        {t(`notifications.types.${notif.type}.title`, {
-                          ...notif.data,
-                          name: notif.data?.name || notif.title,
-                          amount: notif.amount || notif.data?.amount,
-                        })}
-                      </h3>
-                      <button
-                        onClick={(e) => handleClearOne(notif.id, e)}
-                        className="absolute right-4 top-5 p-1 theme-text-secondary opacity-0 group-hover:opacity-100 hover:theme-primary-text transition-all active:scale-90"
-                      >
-                        <X size={16} />
-                      </button>
+                    <div className="w-11 h-11 theme-bubble-bg rounded-2xl flex items-center justify-center shrink-0 border theme-border shadow-sm group-hover:scale-105 transition-transform">
+                      {getIcon(notif.type)}
                     </div>
-                    <p className="theme-text-secondary text-xs leading-relaxed line-clamp-2">
-                      {t(`notifications.types.${notif.type}.body`, {
-                        ...notif.data,
-                        name: notif.data?.name || notif.body,
-                        amount: notif.amount || notif.data?.amount,
-                      })}
-                    </p>
-                    <div className="flex items-center justify-between mt-1">
-                      {(() => {
-                        // Extraire le montant : soit notif.amount soit notif.data?.amount
-                        let rawAmount = notif.amount ?? notif.data?.amount;
-                        if (!rawAmount) return null;
-                        // Si c'est une chaîne, essayer de parser un nombre
-                        let numericAmount: number | null = null;
-                        if (typeof rawAmount === 'number') numericAmount = rawAmount;
-                        else if (typeof rawAmount === 'string') {
-                          // Ignorer les chaînes JSON (ex: {"receiverUserId":...})
-                          if (rawAmount.trim().startsWith('{')) return null;
-                          numericAmount = parseFloat(rawAmount);
-                        }
-                        if (numericAmount === null || isNaN(numericAmount)) return null;
-                        return (
-                          <p className="font-black theme-text-main text-xs">
-                            {displayMoney(numericAmount * 100)}
-                          </p>
-                        );
-                      })()}
-                      <p className="text-[9px] font-bold theme-text-secondary opacity-60 uppercase tracking-tighter">
-                        {formatTime(notif.timestamp)}
+
+                    <div className="flex-1 min-w-0 space-y-0.5">
+                      <div className="flex justify-between items-start gap-2">
+                        <h3
+                          className={`text-sm leading-tight theme-text-main truncate pr-6 ${!notif.isRead ? "font-black" : "font-bold"}`}
+                        >
+                          {t(`notifications.types.${notif.type}.title`, {
+                            ...notif.data,
+                            name: notif.data?.name || notif.title,
+                            amount: formattedAmount ?? notif.amount ?? notif.data?.amount,
+                          })}
+                        </h3>
+                        <button
+                          onClick={(e) => handleClearOne(notif.id, e)}
+                          className="absolute right-4 top-5 p-1 theme-text-secondary opacity-0 group-hover:opacity-100 hover:theme-primary-text transition-all active:scale-90"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                      <p className="theme-text-secondary text-xs leading-relaxed line-clamp-2">
+                        {formatAmountInText(
+                          t(`notifications.types.${notif.type}.body`, {
+                            ...notif.data,
+                            name: notif.data?.name || notif.body,
+                            amount: formattedAmount ?? notif.amount ?? notif.data?.amount,
+                          })
+                        )}
                       </p>
+                      <div className="flex items-center justify-between mt-1">
+                        {(() => {
+                          let rawAmount = notif.amount ?? notif.data?.amount;
+                          if (!rawAmount) return null;
+                          let numericAmount: number | null = null;
+                          if (typeof rawAmount === 'number') numericAmount = rawAmount;
+                          else if (typeof rawAmount === 'string') {
+                            if (rawAmount.trim().startsWith('{')) return null;
+                            numericAmount = parseFloat(rawAmount);
+                          }
+                          if (numericAmount === null || isNaN(numericAmount)) return null;
+                          return (
+                            <p className="font-black theme-text-main text-xs">
+                              {displayMoney(numericAmount * 100)}
+                            </p>
+                          );
+                        })()}
+                        <p className="text-[9px] font-bold theme-text-secondary opacity-60 uppercase tracking-tighter">
+                          {formatTime(notif.timestamp)}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                );
+              })}
+            </div>
           </div>
         )}
 
