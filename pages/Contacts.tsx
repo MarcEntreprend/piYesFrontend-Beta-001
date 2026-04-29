@@ -1,6 +1,6 @@
 // pages/Contacts.tsx
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { http } from "../services/httpClient";
 import {
@@ -74,6 +74,7 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [highlightFriendship, setHighlightFriendship] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const handleImportFromPhone = async () => {
     // Show the native contacts modal
@@ -84,7 +85,7 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
       try {
         const contacts = await getMatchedNativeContacts((msg) => {
           console.log('[ImportFromPhone]', msg);
-        });
+        }, true);  // forceRefresh = true
         setNativeAppContacts(contacts);
       } catch (e) {
         console.error('handleImportFromPhone error:', e);
@@ -128,6 +129,19 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
     fetchData(true);
   }, []);
 
+  // Sauvegarder la position de scroll dans sessionStorage
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      sessionStorage.setItem('contacts_scroll_position', String(container.scrollTop));
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
   useEffect(() => {
     if (!contacts.length) return;
     const params = new URLSearchParams(location.search);
@@ -166,10 +180,28 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
       setFriendships(syncData.friendships || []);
       if (!background || !hasCache) {
         setLoading(false);
+        // Restaurer la position de scroll après chargement des contacts
+        if (!background) {
+          setTimeout(() => {
+            const savedScroll = sessionStorage.getItem('contacts_scroll_position');
+            if (savedScroll && scrollContainerRef.current) {
+              scrollContainerRef.current.scrollTop = parseInt(savedScroll, 10);
+            }
+          }, 100);
+        }
       }
     } catch (error) {
       console.error(t("contacts.errors.fetch_failed"), error);
       setLoading(false);
+      // Restaurer la position même en cas d'erreur
+      if (!background) {
+        setTimeout(() => {
+          const savedScroll = sessionStorage.getItem('contacts_scroll_position');
+          if (savedScroll && scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = parseInt(savedScroll, 10);
+          }
+        }, 100);
+      }
     }
 
     // 3. Contacts natifs
@@ -325,13 +357,13 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
       return;
     }
 
-    // Sync native contacts separately (never blocks or throws)
+    // Synchronisation des contacts natifss
     try {
       clearNativeContactsCache();
       setLoadingNative(true);
       const nativeContacts = await getMatchedNativeContacts((msg) => {
         showToast(msg, 'info');
-      });
+      }, true);  // forceRefresh = true
       setNativeAppContacts(nativeContacts);
     } catch (e) {
       // Should never reach here since getMatchedNativeContacts catches internally
@@ -544,7 +576,7 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
     return all.sort((a, b) => {
       const nameA = a.repertoireName || a.name;
       const nameB = b.repertoireName || b.name;
-      return nameA.localeCompare(nameB);
+      return nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
     });
   }, [contacts, nativeAppContacts]);
 
@@ -585,7 +617,7 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
       />
 
       {/* Contenu scrollable */}
-      <div className="flex-1 overflow-y-auto no-scrollbar">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto no-scrollbar">
         {/* Search Bar */}
         <div className="pt-6">
           <div className="px-6 flex gap-2 mb-4">
@@ -653,7 +685,39 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
             title={t("contacts.all_title") || "Tous les contacts"}
             contacts={combinedAllContacts}
             type="all"
-            onContactClick={(c) => navigate(`/contact-detail/${c.id}`)}
+            // 
+            onContactClick={async (c) => {
+              // Détecter si c'est un contact natif non enregistré
+              const isUnsavedNative = c.repertoireName && !c.contactUserId && c.id?.startsWith('native_');
+
+              if (isUnsavedNative) {
+                try {
+                  // 1. Construire la clé (tag ou numéro)
+                  const key = c.phone ? `+509${c.phone.replace(/^\+?509/, '')}` : c.tag || '';
+
+                  // 2. Appeler /contacts/sync pour créer le contact dans la BDD
+                  const response = await http.post<any[]>('/contacts/sync', {
+                    contacts: [{
+                      name: c.repertoireName,
+                      info: key,
+                    }],
+                  });
+
+                  // 3. Si succès, ajouter le nouveau contact à l'état local
+                  if (response && response[0]) {
+                    setContacts(prev => [response[0], ...prev]);
+                    // 4. Naviguer vers ContactDetail avec le vrai ID
+                    navigate(`/contact-detail/${response[0].id}`);
+                  }
+                } catch (e) {
+                  console.error('Erreur ajout contact natif:', e);
+                  alert('Erreur lors de l\'ajout du contact');
+                }
+              } else {
+                // Contact normal (déjà en BDD)
+                navigate(`/contact-detail/${c.id}`);
+              }
+            }}
             onToggleFavorite={handleToggleFavorite}
           />
         </div>

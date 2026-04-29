@@ -155,7 +155,12 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   onToggleFavorite,
 }) => {
   const { t } = useTranslation();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  // Clé unique basée sur le titre (en anglais, ou utiliser une prop `storageKey`)
+  const storageKey = `contactSection_${title.replace(/\s/g, '_')}`;
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const saved = sessionStorage.getItem(storageKey);
+    return saved === 'collapsed';
+  });
 
   if (contacts.length === 0 && type !== "all") return null;
 
@@ -163,7 +168,11 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
     <div className="mb-6">
       <div
         className="flex items-center justify-between px-6 mb-4 cursor-pointer"
-        onClick={() => setIsCollapsed(!isCollapsed)}
+        onClick={() => {
+          const newState = !isCollapsed;
+          setIsCollapsed(newState);
+          sessionStorage.setItem(storageKey, newState ? 'collapsed' : 'expanded');
+        }}
       >
         <div className="flex items-center gap-2">
           <h3 className="text-[11px] font-bold theme-text-secondary uppercase tracking-[0.2em]">

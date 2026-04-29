@@ -70,7 +70,8 @@ export const clearNativeContactsCache = (): void => {
 };
 
 export const getMatchedNativeContacts = async (
-    onStatus?: (msg: string) => void
+    onStatus?: (msg: string) => void,
+    forceRefresh: boolean = false
 ): Promise<NativeContact[]> => {
     const log = (msg: string) => {
         console.log('[NativeContacts]', msg);
@@ -81,6 +82,13 @@ export const getMatchedNativeContacts = async (
     if (!Capacitor.isNativePlatform()) {
         log('Non-natif, contacts natifs non disponibles');
         return [];
+    }
+
+    // 1. Retourner le cache immédiatement s'il existe et qu'on ne force pas le refresh
+    const cached = getCachedNativeContacts();
+    if (!forceRefresh && cached && cached.length > 0) {
+        log(`${cached.length} contacts depuis le cache (instantané)`);
+        return cached;
     }
 
     try {
