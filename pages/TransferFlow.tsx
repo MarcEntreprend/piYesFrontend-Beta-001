@@ -28,6 +28,7 @@ import StepIndicator from "../components/StepIndicator";
 import { formatPhoneDisplay } from "../shared/phoneFormatter";
 import { TransactionType } from "../shared/types";
 import { displayMoney } from "../shared/money";
+import { MoneyInput } from "@/components/MoneyInput";
 import {
   formatRecipientValue,
   isOwnKey,
@@ -510,11 +511,10 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
               <span className="text-xl font-bold theme-text-secondary mr-2">
                 {t("currency.symbol")}
               </span>
-              <input
+              <MoneyInput
                 autoFocus
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                value={amount ? parseFloat(amount) : undefined}
+                onValueChange={(val) => setAmount(val !== undefined ? val.toString() : "")}
                 placeholder={t("transfer.amount_placeholder")}
                 disabled={isLocked}
                 className="w-full text-5xl font-bold outline-none bg-transparent theme-text-main disabled:opacity-70"

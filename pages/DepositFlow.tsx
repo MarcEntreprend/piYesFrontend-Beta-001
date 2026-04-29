@@ -22,6 +22,8 @@ import AiSupportChat from "../components/AiSupportChat";
 import Button from "../components/Button";
 import PageHeader from "../components/PageHeader";
 import StepIndicator from "../components/StepIndicator";
+import { MoneyInput } from "../components/MoneyInput";
+import { displayMoney } from "../shared/money";
 
 interface DepositFlowProps {
   user: User;
@@ -127,11 +129,10 @@ const DepositFlow: React.FC<DepositFlowProps> = ({ user, onUpdateUser }) => {
                 <span className="text-xl font-bold theme-text-secondary mr-2">
                   {t("currency.name_plural")}
                 </span>
-                <input
+                <MoneyInput
                   autoFocus
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  value={amount ? parseFloat(amount) : undefined}
+                  onValueChange={(val) => setAmount(val !== undefined ? val.toString() : "")}
                   placeholder={t("transfer.amount_placeholder")}
                   className="w-full text-5xl font-bold outline-none bg-transparent theme-text-main"
                 />

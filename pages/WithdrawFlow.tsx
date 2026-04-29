@@ -31,6 +31,8 @@ import AiSupportChat from "../components/AiSupportChat";
 import Button from "../components/Button";
 import PageHeader from "../components/PageHeader";
 import StepIndicator from "../components/StepIndicator";
+import { MoneyInput } from "../components/MoneyInput";
+import { displayMoney } from "../shared/money";
 
 interface WithdrawFlowProps {
   user: User;
@@ -204,12 +206,11 @@ const WithdrawFlow: React.FC<WithdrawFlowProps> = ({ user, onUpdateUser }) => {
                   <span className="text-xl font-bold theme-text-secondary mr-2">
                     {t("currency.name_plural")}
                   </span>
-                  <input
+                  <MoneyInput
                     autoFocus
-                    type="number"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    placeholder={t("transfer.amount_placeholder")}
+                    value={amount ? parseFloat(amount) : undefined}
+                    onValueChange={(val) => setAmount(val !== undefined ? val.toString() : "")}
+                    placeholder="0,00"
                     className="w-full text-5xl font-bold outline-none bg-transparent theme-text-main"
                   />
                 </div>

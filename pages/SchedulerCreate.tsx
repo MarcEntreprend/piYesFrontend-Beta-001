@@ -18,6 +18,8 @@ import { useTranslation, useGlobalSync } from "../App";
 import Modal from "../components/Modal";
 import { ContactSearch } from "../components/ContactSearch";
 import PageHeader from "../components/PageHeader";
+import { MoneyInput } from "../components/MoneyInput";
+import { displayMoney } from "../shared/money";
 
 // ── Helper : générer les slots de rappel côté frontend ────────────────────────
 function buildReminderSlots(dueDateStr: string): ReminderSlot[] {
@@ -427,10 +429,9 @@ const SchedulerCreate: React.FC = () => {
           </label>
           <div className="flex items-baseline gap-2 border-b-2 theme-border pb-2">
             <span className="text-xl font-black theme-text-secondary">G.</span>
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+            <MoneyInput
+              value={amount ? parseFloat(amount) : undefined}
+              onValueChange={(val) => setAmount(val !== undefined ? val.toString() : "")}
               placeholder="0,00"
               className="w-full text-4xl font-black outline-none bg-transparent theme-text-main"
             />

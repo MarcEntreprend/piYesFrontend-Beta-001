@@ -34,7 +34,6 @@ import SegmentedControl from "../components/SegmentedControl";
 import { HighlightedItem, useHighlight } from '../components/HighlightedItem';
 import { displayMoney } from "../shared/money";
 
-
 type SchedulerTab = "outgoing" | "incoming";
 
 export interface ScheduledPayment {
@@ -672,7 +671,7 @@ const ScheduledPayments: React.FC = () => {
                     {p.title}
                   </span>
                   <span className="text-[9px] theme-text-secondary shrink-0">
-                    {p.amount.toLocaleString()} {t("currency.symbol")}
+                    {displayMoney(p.amount * 100)} {t("currency.symbol")}
                   </span>
                 </div>
               );
@@ -726,7 +725,7 @@ const ScheduledPayments: React.FC = () => {
                   {t("scheduler.modals.amount_label")}
                 </span>
                 <span className="text-sm font-black theme-text-main">
-                  {confirmSchedule.amount?.toLocaleString("fr-HT")}{" "}
+                  {displayMoney(confirmSchedule.amount * 100)}{" "}
                   {t("currency.symbol")}
                 </span>
               </div>

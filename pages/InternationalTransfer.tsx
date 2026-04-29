@@ -31,6 +31,8 @@ import AiSupportChat from "../components/AiSupportChat";
 import Button from "../components/Button";
 import PageHeader from "../components/PageHeader";
 import StepIndicator from "../components/StepIndicator";
+import { MoneyInput } from "../components/MoneyInput";
+import { displayMoney } from "../shared/money";
 
 interface InternationalTransferProps {
   user: User;
@@ -316,11 +318,10 @@ const InternationalTransfer: React.FC<InternationalTransferProps> = ({
                   <span className="text-3xl font-black theme-text-secondary">
                     {t("currency.symbol")}
                   </span>
-                  <input
+                  <MoneyInput
                     autoFocus
-                    type="number"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
+                    value={amount ? parseFloat(amount) : undefined}
+                    onValueChange={(val) => setAmount(val !== undefined ? val.toString() : "")}
                     placeholder={t("transfer.amount_placeholder")}
                     className="w-full text-6xl font-black outline-none bg-transparent theme-text-main text-center placeholder-gray-200"
                   />
@@ -335,8 +336,7 @@ const InternationalTransfer: React.FC<InternationalTransferProps> = ({
                       {t("intl.exchange_rate")}
                     </span>
                     <span className="text-xs font-black theme-text-main">
-                      1 {selectedCountry?.currency} = {conversion.rate}{" "}
-                      {t("currency.symbol")}
+                      1 {selectedCountry?.currency} = {conversion.rate} {t("currency.symbol")}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
@@ -344,8 +344,7 @@ const InternationalTransfer: React.FC<InternationalTransferProps> = ({
                       {t("intl.fees")} (1%)
                     </span>
                     <span className="text-xs font-black text-green-600">
-                      -{conversion.fees.toLocaleString("fr-HT")}{" "}
-                      {t("currency.symbol")}
+                      -{displayMoney(conversion.fees * 100)} {t("currency.symbol")}
                     </span>
                   </div>
                   <div className="h-px bg-gray-200 dark:bg-gray-800"></div>
@@ -411,8 +410,7 @@ const InternationalTransfer: React.FC<InternationalTransferProps> = ({
                   {t("intl.send_amount")}
                 </span>
                 <h3 className="text-5xl font-black theme-text-main">
-                  {parseFloat(amount).toLocaleString("fr-HT")}{" "}
-                  {t("currency.symbol")}
+                  {displayMoney(parseFloat(amount) * 100)} {t("currency.symbol")}
                 </h3>
               </div>
 

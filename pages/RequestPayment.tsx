@@ -25,6 +25,8 @@ import OperationResult from "../components/OperationResult";
 import { useToast } from "../App";
 import PageHeader from "../components/PageHeader";
 import { HighlightedItem, useHighlight } from '../components/HighlightedItem';
+import { MoneyInput } from "../components/MoneyInput";
+import { displayMoney } from "../shared/money";
 
 interface RequestPaymentProps {
   user: User;
@@ -239,12 +241,11 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
                 <span className="text-xl font-bold theme-text-secondary mr-2">
                   {t("currency.symbol")}
                 </span>
-                <input
+                <MoneyInput
                   autoFocus
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder={t("transfer.amount_placeholder")}
+                  value={amount ? parseFloat(amount) : undefined}
+                  onValueChange={(val) => setAmount(val !== undefined ? val.toString() : "")}
+                  placeholder="0,00"
                   className="w-full text-5xl font-bold outline-none bg-transparent theme-text-main"
                 />
               </div>
@@ -333,7 +334,7 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
                 {t("request.success_title")}
               </h2>
               <p className="text-3xl font-black theme-primary-text">
-                {parseFloat(amount).toLocaleString("fr-HT")} {t("currency.symbol")}
+                {displayMoney(parseFloat(amount) * 100)} {t("currency.symbol")}
               </p>
             </div>
 
