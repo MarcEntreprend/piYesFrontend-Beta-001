@@ -71,6 +71,7 @@ piyes-wallet-frontend/
 │   ├── useGroupedTransactions.ts
 │   ├── useMarketplaceBadges.ts
 │   ├── useNotifications.ts
+│   ├── useRealtimeBalance.ts
 │   ├── useRealtimeHistory.ts
 │   └── useSync.ts
 │

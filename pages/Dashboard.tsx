@@ -72,6 +72,7 @@ import BankIcon from "../components/BankIcon";
 import AiSupportChat from "../components/AiSupportChat";
 import Button from "../components/Button";
 import { useRealtimeHistory } from '../hooks/useRealtimeHistory';
+import { useRealtimeBalance } from '../hooks/useRealtimeBalance';
 
 interface DashboardProps {
   user: User;
@@ -106,6 +107,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     refresh();
   });
 
+  // Écouter les changements de balance en temps réel
+  useRealtimeBalance(userId, (newBalance) => {
+    console.log('[Dashboard] Balance updated via Realtime:', newBalance);
+    setLocalBalance(newBalance);
+    // Optionnel : refresh le contexte pour synchroniser les autres données
+    refresh();
+  });
+
   // Écouter l'événement personnalisé pour naviguer depuis les notifs
   useEffect(() => {
     const handleRealtimeNotif = (e: CustomEvent<Notification>) => {
@@ -126,6 +135,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     const saved = localStorage.getItem("piyes_show_balance");
     return saved === null ? true : saved === "true";
   });
+  // État local pour la balance (met à jour instantanément)
+  const [localBalance, setLocalBalance] = useState<number | null>(null);
+
   const [selectedAccountId, setSelectedAccountId] = useState<string>("");
 
   // Bank Management States
@@ -957,7 +969,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                         {t("currency.symbol")}{" "}
                         {(selectedAccountId === "all"
                           ? totalBalance
-                          : activeAccount?.balance || 0
+                          : (localBalance !== null && activeAccount?.provider === "piyes"
+                            ? localBalance
+                            : activeAccount?.balance || 0)
                         ).toLocaleString("fr-HT")}
                       </>
                     )}
