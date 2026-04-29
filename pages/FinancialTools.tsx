@@ -108,7 +108,7 @@ const FinancialTools: React.FC = () => {
       // eslint-disable-next-line no-eval
       const res = eval(sanitized);
       if (typeof res === "number" && isFinite(res)) setResult(res.toString());
-    } catch (e) {}
+    } catch (e) { }
   }, [formula]);
 
   const handleInput = (val: string) => {
@@ -239,7 +239,7 @@ const FinancialTools: React.FC = () => {
             <p
               className={`transition-all duration-300 break-all font-light tracking-wide ${isEvaluated ? "text-lg theme-text-secondary" : "text-5xl theme-text-main"}`}
             >
-              {formula || "0"}
+              {(formula || "0").replace(/\./g, ',')}
             </p>
           </div>
 
@@ -266,11 +266,10 @@ const FinancialTools: React.FC = () => {
                 setHasHistory(parsed.length > 0);
                 setShowHistoryModal(true);
               }}
-              className={`transition-colors ${
-                hasHistory
-                  ? "theme-text-secondary opacity-60 hover:theme-primary-text cursor-pointer"
-                  : "theme-text-secondary opacity-20 cursor-default pointer-events-none"
-              }`}
+              className={`transition-colors ${hasHistory
+                ? "theme-text-secondary opacity-60 hover:theme-primary-text cursor-pointer"
+                : "theme-text-secondary opacity-20 cursor-default pointer-events-none"
+                }`}
             />
           </div>
           <button
@@ -332,7 +331,7 @@ const FinancialTools: React.FC = () => {
 
           <CalcButton label="+/-" onClick={handlePlusMinus} />
           <CalcButton label="0" onClick={() => handleInput("0")} />
-          <CalcButton label="." onClick={() => handleInput(".")} />
+          <CalcButton label="," onClick={() => handleInput(".")} />
           <CalcButton
             label={<Equal size={28} />}
             variant="primary"
