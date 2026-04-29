@@ -23,6 +23,7 @@ import { Notification } from "../services/notificationService";
 import PageHeader from "../components/PageHeader";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNotificationContext } from "../contexts/NotificationContext";
+import { displayMoney } from "../shared/money";
 
 const Notifications: React.FC = () => {
   const navigate = useNavigate();
@@ -293,13 +294,25 @@ const Notifications: React.FC = () => {
                       })}
                     </p>
                     <div className="flex items-center justify-between mt-1">
-                      {notif.amount ? (
-                        <p className="font-black theme-text-main text-xs">
-                          {notif.amount}
-                        </p>
-                      ) : (
-                        <div />
-                      )}
+                      {(() => {
+                        // Extraire le montant : soit notif.amount soit notif.data?.amount
+                        let rawAmount = notif.amount ?? notif.data?.amount;
+                        if (!rawAmount) return null;
+                        // Si c'est une chaîne, essayer de parser un nombre
+                        let numericAmount: number | null = null;
+                        if (typeof rawAmount === 'number') numericAmount = rawAmount;
+                        else if (typeof rawAmount === 'string') {
+                          // Ignorer les chaînes JSON (ex: {"receiverUserId":...})
+                          if (rawAmount.trim().startsWith('{')) return null;
+                          numericAmount = parseFloat(rawAmount);
+                        }
+                        if (numericAmount === null || isNaN(numericAmount)) return null;
+                        return (
+                          <p className="font-black theme-text-main text-xs">
+                            {displayMoney(numericAmount * 100)}
+                          </p>
+                        );
+                      })()}
                       <p className="text-[9px] font-bold theme-text-secondary opacity-60 uppercase tracking-tighter">
                         {formatTime(notif.timestamp)}
                       </p>
