@@ -374,7 +374,7 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
                 placeholder="Nom du contact"
               />
             ) : (
-              <h3 className="text-2xl font-bold">{contact.name}</h3>
+              <h3 className="text-2xl font-bold">{contact.repertoireName || contact.name}</h3>
             )}
             <p className="text-xs font-bold opacity-70">
               {contact.tag || contact.phone || contact.email}
@@ -398,24 +398,22 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
 
         {/* Champs info */}
         <div className="space-y-3">
-          {/* Relation */}
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 theme-bubble-bg rounded-xl flex items-center justify-center theme-primary-text shrink-0">
-              <UserCheck size={18} />
+          {/* Nom sur piYès (uniquement si différent du nom du répertoire) */}
+          {contact.repertoireName && contact.repertoireName !== contact.name && (
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 theme-bubble-bg rounded-xl flex items-center justify-center theme-primary-text shrink-0">
+                <UserCheck size={18} />
+              </div>
+              <div className="flex-1 border-b theme-border pb-3">
+                <p className="text-[9px] theme-text-secondary uppercase font-bold tracking-widest">
+                  Nom sur piYès
+                </p>
+                <p className="text-sm font-bold theme-text-main">
+                  {contact.name}
+                </p>
+              </div>
             </div>
-            <div className="flex-1 border-b theme-border pb-3">
-              <p className="text-[9px] theme-text-secondary uppercase font-bold tracking-widest">
-                Relation
-              </p>
-              <p className="text-sm font-bold theme-text-main">
-                {!isUserContact
-                  ? "Contact hors-réseau piYès"
-                  : status === "friends"
-                    ? "Ami (Contact mutuel)"
-                    : "Contact piYès"}
-              </p>
-            </div>
-          </div>
+          )}
 
           {/* Amitié — seulement si user piYès */}
           {isUserContact && contact.contactUserId && (
@@ -431,7 +429,7 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
                 className={`flex-1 border-b theme-border pb-3 rounded-xl px-1.5 transition-all duration-700 ${highlightFriendship ? "bg-(--primary-color)/10 ring-2 ring-(--primary-color)" : ""}`}
               >
                 <p className="text-[9px] theme-text-secondary uppercase font-bold tracking-widest">
-                  Amis piYès
+                  RELATION AVEC VOUS
                 </p>
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-bold theme-text-main">

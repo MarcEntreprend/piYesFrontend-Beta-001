@@ -478,6 +478,76 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
     [contacts],
   );
 
+  // Fusion des contacts piYès (manuels + récents) et des contacts natifs (piYès uniquement)
+  const combinedAllContacts = useMemo(() => {
+    // 1. Construire une Map des contacts piYès existants (par contactUserId et par phone)
+    const piyesContactByUserId = new Map<string, Contact>();
+    const piyesContactByPhone = new Map<string, Contact>();
+
+    contacts.forEach(contact => {
+      if (contact.contactUserId) {
+        piyesContactByUserId.set(contact.contactUserId, contact);
+      }
+      if (contact.phone) {
+        const normalizedPhone = contact.phone.replace(/[\s\-\(\)]/g, '').replace(/^\+?509?/, '');
+        if (normalizedPhone.length === 8) {
+          piyesContactByPhone.set(normalizedPhone, contact);
+        }
+      }
+    });
+
+    // 2. Convertir les contacts natifs en structure Contact (si pas déjà présents)
+    const nativeAsContacts: Contact[] = [];
+
+    for (const nc of nativeAppContacts) {
+      // Vérifier si déjà dans piYès contacts
+      let existing = nc.appUserId ? piyesContactByUserId.get(nc.appUserId) : null;
+      if (!existing && nc.matchedPhone) {
+        existing = piyesContactByPhone.get(nc.matchedPhone);
+      }
+
+      if (existing) {
+        // Si le contact existe déjà, on enrichit avec le nom du répertoire (sans doublon)
+        if (!existing.repertoireName) {
+          existing.repertoireName = nc.name;
+        }
+        // On ne l'ajoute pas deux fois
+        nativeAsContacts.push(existing);
+      } else {
+        // Créer un nouveau Contact pour ce natif (non encore dans la table)
+        nativeAsContacts.push({
+          id: `native_${nc.id}`,
+          name: nc.appUserName || nc.name,
+          repertoireName: nc.name,  // nom du répertoire
+          tag: nc.appUserTag,
+          avatarUrl: nc.appUserAvatar,
+          contactUserId: nc.appUserId,
+          phone: nc.matchedPhone ? `+509${nc.matchedPhone}` : '',
+          isVerified: false,
+          isFavorite: false,
+          userId: '',
+          app: 'native',
+        });
+      }
+    }
+
+    // 3. Fusionner tous les contacts piYès et les contacts natifs dédupliqués
+    const all = [...contacts];
+    for (const nc of nativeAsContacts) {
+      const exists = all.some(c => c.id === nc.id);
+      if (!exists) {
+        all.push(nc);
+      }
+    }
+
+    // 4. Trier par nom d'affichage : priorité au repertoireName, sinon name
+    return all.sort((a, b) => {
+      const nameA = a.repertoireName || a.name;
+      const nameB = b.repertoireName || b.name;
+      return nameA.localeCompare(nameB);
+    });
+  }, [contacts, nativeAppContacts]);
+
   // Open SMS invite for a native contact not yet on piYès
   const handleInviteViaSms = (nativeContact: NativeContact) => {
     const phone = nativeContact.phoneNumbers[0]
@@ -578,92 +648,10 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
             onToggleFavorite={handleToggleFavorite}
           />
 
-          {/* Contacts natifs sur piYès */}
-          {nativeAppContacts.length > 0 && (
-            <div className="mb-6">
-              <div className="px-6 mb-3 flex items-center justify-between">
-                <h3 className="text-xs font-bold theme-text-secondary uppercase tracking-wider">
-                  📱 Contacts sur piYès ({nativeAppContacts.length})
-                </h3>
-                <p className="text-[9px] theme-text-secondary">depuis ton répertoire</p>
-              </div>
-              <div className="space-y-1">
-                {nativeAppContacts.map((nativeContact) => (
-                  <div
-                    key={nativeContact.id}
-                    onClick={async () => {
-                      const existingContact = contacts.find(
-                        c => c.contactUserId === nativeContact.appUserId
-                      );
-                      if (existingContact) {
-                        // Already saved — go to detail directly
-                        navigate(`/contact-detail/${existingContact.id}`);
-                      } else {
-                        // Not saved yet — sync to DB then navigate to detail
-                        try {
-                          const key = nativeContact.appUserTag
-                            ? nativeContact.appUserTag
-                            : `+509${nativeContact.matchedPhone}`;
-                          const response = await http.post<any[]>('/contacts/sync', {
-                            contacts: [{
-                              name: nativeContact.appUserName || nativeContact.name,
-                              info: key,
-                            }],
-                          });
-                          if (response && response[0]) {
-                            setContacts(prev => {
-                              const exists = prev.find(c => c.id === response[0].id);
-                              return exists ? prev : [response[0], ...prev];
-                            });
-                            navigate(`/contact-detail/${response[0].id}`);
-                          }
-                        } catch (e) {
-                          console.error('[NativeContact] sync error:', e);
-                          // Fallback: invite via SMS
-                          handleInviteViaSms(nativeContact);
-                        }
-                      }
-                    }}
-                    className="flex items-center gap-4 px-6 py-3 active:bg-gray-50 dark:active:bg-white/5 transition-all cursor-pointer"
-                  >
-                    <div className="w-12 h-12 theme-bubble-bg rounded-2xl flex items-center justify-center font-bold theme-primary-text text-lg border theme-border shadow-sm overflow-hidden shrink-0">
-                      {nativeContact.appUserAvatar ? (
-                        <img
-                          src={nativeContact.appUserAvatar}
-                          alt={nativeContact.appUserName}
-                          className="w-full h-full object-cover"
-                          referrerPolicy="no-referrer"
-                        />
-                      ) : (
-                        getInitials(nativeContact.appUserName || nativeContact.name)
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-bold theme-text-main truncate">
-                          {nativeContact.appUserName || nativeContact.name}
-                        </p>
-                        <span className="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-[8px] font-bold px-1.5 py-0.5 rounded-full">
-                          piYès
-                        </span>
-                      </div>
-                      <p className="text-[10px] theme-text-secondary truncate">
-                        {nativeContact.phoneNumbers[0] &&
-                          formatPhoneDisplay(`+509${nativeContact.phoneNumbers[0]}`)}
-                      </p>
-                    </div>
-                    <ChevronRight size={18} className="theme-text-secondary shrink-0" />
-                  </div>
-                ))}
-              </div>
-              <div className="h-px theme-border mx-6 my-4" />
-            </div>
-          )}
-
           {/* Tous les contacts */}
           <ContactSection
             title={t("contacts.all_title") || "Tous les contacts"}
-            contacts={sortedAll}
+            contacts={combinedAllContacts}
             type="all"
             onContactClick={(c) => navigate(`/contact-detail/${c.id}`)}
             onToggleFavorite={handleToggleFavorite}
@@ -792,9 +780,7 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
                     )}
                   </div>
                   <div className="text-center">
-                    <h3 className="text-2xl font-bold">
-                      {selectedContact.name}
-                    </h3>
+                    <h3 className="text-2xl font-bold">{selectedContact.repertoireName || selectedContact.name}</h3>
                     <p className="text-xs font-bold opacity-70 tracking-wider">
                       {selectedContact.tag ||
                         formatPhoneDisplay(selectedContact.phone) ||
@@ -807,6 +793,22 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
               {/* Body Info */}
               <div className="flex-1 p-8 -mt-8 theme-card-bg rounded-t-[48px] space-y-6">
                 <div className="space-y-4">
+                  {/* Nom sur piYès (si différent du nom affiché) */}
+                  {selectedContact.repertoireName && (
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 theme-bubble-bg rounded-xl flex items-center justify-center theme-primary-text shrink-0">
+                        <UserCheck size={18} />
+                      </div>
+                      <div className="flex-1 border-b theme-border pb-3">
+                        <p className="text-[9px] theme-text-secondary uppercase font-bold tracking-widest">
+                          Nom sur piYès
+                        </p>
+                        <p className="text-sm font-bold theme-text-main">
+                          {selectedContact.name}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 theme-bubble-bg rounded-xl flex items-center justify-center theme-primary-text">
                       <UserCheck size={20} />
