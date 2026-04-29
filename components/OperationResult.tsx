@@ -15,6 +15,7 @@ import { useNavigate } from "react-router";
 import { CheckCircle2, XCircle, FileText, Home, Clock } from "lucide-react";
 import { useTranslation } from "../App";
 import Button from "./Button";
+import { displayMoney } from "../shared/money";
 
 interface OperationResultProps {
   type: "transfer" | "deposit" | "withdraw" | "international";
@@ -58,7 +59,7 @@ const OperationResult: React.FC<OperationResultProps> = ({
   const isSuccess = status === "success";
   const currencyName =
     amount > 1 ? t("currency.name_plural") : t("currency.name");
-  const formattedAmount = amount.toLocaleString("fr-HT");
+  const formattedAmount = displayMoney(amount * 100);
 
   // Déterminer le nom du destinataire à afficher dans le récap
   const getDisplayRecipient = () => {

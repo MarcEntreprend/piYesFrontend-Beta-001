@@ -27,6 +27,7 @@ import PageHeader from "../components/PageHeader";
 import StepIndicator from "../components/StepIndicator";
 import { formatPhoneDisplay } from "../shared/phoneFormatter";
 import { TransactionType } from "../shared/types";
+import { displayMoney } from "../shared/money";
 import {
   formatRecipientValue,
   isOwnKey,
@@ -556,7 +557,7 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
                   {t("transfer.review_amount")}
                 </span>
                 <span className="text-3xl font-black theme-text-main">
-                  {parseFloat(amount).toLocaleString("fr-HT")}{" "}
+                  {displayMoney(parseFloat(amount) * 100)}{" "}
                   {t("currency.symbol")}
                 </span>
               </div>

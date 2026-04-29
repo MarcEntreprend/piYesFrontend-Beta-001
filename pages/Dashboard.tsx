@@ -73,6 +73,7 @@ import AiSupportChat from "../components/AiSupportChat";
 import Button from "../components/Button";
 import { useRealtimeHistory } from '../hooks/useRealtimeHistory';
 import { useRealtimeBalance } from '../hooks/useRealtimeBalance';
+import { displayMoney, parseMoneyInputToCents } from "../shared/money";
 
 interface DashboardProps {
   user: User;
@@ -967,12 +968,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                     ) : (
                       <>
                         {t("currency.symbol")}{" "}
-                        {(selectedAccountId === "all"
-                          ? totalBalance
-                          : (localBalance !== null && activeAccount?.provider === "piyes"
-                            ? localBalance
-                            : activeAccount?.balance || 0)
-                        ).toLocaleString("fr-HT")}
+                        {displayMoney(
+                          (selectedAccountId === "all"
+                            ? totalBalance * 100
+                            : (localBalance !== null && activeAccount?.provider === "piyes"
+                              ? localBalance * 100
+                              : (activeAccount?.balance || 0) * 100)
+                          )
+                        )}
                       </>
                     )}
                   </>

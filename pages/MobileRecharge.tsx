@@ -26,6 +26,7 @@ import PageHeader from "../components/PageHeader";
 import Button from "../components/Button";
 import StepIndicator from "../components/StepIndicator";
 import { formatPhoneDisplay } from "../shared/phoneFormatter";
+import { displayMoney, parseMoneyInputToCents } from "../shared/money";
 
 type Step = "number" | "amount" | "confirm" | "receipt";
 
@@ -315,7 +316,7 @@ const MobileRecharge: React.FC = () => {
                     <p
                       className={`text-[10px] font-bold ${isInsufficient ? "text-red-500" : ""}`}
                     >
-                      {acc.balance.toLocaleString()} {t("currency.symbol")}
+                      {displayMoney(acc.balance * 100)} {t("currency.symbol")}
                     </p>
                   </div>
                 </button>
@@ -345,7 +346,7 @@ const MobileRecharge: React.FC = () => {
             {t("recharge.step_confirm")}
           </p>
           <h2 className="text-4xl font-black theme-text-main">
-            {(amount || parseFloat(customAmount)).toLocaleString()}{" "}
+            {displayMoney((amount || parseFloat(customAmount)) * 100)}
             <span className="text-xl opacity-50">{t("currency.symbol")}</span>
           </h2>
         </div>
@@ -432,7 +433,7 @@ const MobileRecharge: React.FC = () => {
             {t("receipt.amount_label")}
           </span>
           <span className="text-xl font-black theme-text-main">
-            {(amount || parseFloat(customAmount)).toLocaleString()}{" "}
+            {displayMoney((amount || parseFloat(customAmount)) * 100)}
             {t("currency.symbol")}
           </span>
         </div>

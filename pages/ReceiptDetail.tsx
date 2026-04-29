@@ -13,6 +13,7 @@ import { Share } from '@capacitor/share';
 import { Capacitor } from '@capacitor/core';
 import { financeService } from '../services/financeService';
 import { TransactionType } from '../shared/types';
+import { displayMoney, displayPercent } from '../shared/money';
 
 const ReceiptDetail: React.FC = () => {
   const { id } = useParams();
@@ -145,9 +146,9 @@ const ReceiptDetail: React.FC = () => {
       return messages[Math.floor(Math.random() * messages.length)];
     }
     if (isInterbankOut) {
-      return `🔹 Seulement ${totalPercent}% de frais pour ce transfert interbancaire. Avec piYès, vous économisez !`;
+      return `🔹 Seulement ${displayPercent(totalPercent)} de frais pour ce transfert interbancaire. Avec piYès, vous économisez !`;
     }
-    return `🌍 Frais internationaux : seulement ${totalPercent}%. piYès vous offre le meilleur taux.`;
+    return `🌍 Frais internationaux : seulement ${displayPercent(totalPercent)}. piYès vous offre le meilleur taux.`;
   }, [receipt]);
 
   // Fonctions utilitaires (pas des hooks, peuvent rester ici)
@@ -330,7 +331,7 @@ const ReceiptDetail: React.FC = () => {
               <div class="brand">piYès</div>
               <div class="type">${typeLabel}</div>
               <div class="amount-container">
-                <div class="amount">${receipt.amount.toLocaleString('fr-HT')} G *</div>
+                <div class="amount">${displayMoney(receipt.amount * 100)} G *</div>
                 <div class="fees-note">${feeDisplayText}</div>
               </div>
               <div class="status">${statusLabel}</div>

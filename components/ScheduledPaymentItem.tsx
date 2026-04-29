@@ -18,6 +18,7 @@ import {
 import { ScheduledPayment, ReminderSlot } from "../shared/types";
 import { api } from "../services/apiService";
 import { useTranslation } from "../App";
+import { displayMoney } from "../shared/money";
 
 interface ScheduledPaymentItemProps {
   payment: ScheduledPayment;
@@ -167,8 +168,8 @@ export const ScheduledPaymentItem: React.FC<ScheduledPaymentItemProps> = ({
     const noteText = payment.title
       ? t("scheduler.payment_reminder_prefix", { title: payment.title })
       : t("scheduler.payment_reminder_due_prefix", {
-          date: new Date(payment.dueDate).toLocaleDateString(t("intl.locale")),
-        });
+        date: new Date(payment.dueDate).toLocaleDateString(t("intl.locale")),
+      });
 
     const params = new URLSearchParams({
       amount: String(payment.amount),
@@ -258,13 +259,12 @@ export const ScheduledPaymentItem: React.FC<ScheduledPaymentItemProps> = ({
         onClick={() =>
           isSelectionMode ? onSelect?.(payment.id) : setExpanded(!expanded)
         }
-        className={`flex items-center gap-4 p-4 rounded-2xl border transition-all active:scale-[0.99] cursor-pointer ${
-          isSelected
-            ? "bg-purple-50 dark:bg-purple-900/10 border-(--primary-color)"
-            : highlighted
-              ? "theme-primary-bg/5 border-(--primary-color)/30"
-              : "theme-card-bg shadow-sm theme-border"
-        }`}
+        className={`flex items-center gap-4 p-4 rounded-2xl border transition-all active:scale-[0.99] cursor-pointer ${isSelected
+          ? "bg-purple-50 dark:bg-purple-900/10 border-(--primary-color)"
+          : highlighted
+            ? "theme-primary-bg/5 border-(--primary-color)/30"
+            : "theme-card-bg shadow-sm theme-border"
+          }`}
       >
         {/* Checkbox mode sélection */}
         {isSelectionMode && (
@@ -295,7 +295,7 @@ export const ScheduledPaymentItem: React.FC<ScheduledPaymentItemProps> = ({
                 })}
             </h4>
             <span className="text-sm font-black theme-text-main shrink-0">
-              {payment.amount.toLocaleString(t("intl.locale"))} G.
+              {displayMoney(payment.amount * 100)} G.
             </span>
           </div>
           <div className="flex justify-between items-center gap-2">
@@ -311,11 +311,11 @@ export const ScheduledPaymentItem: React.FC<ScheduledPaymentItemProps> = ({
               <Clock size={9} />{" "}
               {activeReminderCount > 1
                 ? t("scheduler.item.active_reminders_plural", {
-                    count: activeReminderCount,
-                  })
+                  count: activeReminderCount,
+                })
                 : t("scheduler.item.active_reminders", {
-                    count: activeReminderCount,
-                  })}
+                  count: activeReminderCount,
+                })}
             </p>
           )}
         </div>
@@ -352,7 +352,7 @@ export const ScheduledPaymentItem: React.FC<ScheduledPaymentItemProps> = ({
             >
               <CreditCard size={16} />{" "}
               {t("scheduler.item.pay_now_amount", {
-                amount: payment.amount.toLocaleString(t("intl.locale")),
+                amount: displayMoney(payment.amount * 100),
               })}
             </button>
           )}

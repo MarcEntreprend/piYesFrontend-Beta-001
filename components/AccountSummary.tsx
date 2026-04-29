@@ -1,4 +1,5 @@
 // components/AccountSummary.tsx
+// ce component est responsable de l'affichage du solde du compte et des frais
 
 import React, { useMemo, useState, useEffect } from 'react';
 import { Landmark, Target, WifiOff } from 'lucide-react';
@@ -7,6 +8,7 @@ import { User, TransactionType } from '../shared/types';
 import { financeService } from '../services/financeService';
 import BankIcon from './BankIcon';
 import logo from '../src/assets/images/logo-piyes-ppl-wh-wh-svg.svg';
+import { displayMoney, displayPercent } from '../shared/money';
 
 interface AccountSummaryProps {
   user: User;
@@ -79,7 +81,7 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({
   } = feeCalculation;
 
   const getDynamicContent = () => {
-    const formattedNet = netAmount.toLocaleString('fr-HT');
+    const formattedNet = displayMoney(netAmount * 100);
     const currency = t('currency.symbol');
 
     switch (type) {
@@ -156,13 +158,13 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({
                 <span className="flex items-center gap-1">
                   <WifiOff size={10} />
                   {t('deposit.current_balance', {
-                    amount: user.balance.toLocaleString('fr-HT'),
+                    amount: displayMoney(user.balance * 100),
                     currency: t('currency.symbol'),
                   })}
                 </span>
               ) : (
                 t('deposit.current_balance', {
-                  amount: user.balance.toLocaleString('fr-HT'),
+                  amount: displayMoney(user.balance * 100),
                   currency: t('currency.symbol'),
                 })
               )}
@@ -185,18 +187,18 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({
           <div className="pt-4 border-t theme-border space-y-3">
             <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider theme-text-secondary opacity-60">
               <span>
-                {t('account_summary.fees_transfer')} ({transferPercent}%)
+                {t('account_summary.fees_transfer')} ({displayPercent(transferPercent)})
               </span>
               <span>
-                {transferFeeVal.toLocaleString('fr-HT')} {t('currency.symbol')}
+                {displayMoney(transferFeeVal * 100)} {t('currency.symbol')}
               </span>
             </div>
             <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider theme-text-secondary opacity-60">
               <span>
-                {t('account_summary.fees_service')} ({servicePercent}%)
+                {t('account_summary.fees_service')} ({displayPercent(servicePercent)})
               </span>
               <span>
-                {serviceFeeVal.toLocaleString('fr-HT')} {t('currency.symbol')}
+                {displayMoney(serviceFeeVal * 100)} {t('currency.symbol')}
               </span>
             </div>
 

@@ -36,6 +36,7 @@ import { HighlightedItem, useHighlight } from '../components/HighlightedItem';
 import PageHeader from "../components/PageHeader";
 import { App as CapacitorApp } from "@capacitor/app";
 import { useRealtimeHistory } from '../hooks/useRealtimeHistory';
+import { displayMoney } from "../shared/money";
 
 const History: React.FC = () => {
   const { t, language } = useTranslation();
@@ -529,9 +530,7 @@ const History: React.FC = () => {
                                   className={`font-black whitespace-nowrap block ${tx.role === TransactionRole.PAYER ? "theme-text-main" : "text-green-600"} ${tx.amount.toString().split(".")[0].length > 5 ? "text-[10px]" : "text-sm"}`}
                                 >
                                   {tx.role === TransactionRole.PAYER ? "-" : "+"}{" "}
-                                  {tx.amount.toLocaleString(
-                                    language === "ht" ? "ht-HT" : "fr-HT",
-                                  )}{" "}
+                                  {displayMoney(tx.amount * 100)}{" "}
                                   {t("currency.symbol")}
                                 </span>
                               </div>

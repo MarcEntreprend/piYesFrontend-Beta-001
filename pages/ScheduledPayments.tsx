@@ -32,7 +32,9 @@ import SearchInput from "../components/SearchInput";
 import ScheduledPaymentItem from "../components/ScheduledPaymentItem";
 import SegmentedControl from "../components/SegmentedControl";
 import { HighlightedItem, useHighlight } from '../components/HighlightedItem';
-// Après les imports
+import { displayMoney } from "../shared/money";
+
+
 type SchedulerTab = "outgoing" | "incoming";
 
 export interface ScheduledPayment {
@@ -482,7 +484,7 @@ const ScheduledPayments: React.FC = () => {
                       : t("scheduler.stats.to_receive")}
                   </p>
                   <h2 className="text-3xl font-black theme-text-main tracking-tight">
-                    {stats.total.toLocaleString("fr-HT")}
+                    {displayMoney(stats.total * 100)}
                     <span className="text-sm font-bold theme-text-secondary ml-1">
                       {t("currency.symbol")}
                     </span>
@@ -493,7 +495,7 @@ const ScheduledPayments: React.FC = () => {
                     {t("scheduler.stats.confirmed")}
                   </p>
                   <p className="text-xl font-black text-green-600">
-                    {stats.confirmedAmount.toLocaleString("fr-HT")}
+                    {displayMoney(stats.confirmedAmount * 100)}
                     <span className="text-xs font-bold text-green-400 ml-1">
                       {t("currency.symbol")}
                     </span>

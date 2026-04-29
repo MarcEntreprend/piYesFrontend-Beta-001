@@ -16,6 +16,19 @@ export function displayMoney(cents: number): string {
 }
 
 /**
+ * Convertit un nombre (ex: 0.5) en chaîne d'affichage avec virgule décimale
+ * Exemple: 0.5 → "0,5%", 1.25 → "1,25%"
+ */
+export function displayPercent(value: number): string {
+    if (value === undefined || value === null) return "0%";
+    // Formater avec virgule décimale, sans espaces milliers (inutile pour les petits nombres)
+    return value.toLocaleString("fr-FR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+    }) + "%";
+}
+
+/**
  * Convertit une saisie utilisateur (ex: "84 514,67" ou "84514,67" ou "84514.67") en centimes.
  * Retourne un entier.
  */

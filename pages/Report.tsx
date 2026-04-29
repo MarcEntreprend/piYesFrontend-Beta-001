@@ -44,6 +44,7 @@ import { useTranslation } from "../App";
 import Button from "../components/Button";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { displayMoney } from "../shared/money";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface TopSender {
@@ -80,11 +81,7 @@ interface ReportData {
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-const fmtAmt = (n: number) =>
-  n.toLocaleString("fr-HT", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
+const fmtAmt = (n: number) => displayMoney(n * 100);
 
 const pctChange = (
   curr: number,
@@ -147,11 +144,10 @@ const StatCard: React.FC<{
       <div className="flex items-center gap-2">
         {trend && (
           <span
-            className={`text-[10px] font-bold flex items-center gap-1 px-2 py-0.5 rounded-full ${
-              trend.positive
-                ? "bg-green-500/10 text-green-500"
-                : "bg-red-500/10 text-red-500"
-            }`}
+            className={`text-[10px] font-bold flex items-center gap-1 px-2 py-0.5 rounded-full ${trend.positive
+              ? "bg-green-500/10 text-green-500"
+              : "bg-red-500/10 text-red-500"
+              }`}
           >
             {trend.positive ? (
               <TrendingUp size={10} />
@@ -217,11 +213,11 @@ const Report: React.FC = () => {
     id: "month" | "3months" | "6months" | "year" | "custom";
     label: string;
   }[] = [
-    { id: "month", label: t("reports.periods.this_month") },
-    { id: "3months", label: t("reports.periods.three_months") },
-    { id: "6months", label: t("reports.periods.six_months") },
-    { id: "year", label: t("reports.periods.this_year") },
-  ];
+      { id: "month", label: t("reports.periods.this_month") },
+      { id: "3months", label: t("reports.periods.three_months") },
+      { id: "6months", label: t("reports.periods.six_months") },
+      { id: "year", label: t("reports.periods.this_year") },
+    ];
 
   const exportMonths = [
     t("months.january"),
@@ -521,9 +517,9 @@ const Report: React.FC = () => {
                 <th class="amount-col">Montant (G.)</th>
               </tr>
               ${txs
-                .map((tx: any, i: number) => {
-                  const isIn = tx.role === "RECEIVER";
-                  return `<tr>
+            .map((tx: any, i: number) => {
+              const isIn = tx.role === "RECEIVER";
+              return `<tr>
                   <td>${i + 1}</td>
                   <td>${formatDay(tx.date)}</td>
                   <td>${tx.external_id || "—"}</td>
@@ -531,8 +527,8 @@ const Report: React.FC = () => {
                   <td class="sign-col ${isIn ? "plus" : "minus"}">${isIn ? "+" : "−"}</td>
                   <td class="amount-col">${tx.amount.toLocaleString("fr-HT", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 </tr>`;
-                })
-                .join("")}
+            })
+            .join("")}
               <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
               <tr class="balance-row">
                 <td>${txs.length + 1}</td>
@@ -710,11 +706,10 @@ const Report: React.FC = () => {
                   setPeriod(opt.id);
                   setShowDatePicker(false);
                 }}
-                className={`shrink-0 px-4 py-2 rounded-full text-xs font-black transition-all active:scale-95 ${
-                  period === opt.id
-                    ? "theme-primary-bg text-white shadow-lg"
-                    : "theme-bubble-bg theme-text-secondary border theme-border"
-                }`}
+                className={`shrink-0 px-4 py-2 rounded-full text-xs font-black transition-all active:scale-95 ${period === opt.id
+                  ? "theme-primary-bg text-white shadow-lg"
+                  : "theme-bubble-bg theme-text-secondary border theme-border"
+                  }`}
               >
                 {opt.label}
               </button>
@@ -724,11 +719,10 @@ const Report: React.FC = () => {
                 setShowDatePicker(!showDatePicker);
                 if (!showDatePicker) setPeriod("custom");
               }}
-              className={`shrink-0 px-4 py-2 rounded-full text-xs font-black transition-all active:scale-95 flex items-center gap-1.5 ${
-                period === "custom"
-                  ? "theme-primary-bg text-white shadow-lg"
-                  : "theme-bubble-bg theme-text-secondary border theme-border"
-              }`}
+              className={`shrink-0 px-4 py-2 rounded-full text-xs font-black transition-all active:scale-95 flex items-center gap-1.5 ${period === "custom"
+                ? "theme-primary-bg text-white shadow-lg"
+                : "theme-bubble-bg theme-text-secondary border theme-border"
+                }`}
             >
               <Clock size={12} /> {t("reports.labels.custom")}
             </button>
@@ -1403,11 +1397,10 @@ const Report: React.FC = () => {
                     <button
                       key={year}
                       onClick={() => setExportYear(year)}
-                      className={`px-6 py-3 rounded-2xl text-sm font-bold transition-all ${
-                        exportYear === year
-                          ? "theme-primary-bg text-white shadow-lg"
-                          : "theme-bubble-bg theme-text-main border theme-border"
-                      }`}
+                      className={`px-6 py-3 rounded-2xl text-sm font-bold transition-all ${exportYear === year
+                        ? "theme-primary-bg text-white shadow-lg"
+                        : "theme-bubble-bg theme-text-main border theme-border"
+                        }`}
                     >
                       {year}
                     </button>
@@ -1425,11 +1418,10 @@ const Report: React.FC = () => {
                     <button
                       key={month}
                       onClick={() => setExportMonth(index)}
-                      className={`py-4 rounded-2xl text-xs font-bold transition-all ${
-                        exportMonth === index
-                          ? "theme-primary-bg text-white shadow-lg"
-                          : "theme-bubble-bg theme-text-main border theme-border"
-                      }`}
+                      className={`py-4 rounded-2xl text-xs font-bold transition-all ${exportMonth === index
+                        ? "theme-primary-bg text-white shadow-lg"
+                        : "theme-bubble-bg theme-text-main border theme-border"
+                        }`}
                     >
                       {month}
                     </button>
