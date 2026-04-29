@@ -1,4 +1,5 @@
 // contexts/NotificationContext.tsx
+// ce context est responsable de la gestion des notifications
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { Notification, notificationService } from '../services/notificationService';

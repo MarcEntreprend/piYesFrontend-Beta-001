@@ -145,6 +145,7 @@ piyes-wallet-frontend/
 │   └── 19- supabaseService.ts
 │
 ├── shared/                     # Code partagé (types, utils)
+│   ├── formatMoney.ts
 │   ├── phoneFormatter.ts
 │   ├── recipientUtils.ts
 │   ├── schemas.ts

@@ -1,4 +1,5 @@
 //pages/TransferInteractions.tsx
+// cette page affiche les interactions d'un utilisateur avec un contact
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router";
@@ -106,7 +107,7 @@ const TransferInteractions: React.FC = () => {
       // Si pas de contactId, pas de filtre par mois (on montre tout), sinon filtre par mois
       const matchesMonth = contactId
         ? txDate.getMonth() === selectedMonth &&
-          txDate.getFullYear() === selectedYear
+        txDate.getFullYear() === selectedYear
         : true;
 
       const matchesSearch =
@@ -143,8 +144,8 @@ const TransferInteractions: React.FC = () => {
             <h1 className="text-xl font-black theme-text-main tracking-tight">
               {contact
                 ? t("reports.labels.interactions.with_contact", {
-                    name: contact.name.split(" ")[0],
-                  })
+                  name: contact.name.split(" ")[0],
+                })
                 : t("reports.labels.interactions.my_interactions")}
             </h1>
             {contact && (
@@ -184,11 +185,10 @@ const TransferInteractions: React.FC = () => {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
-                filter === f
+              className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${filter === f
                   ? "theme-primary-bg text-white shadow-lg"
                   : "theme-bubble-bg theme-text-secondary border theme-border"
-              }`}
+                }`}
             >
               {f === "all"
                 ? t("reports.labels.interactions.all")
@@ -221,11 +221,10 @@ const TransferInteractions: React.FC = () => {
               >
                 <div className="flex items-center gap-4">
                   <div
-                    className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                      tx.role === TransactionRole.PAYER
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center ${tx.role === TransactionRole.PAYER
                         ? "bg-red-50 text-red-500"
                         : "bg-green-50 text-green-500"
-                    }`}
+                      }`}
                   >
                     {tx.role === TransactionRole.PAYER ? (
                       <ArrowUpRight size={24} />
@@ -249,11 +248,10 @@ const TransferInteractions: React.FC = () => {
                 </div>
                 <div className="text-right">
                   <p
-                    className={`font-black text-sm ${
-                      tx.role === TransactionRole.PAYER
+                    className={`font-black text-sm ${tx.role === TransactionRole.PAYER
                         ? "theme-text-main"
                         : "text-green-600"
-                    }`}
+                      }`}
                   >
                     {tx.role === TransactionRole.PAYER ? "-" : "+"}{" "}
                     {tx.amount.toLocaleString("fr-HT")} G
@@ -325,11 +323,10 @@ const TransferInteractions: React.FC = () => {
                       <button
                         key={year}
                         onClick={() => setSelectedYear(year)}
-                        className={`px-6 py-3 rounded-2xl text-sm font-bold transition-all ${
-                          selectedYear === year
+                        className={`px-6 py-3 rounded-2xl text-sm font-bold transition-all ${selectedYear === year
                             ? "theme-primary-bg text-white shadow-lg"
                             : "theme-bubble-bg theme-text-main border theme-border"
-                        }`}
+                          }`}
                       >
                         {year}
                       </button>
@@ -346,11 +343,10 @@ const TransferInteractions: React.FC = () => {
                       <button
                         key={month}
                         onClick={() => setSelectedMonth(index)}
-                        className={`py-4 rounded-2xl text-xs font-bold transition-all ${
-                          selectedMonth === index
+                        className={`py-4 rounded-2xl text-xs font-bold transition-all ${selectedMonth === index
                             ? "theme-primary-bg text-white shadow-lg"
                             : "theme-bubble-bg theme-text-main border theme-border"
-                        }`}
+                          }`}
                       >
                         {month}
                       </button>
