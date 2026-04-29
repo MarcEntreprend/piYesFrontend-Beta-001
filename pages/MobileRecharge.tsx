@@ -27,6 +27,7 @@ import Button from "../components/Button";
 import StepIndicator from "../components/StepIndicator";
 import { formatPhoneDisplay } from "../shared/phoneFormatter";
 import { displayMoney, parseMoneyInputToCents } from "../shared/money";
+import { MoneyInput } from "../components/MoneyInput";
 
 type Step = "number" | "amount" | "confirm" | "receipt";
 
@@ -258,17 +259,18 @@ const MobileRecharge: React.FC = () => {
         </div>
 
         <div className="relative group">
-          <input
-            type="number"
-            value={customAmount}
-            onChange={(e) => {
-              setCustomAmount(e.target.value);
+          <MoneyInput
+            value={customAmount ? parseFloat(customAmount) : undefined}
+            onValueChange={(val) => {
+              setCustomAmount(val !== undefined ? val.toString() : "");
               setAmount(null);
             }}
             placeholder={t("recharge.custom_amount")}
+            maxValue={100000}
+            showWarning={true}
             className="w-full theme-bubble-bg theme-text-main py-5 px-6 rounded-3xl outline-none border-2 border-transparent focus:border-theme-primary transition-all font-bold text-lg shadow-inner text-center"
           />
-          <div className="absolute right-6 top-1/2 -translate-y-1/2 theme-text-secondary font-black">
+          <div className="absolute right-6 top-1/2 -translate-y-1/2 theme-text-secondary font-black pointer-events-none">
             {t("currency.symbol")}
           </div>
         </div>
