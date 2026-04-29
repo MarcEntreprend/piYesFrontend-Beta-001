@@ -33,6 +33,7 @@ import BankIcon from "../components/BankIcon";
 import { financeService } from "../services/financeService";
 import StepIndicator from "../components/StepIndicator";
 import PageHeader from "../components/PageHeader";
+import { MoneyInput } from '../components/MoneyInput';
 
 interface InterBankTransferProps {
   user: User;
@@ -412,17 +413,14 @@ const InterBankTransfer: React.FC<InterBankTransferProps> = ({
                   <span className="text-3xl font-black theme-text-secondary">
                     {t("currency.symbol")}
                   </span>
-                  <input
+                  <MoneyInput
                     autoFocus
-                    type="number"
-                    min="0"
-                    value={amount}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      if (val === "" || parseFloat(val) >= 0) setAmount(val);
-                    }}
-                    placeholder={t("transfer.amount_placeholder")}
-                    className="w-full text-6xl font-black outline-none bg-transparent theme-text-main text-center placeholder-gray-200"
+                    value={amount ? parseFloat(amount) : undefined}
+                    onValueChange={(val) => setAmount(val !== undefined ? val.toString() : "")}
+                    placeholder="0,00"
+                    maxValue={100000}
+                    showWarning={true}
+                    className="w-full text-6xl font-black outline-none bg-transparent theme-text-main text-center"
                   />
                 </div>
               </div>
