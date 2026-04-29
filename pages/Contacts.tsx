@@ -1,6 +1,6 @@
 // pages/Contacts.tsx
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { http } from "../services/httpClient";
 import {
@@ -74,7 +74,6 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [highlightFriendship, setHighlightFriendship] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const handleImportFromPhone = async () => {
     // Show the native contacts modal
@@ -129,19 +128,6 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
     fetchData(true);
   }, []);
 
-  // Sauvegarder la position de scroll dans sessionStorage
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const handleScroll = () => {
-      sessionStorage.setItem('contacts_scroll_position', String(container.scrollTop));
-    };
-
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, []);
-
   useEffect(() => {
     if (!contacts.length) return;
     const params = new URLSearchParams(location.search);
@@ -180,28 +166,10 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
       setFriendships(syncData.friendships || []);
       if (!background || !hasCache) {
         setLoading(false);
-        // Restaurer la position de scroll après chargement des contacts
-        if (!background) {
-          setTimeout(() => {
-            const savedScroll = sessionStorage.getItem('contacts_scroll_position');
-            if (savedScroll && scrollContainerRef.current) {
-              scrollContainerRef.current.scrollTop = parseInt(savedScroll, 10);
-            }
-          }, 100);
-        }
       }
     } catch (error) {
       console.error(t("contacts.errors.fetch_failed"), error);
       setLoading(false);
-      // Restaurer la position même en cas d'erreur
-      if (!background) {
-        setTimeout(() => {
-          const savedScroll = sessionStorage.getItem('contacts_scroll_position');
-          if (savedScroll && scrollContainerRef.current) {
-            scrollContainerRef.current.scrollTop = parseInt(savedScroll, 10);
-          }
-        }, 100);
-      }
     }
 
     // 3. Contacts natifs
@@ -580,6 +548,44 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
     });
   }, [contacts, nativeAppContacts]);
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null); // pour restaurer la position de scroll
+
+
+  // Restauration immédiate au montage (avant le paint)
+  useLayoutEffect(() => {
+    const saved = sessionStorage.getItem('contacts_scroll_position');
+    if (saved && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = parseInt(saved, 10);
+      // Optionnel : nettoyer pour éviter de re-sauvegarder par erreur
+      // sessionStorage.removeItem('contacts_scroll_position');
+    }
+  }, []); // ne dépend de rien, s'exécute une fois au montage
+  // Sauvegarde du scroll
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const handleScroll = () => {
+      sessionStorage.setItem('contacts_scroll_position', String(container.scrollTop));
+    };
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+  // Restauration du scroll une fois que tout est chargé
+  useEffect(() => {
+    if (loading || combinedAllContacts.length === 0) return;
+    const savedScroll = sessionStorage.getItem('contacts_scroll_position');
+    if (savedScroll && scrollContainerRef.current) {
+      // Attendre que le DOM soit stabilisé
+      setTimeout(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop = parseInt(savedScroll, 10);
+        }
+      }, 150);
+    }
+  }, [loading, combinedAllContacts]);
+
+
+
   // Open SMS invite for a native contact not yet on piYès
   const handleInviteViaSms = (nativeContact: NativeContact) => {
     const phone = nativeContact.phoneNumbers[0]
@@ -687,6 +693,11 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
             type="all"
             // 
             onContactClick={async (c) => {
+              // Sauvegarder la position avant de partir
+              if (scrollContainerRef.current) {
+                sessionStorage.setItem('contacts_scroll_position', String(scrollContainerRef.current.scrollTop));
+              }
+
               // Détecter si c'est un contact natif non enregistré
               const isUnsavedNative = c.repertoireName && !c.contactUserId && c.id?.startsWith('native_');
 
