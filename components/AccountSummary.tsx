@@ -124,7 +124,7 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({
         <h3 className="text-[10px] font-black theme-text-secondary uppercase tracking-widest">
           {t('deposit.select_account')}
         </h3>
-        {showAid && onAmountChange && !isDataStale && (
+        {/* {showAid && onAmountChange && !isDataStale && (
           <button
             onClick={handleAidClick}
             className="text-[10px] font-black theme-primary-text uppercase tracking-tight animate-in slide-in-from-right flex items-center gap-1 bg-purple-50 dark:bg-purple-900/20 px-2 py-1 rounded-lg"
@@ -132,7 +132,7 @@ const AccountSummary: React.FC<AccountSummaryProps> = ({
             <Target size={12} />
             {t('transfer.net_amount_aid', { name: recipientName || 'Destinataire', amount: numericAmount })}
           </button>
-        )}
+        )} */}
       </div>
 
       <div className={`p-5 border-2 rounded-[28px] space-y-4 shadow-sm transition-all duration-500 ${isDataStale
