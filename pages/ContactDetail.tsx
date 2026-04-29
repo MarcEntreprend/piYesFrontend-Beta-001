@@ -7,6 +7,7 @@ import {
   CheckCircle,
   Star,
   Send,
+  Mail,
   ArrowDownLeft,
   Share2,
   Briefcase,
@@ -319,72 +320,73 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
   const status = getFriendshipStatus(contact.contactUserId);
 
   return (
-    <div className="theme-card-bg min-h-screen flex flex-col pb-32">
-      {/* Header coloré */}
-      <div className="theme-primary-bg p-8 pt-14 pb-16 relative">
-        <button
-          onClick={() => navigate(-1)}
-          className="absolute top-12 left-6 p-2 bg-white/20 text-white rounded-full backdrop-blur-md active:scale-90 transition-transform"
-        >
-          <ArrowLeft size={20} />
-        </button>
-        {/* Edit / Save button */}
-        {!isEditing ? (
+    <div className="theme-card-bg min-h-screen flex flex-col pb-24">
+      {/* Header simple (sans arrondis) */}
+      <div className="theme-primary-bg pt-8 pb-6 px-6">
+        <div className="flex justify-between items-center mb-4">
           <button
-            onClick={() => setIsEditing(true)}
-            className="absolute top-12 right-6 p-2 bg-white/20 text-white rounded-full backdrop-blur-md active:scale-90 transition-transform"
+            onClick={() => navigate(-1)}
+            className="p-2 bg-white/20 text-white rounded-full backdrop-blur-md active:scale-90 transition-transform"
           >
-            <Edit2 size={18} />
+            <ArrowLeft size={20} />
           </button>
-        ) : (
-          <button
-            onClick={handleSaveEdit}
-            disabled={saving}
-            className="absolute top-12 right-6 p-2 bg-white/20 text-white rounded-full backdrop-blur-md active:scale-90 transition-transform"
-          >
-            {saving ? (
-              <Loader2 size={18} className="animate-spin" />
-            ) : (
-              <Save size={18} />
-            )}
-          </button>
-        )}
 
-        <div className="flex flex-col items-center gap-4 text-white">
-          <AvatarViewer
-            avatarUrl={contact.avatarUrl}
-            size="xl"
-            shape="circle"
-            fallback={
-              <span className="text-3xl font-black text-white">
-                {getInitials(contact.name)}
-              </span>
-            }
-            className="bg-white/20 border-4 border-white/30 shadow-xl backdrop-blur-sm"
-          />
-          <div className="text-center w-full px-8">
-            {isEditing ? (
-              <input
-                type="text"
-                value={editForm.name}
-                onChange={(e) =>
-                  setEditForm((p) => ({ ...p, name: e.target.value }))
-                }
-                className="text-2xl font-bold bg-transparent text-white border-b border-white/50 outline-none text-center w-full"
-                placeholder="Nom du contact"
-              />
-            ) : (
-              <h3 className="text-2xl font-bold">{contact.repertoireName || contact.name}</h3>
-            )}
-            <p className="text-xs font-bold opacity-70">
-              {contact.tag || contact.phone || contact.email}
-            </p>
+          {!isEditing ? (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="p-2 bg-white/20 text-white rounded-full backdrop-blur-md active:scale-90 transition-transform"
+            >
+              <Edit2 size={18} />
+            </button>
+          ) : (
+            <button
+              onClick={handleSaveEdit}
+              disabled={saving}
+              className="p-2 bg-white/20 text-white rounded-full backdrop-blur-md active:scale-90 transition-transform"
+            >
+              {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+            </button>
+          )}
+        </div>
+
+        {/* Balance Card inspirée du dashboard */}
+        <div className="bg-white/10 backdrop-blur-md rounded-[28px] p-6 border border-white/20">
+          <div className="flex flex-col items-center gap-4">
+            <AvatarViewer
+              avatarUrl={contact.avatarUrl}
+              size="xl"
+              shape="circle"
+              fallback={
+                <span className="text-3xl font-black text-white">
+                  {getInitials(contact.name)}
+                </span>
+              }
+              className="ring-4 ring-white/30 shadow-xl"
+            />
+            <div className="text-center">
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm((p) => ({ ...p, name: e.target.value }))}
+                  className="text-xl font-bold bg-white/10 text-white placeholder-white/50 border-b border-white/30 outline-none text-center w-full px-4 py-1 rounded-full"
+                  placeholder="Nom du contact"
+                />
+              ) : (
+                <h2 className="text-xl font-bold text-white">
+                  {contact.repertoireName || contact.name}
+                </h2>
+              )}
+              <p className="text-xs font-medium text-white/80 mt-1">
+                {contact.tag || contact.phone || contact.email}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Corps */}
-      <div className="flex-1 p-6 -mt-4 theme-card-bg rounded-t-[48px] space-y-5">
+      <div className="flex-1 p-6 space-y-5">
         {/* Avertissement non-user */}
         {!isUserContact && (
           <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/10 rounded-2xl border border-red-200 dark:border-red-900/30">
@@ -396,7 +398,65 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
           </div>
         )}
 
-        {/* Champs info */}
+        {/* 3 boutons d'action en haut */}
+        {!isEditing && (
+          <>
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              {/* Demander */}
+              <Button
+                onClick={() => {
+                  if (!isUserContact) {
+                    showToast("Actions disponibles après inscription sur piYès", "info");
+                    return;
+                  }
+                  if (!isMutualFriend) {
+                    showToast("Demander nécessite une amitié mutuelle piYès", "info");
+                    return;
+                  }
+                  navigate(`/request-payment?name=${encodeURIComponent(contact.name)}&recipient=${encodeURIComponent(getPriorityKey(contact))}`);
+                }}
+                variant="utility"
+                className="w-full"
+                leftIcon={<ArrowDownLeft size={20} />}
+              >
+                Demander
+              </Button>
+
+              {/* Rappel */}
+              <Button
+                onClick={() => {
+                  if (!isUserContact) {
+                    showToast("Actions disponibles après inscription sur piYès", "info");
+                    return;
+                  }
+                  if (!isMutualFriend) {
+                    showToast("Rappel nécessite une amitié mutuelle piYès", "info");
+                    return;
+                  }
+                  navigate(`/scheduler/create?payerUserId=${contact.contactUserId}&payerName=${encodeURIComponent(contact.name)}`);
+                }}
+                variant="utility"
+                className="w-full"
+                leftIcon={<CalendarClock size={20} />}
+              >
+                Rappel
+              </Button>
+
+              {/* Envoyer */}
+              <Button
+                disabled={!isUserContact}
+                onClick={() => navigate(`/transfer?recipient=${encodeURIComponent(getPriorityKey(contact))}`)}
+                variant={isUserContact ? "primary" : "secondary"}
+                className="w-full"
+                leftIcon={<Send size={20} />}
+              >
+                Envoyer
+              </Button>
+            </div>
+          </>
+        )}
+
+        {/* Champs info avec lignes claires */}
         <div className="space-y-3">
           {/* Nom sur piYès (uniquement si différent du nom du répertoire) */}
           {contact.repertoireName && contact.repertoireName !== contact.name && (
@@ -419,15 +479,9 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
           {isUserContact && contact.contactUserId && (
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 theme-bubble-bg rounded-xl flex items-center justify-center theme-primary-text shrink-0">
-                {status === "friends" ? (
-                  <UserCheck size={18} />
-                ) : (
-                  <UserPlusIcon size={18} />
-                )}
+                {status === "friends" ? <UserCheck size={18} /> : <UserPlusIcon size={18} />}
               </div>
-              <div
-                className={`flex-1 border-b theme-border pb-3 rounded-xl px-1.5 transition-all duration-700 ${highlightFriendship ? "bg-(--primary-color)/10 ring-2 ring-(--primary-color)" : ""}`}
-              >
+              <div className={`flex-1 border-b theme-border pb-3 rounded-xl px-1.5 transition-all duration-700 ${highlightFriendship ? "bg-(--primary-color)/10 ring-2 ring-(--primary-color)" : ""}`}>
                 <p className="text-[9px] theme-text-secondary uppercase font-bold tracking-widest">
                   RELATION AVEC VOUS
                 </p>
@@ -443,40 +497,35 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
                   </p>
                   <Button
                     onClick={handleFriendAction}
-                    variant={
-                      status === "friends"
-                        ? "danger"
-                        : status === "pending"
-                          ? "secondary"
-                          : "primary"
-                    }
+                    variant={status === "friends" ? "danger" : status === "pending" ? "secondary" : "primary"}
                     size="sm"
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${status === "friends"
-                      ? "bg-red-500/10 text-red-500 border-none"
-                      : status === "pending"
-                        ? "bg-orange-500/10 text-orange-500 border-none"
-                        : ""
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${status === "friends"
+                        ? "bg-red-500/10 text-red-500 border-none"
+                        : status === "pending"
+                          ? "bg-orange-500/10 text-orange-500 border-none"
+                          : ""
                       }`}
-                  >
-                    {status === "friends" ? (
-                      <>
-                        <UserMinus size={12} /> Retirer
-                      </>
-                    ) : status === "pending" ? (
-                      isRequester(contact.contactUserId) ? (
-                        <>
-                          <X size={12} /> Annuler
-                        </>
+                    leftIcon={
+                      status === "friends" ? (
+                        <UserMinus size={12} />
+                      ) : status === "pending" ? (
+                        isRequester(contact.contactUserId) ? (
+                          <X size={12} />
+                        ) : (
+                          <CheckCircle size={12} />
+                        )
                       ) : (
-                        <>
-                          <CheckCircle size={12} /> Accepter
-                        </>
+                        <UserPlusIcon size={12} />
                       )
-                    ) : (
-                      <>
-                        <UserPlusIcon size={12} /> Ajouter
-                      </>
-                    )}
+                    }
+                  >
+                    {status === "friends"
+                      ? "Retirer"
+                      : status === "pending"
+                        ? isRequester(contact.contactUserId)
+                          ? "Annuler"
+                          : "Accepter"
+                        : "Ajouter"}
                   </Button>
                 </div>
               </div>
@@ -489,28 +538,20 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
               <Edit2 size={18} />
             </div>
             <div className="flex-1 border-b theme-border pb-3">
-              <p className="text-[9px] theme-text-secondary uppercase font-bold tracking-widest">
-                Tag
-              </p>
+              <p className="text-[9px] theme-text-secondary uppercase font-bold tracking-widest">Tag</p>
               {isEditing ? (
                 <div className="relative">
-                  <span className="absolute left-0 bottom-0.5 text-sm theme-text-secondary">
-                    @
-                  </span>
+                  <span className="absolute left-0 bottom-0.5 text-sm theme-text-secondary">@</span>
                   <input
                     type="text"
                     value={editForm.tag.replace(/^@/, "")}
-                    onChange={(e) =>
-                      setEditForm((p) => ({ ...p, tag: e.target.value }))
-                    }
+                    onChange={(e) => setEditForm((p) => ({ ...p, tag: e.target.value }))}
                     className="w-full pl-4 bg-transparent theme-text-main text-sm font-bold outline-none border-b border-(--primary-color) pb-0.5"
                     placeholder="tag"
                   />
                 </div>
               ) : (
-                <p className="text-sm font-bold theme-text-main">
-                  {contact.tag || "—"}
-                </p>
+                <p className="text-sm font-bold theme-text-main">{contact.tag || "—"}</p>
               )}
             </div>
           </div>
@@ -521,16 +562,12 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
               <Smartphone size={18} />
             </div>
             <div className="flex-1 border-b theme-border pb-3">
-              <p className="text-[9px] theme-text-secondary uppercase font-bold tracking-widest">
-                Téléphone
-              </p>
+              <p className="text-[9px] theme-text-secondary uppercase font-bold tracking-widest">Téléphone</p>
               {isEditing ? (
                 <input
                   type="tel"
                   value={editForm.phone}
-                  onChange={(e) =>
-                    setEditForm((p) => ({ ...p, phone: e.target.value }))
-                  }
+                  onChange={(e) => setEditForm((p) => ({ ...p, phone: e.target.value }))}
                   className="w-full bg-transparent theme-text-main text-sm font-bold outline-none border-b border-(--primary-color) pb-0.5"
                   placeholder="+509..."
                 />
@@ -548,23 +585,17 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
               <Edit2 size={18} />
             </div>
             <div className="flex-1 border-b theme-border pb-3">
-              <p className="text-[9px] theme-text-secondary uppercase font-bold tracking-widest">
-                Email
-              </p>
+              <p className="text-[9px] theme-text-secondary uppercase font-bold tracking-widest">Email</p>
               {isEditing ? (
                 <input
                   type="email"
                   value={editForm.email}
-                  onChange={(e) =>
-                    setEditForm((p) => ({ ...p, email: e.target.value }))
-                  }
+                  onChange={(e) => setEditForm((p) => ({ ...p, email: e.target.value }))}
                   className="w-full bg-transparent theme-text-main text-sm font-bold outline-none border-b border-(--primary-color) pb-0.5"
                   placeholder="email@exemple.com"
                 />
               ) : (
-                <p className="text-sm font-bold theme-text-main">
-                  {contact.email || "—"}
-                </p>
+                <p className="text-sm font-bold theme-text-main">{contact.email || "—"}</p>
               )}
             </div>
           </div>
@@ -575,127 +606,49 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
               <Clock size={18} />
             </div>
             <div className="flex-1 border-b theme-border pb-3">
-              <p className="text-[9px] theme-text-secondary uppercase font-bold tracking-widest">
-                Dernière interaction
-              </p>
+              <p className="text-[9px] theme-text-secondary uppercase font-bold tracking-widest">Dernière interaction</p>
               <p className="text-sm font-bold theme-text-main">
                 {contact.lastTransactionDate
-                  ? new Date(contact.lastTransactionDate).toLocaleDateString(
-                    "fr-HT",
-                    { day: "numeric", month: "long", year: "numeric" },
-                  )
+                  ? new Date(contact.lastTransactionDate).toLocaleDateString("fr-HT", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })
                   : "Aucune"}
               </p>
             </div>
           </div>
         </div>
 
-        {/* 3 boutons d'action — masqués en mode edit */}
+        {/* Actions secondaires */}
         {!isEditing && (
-          <>
-            <div className="grid grid-cols-3 gap-3 pt-2">
-              {/* Envoyer */}
-              <Button
-                disabled={!isUserContact}
-                onClick={() =>
-                  navigate(
-                    `/transfer?recipient=${encodeURIComponent(getPriorityKey(contact))}`,
-                  )
-                }
-                variant={isUserContact ? "primary" : "secondary"}
-                className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all active:scale-95 h-auto ${!isUserContact &&
-                  "opacity-40 pointer-events-none grayscale border-dashed"
-                  }`}
-              >
-                <Send size={20} />
-                <span className="text-[10px] font-bold">Envoyer</span>
-              </Button>
+          <div className="flex flex-col gap-2 pt-2">
+            <Button
+              disabled={!isUserContact}
+              onClick={() => isUserContact && navigate(`/transfer-interactions?contactId=${contact.id}`)}
+              variant="utility"
+              fullWidth
+              className="py-3 rounded-xl font-bold text-xs transition-all"
+            >
+              Mes interactions avec {contact.name.split(" ")[0]}
+            </Button>
 
-              {/* Demander */}
-              <Button
-                disabled={!isUserContact || !isMutualFriend}
-                onClick={() =>
-                  navigate(
-                    `/request-payment?name=${encodeURIComponent(contact.name)}&recipient=${encodeURIComponent(getPriorityKey(contact))}`,
-                  )
-                }
-                variant="utility"
-                className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all active:scale-95 h-auto ${(!isUserContact || !isMutualFriend) &&
-                  "opacity-40 pointer-events-none grayscale border-dashed"
-                  }`}
-              >
-                <ArrowDownLeft size={20} />
-                <span className="text-[10px] font-bold">Demander</span>
-              </Button>
-
-              {/* Rappel */}
-              <Button
-                disabled={!isUserContact || !isMutualFriend}
-                onClick={() =>
-                  navigate(
-                    `/scheduler/create?payerUserId=${contact.contactUserId}&payerName=${encodeURIComponent(contact.name)}`,
-                  )
-                }
-                variant="utility"
-                className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all active:scale-95 h-auto ${(!isUserContact || !isMutualFriend) &&
-                  "opacity-40 pointer-events-none grayscale border-dashed"
-                  }`}
-              >
-                <CalendarClock size={20} />
-                <span className="text-[10px] font-bold">Rappel</span>
-              </Button>
-            </div>
-
-            {/* Hints sous les boutons */}
-            {!isUserContact ? (
-              <p className="text-[10px] text-red-400 text-center font-bold -mt-1">
-                Actions disponibles après inscription sur piYès
-              </p>
-            ) : !isMutualFriend ? (
-              <p className="text-[10px] theme-text-secondary text-center -mt-1">
-                Demander et Rappel nécessitent une amitié mutuelle piYès
-              </p>
-            ) : null}
-
-            <div className="flex flex-col gap-2">
-              {/* Interactions */}
-              <Button
-                disabled={!isUserContact}
-                onClick={() =>
-                  isUserContact &&
-                  navigate(`/transfer-interactions?contactId=${contact.id}`)
-                }
-                variant="utility"
-                fullWidth
-                className={`py-3 rounded-xl font-bold text-xs transition-all ${!isUserContact && "opacity-40 pointer-events-none"
-                  }`}
-              >
-                Mes interactions avec {contact.name.split(" ")[0]}
-              </Button>
-
-              {/* Supprimer */}
-              <Button
-                onClick={() => setShowDeleteConfirm(true)}
-                variant="text"
-                fullWidth
-                className="flex items-center justify-center gap-2 text-red-500 font-bold py-2 text-xs opacity-40 hover:opacity-100"
-                leftIcon={<Trash2 size={14} />}
-              >
-                Supprimer le contact
-              </Button>
-            </div>
-          </>
+            <Button
+              onClick={() => setShowDeleteConfirm(true)}
+              variant="text"
+              fullWidth
+              className="flex items-center justify-center gap-2 text-red-500 font-bold py-2 text-xs opacity-40 hover:opacity-100"
+              leftIcon={<Trash2 size={14} />}
+            >
+              Supprimer le contact
+            </Button>
+          </div>
         )}
 
         {/* Actions mode edit */}
         {isEditing && (
           <div className="flex gap-3 pt-2">
-            <Button
-              onClick={() => setIsEditing(false)}
-              variant="secondary"
-              fullWidth
-              className="py-3.5 rounded-2xl font-bold text-sm"
-            >
+            <Button onClick={() => setIsEditing(false)} variant="secondary" fullWidth className="py-3.5 rounded-2xl font-bold text-sm">
               Annuler
             </Button>
             <Button
@@ -721,29 +674,16 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
               <Trash2 size={28} />
             </div>
             <div className="space-y-2">
-              <h3 className="text-lg font-black theme-text-main">
-                Supprimer le contact ?
-              </h3>
+              <h3 className="text-lg font-black theme-text-main">Supprimer le contact ?</h3>
               <p className="text-xs theme-text-secondary">
-                Êtes-vous sûr de vouloir supprimer{" "}
-                <strong>{contact.name}</strong> de vos contacts ?
+                Êtes-vous sûr de vouloir supprimer <strong>{contact.name}</strong> de vos contacts ?
               </p>
             </div>
             <div className="flex flex-col gap-3">
-              <Button
-                onClick={handleDelete}
-                variant="danger"
-                fullWidth
-                className="py-3.5 rounded-2xl font-black text-sm"
-              >
+              <Button onClick={handleDelete} variant="danger" fullWidth className="py-3.5 rounded-2xl font-black text-sm">
                 Oui, supprimer
               </Button>
-              <Button
-                onClick={() => setShowDeleteConfirm(false)}
-                variant="utility"
-                fullWidth
-                className="py-3 rounded-2xl font-bold text-sm"
-              >
+              <Button onClick={() => setShowDeleteConfirm(false)} variant="utility" fullWidth className="py-3 rounded-2xl font-bold text-sm">
                 Annuler
               </Button>
             </div>
