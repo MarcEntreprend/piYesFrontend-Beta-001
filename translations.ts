@@ -1168,8 +1168,8 @@ export const translations = {
         btn_create: "Créer la demande planifiée",
       },
       tabs: {
-        to_pay: "À régler",
-        sent: "Demandes envoyées",
+        to_pay: "À Régler",
+        sent: "À Recevoir",
       },
       stats: {
         to_receive: "Total à recevoir",
@@ -2897,7 +2897,7 @@ export const translations = {
       },
       tabs: {
         to_pay: "Pou m peye",
-        sent: "Mwen voye",
+        sent: "Pou m resevwa",
       },
       stats: {
         to_receive: "Total resevwa",
@@ -4587,8 +4587,8 @@ export const translations = {
         btn_create: "Create scheduled request",
       },
       tabs: {
-        to_pay: "To pay",
-        sent: "Sent requests",
+        to_pay: "To Pay",
+        sent: "To Receive",
       },
       stats: {
         to_receive: "Total to receive",
