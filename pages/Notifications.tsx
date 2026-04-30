@@ -16,6 +16,7 @@ import {
   CalendarClock,
   Trash2,
   X,
+  Plus,
 } from "lucide-react";
 import { useTranslation, useToast } from "../App";
 import { useNotifications } from "../hooks/useNotifications";
@@ -98,6 +99,8 @@ const Notifications: React.FC = () => {
       case "transfer_in":
       case "transfer_received":
         return <ArrowDownLeft size={20} className="text-green-500" />;
+      case "deposit_success":
+        return <Plus size={20} className="text-green-500" />;
       case "transfer_out":
         return <ArrowUpRight size={20} className="theme-primary-text" />;
       case "security":
@@ -119,6 +122,12 @@ const Notifications: React.FC = () => {
   };
 
   const handleNotifClick = (notif: Notification) => {
+    console.log('[DEBUG] Notification clicked:', {
+      type: notif.type,
+      targetId: notif.targetId,
+      dataTargetId: notif.data?.targetId,
+      route: notif.data?.route,
+    });
     markRead(notif.id);
 
     // Notif de demande d'ami → ouvrir page Contacts avec le contact en question
@@ -294,12 +303,22 @@ const Notifications: React.FC = () => {
                       <div className="flex justify-between items-start gap-2">
                         <h3
                           className={`text-sm leading-tight theme-text-main truncate pr-6 ${!notif.isRead ? "font-black" : "font-bold"}`}
-                        >
-                          {t(`notifications.types.${notif.type}.title`, {
+                        >{(() => {
+                          const key = `notifications.types.${notif.type}.title`;
+                          const translation = t(key, {
                             ...notif.data,
                             name: notif.data?.name || notif.title,
                             amount: formattedAmount ?? notif.amount ?? notif.data?.amount,
-                          })}
+                          });
+                          // Fallback si la traduction retourne la clé (ex: "transfer_out.title")
+                          if (translation === key) {
+                            if (notif.type === 'transfer_out') return 'Transfert envoyé';
+                            if (notif.type === 'transfer_received') return 'Transfert reçu';
+                            if (notif.type === 'deposit_success') return 'Dépôt réussi';
+                            return notif.title;
+                          }
+                          return translation;
+                        })()}
                         </h3>
                         <button
                           onClick={(e) => handleClearOne(notif.id, e)}
