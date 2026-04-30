@@ -1,5 +1,5 @@
 // components/ScheduledPaymentItem.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import {
   ArrowUpRight,
@@ -14,10 +14,11 @@ import {
   Loader2,
   CreditCard,
   Trash2,
+  Copy,
 } from "lucide-react";
 import { ScheduledPayment, ReminderSlot } from "../shared/types";
 import { api } from "../services/apiService";
-import { useTranslation } from "../App";
+import { useToast, useTranslation } from "../App";
 import { displayMoney } from "../shared/money";
 
 interface ScheduledPaymentItemProps {
@@ -54,8 +55,24 @@ export const ScheduledPaymentItem: React.FC<ScheduledPaymentItemProps> = ({
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(defaultExpanded);
   const [loadingQR, setLoadingQR] = useState(false);
+
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [qrExpiry, setQrExpiry] = useState<string | null>(null);
+  const [qrLink, setQrLink] = useState<string | null>(null); // pour recevoir l'url du qr code en cas de relance
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  const { showToast } = useToast();
+  // Initialiser le lien QR à partir des données existantes du payment
+  useEffect(() => {
+    if (payment.qrToken) {
+      const link = `https://piyes.ht/schedule?token=${payment.qrToken}`;
+      setQrLink(link);
+      const url = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(link)}`;
+      setQrUrl(url);
+      setQrExpiry(payment.qrExpiresAt || null);
+    }
+  }, [payment.qrToken, payment.qrExpiresAt]);
+
   const [localReminders, setLocalReminders] = useState<ReminderSlot[]>(
     payment.reminders || [],
   );
@@ -140,6 +157,7 @@ export const ScheduledPaymentItem: React.FC<ScheduledPaymentItemProps> = ({
         payment.id,
       );
       const link = `https://piyes.ht/schedule?token=${qrToken}`;
+      setQrLink(link);
       const url = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(link)}`;
       setQrUrl(url);
       setQrExpiry(qrExpiresAt);
@@ -474,7 +492,7 @@ export const ScheduledPaymentItem: React.FC<ScheduledPaymentItemProps> = ({
               </button>
             )}
 
-            {/* Receiver + pending → Relancer QR (pas si payé) */}
+            {/* Receiver +  pending → Relancer QR (pas si payé) */}
             {isReceiver && !isPaid && payment.status === "pending" && (
               <button
                 onClick={handleRegenerateQR}
@@ -508,7 +526,7 @@ export const ScheduledPaymentItem: React.FC<ScheduledPaymentItemProps> = ({
           </div>
 
           {/* ── QR généré ──────────────────────────────────────────────── */}
-          {qrUrl && (
+          {qrUrl && qrLink && (
             <div className="flex flex-col items-center gap-3 p-4 theme-card-bg rounded-2xl border theme-border">
               <p className="text-[10px] font-black theme-text-secondary uppercase tracking-widest">
                 {t("scheduler.confirm_qr")}
@@ -524,18 +542,37 @@ export const ScheduledPaymentItem: React.FC<ScheduledPaymentItemProps> = ({
                   })}
                 </p>
               )}
-              <button
-                onClick={() => {
-                  // Extraire le lien du QR URL (paramètre data=)
-                  const match = qrUrl.match(/data=([^&]+)/);
-                  const link = match ? decodeURIComponent(match[1]) : "";
-                  navigator.clipboard.writeText(link);
-                  alert(t("scheduler.create.copy_success"));
-                }}
-                className="text-[10px] theme-primary-text font-bold underline"
-              >
-                {t("scheduler.item.copy_link")}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={async () => {
+                    if (!qrLink) return;
+                    try {
+                      await navigator.clipboard.writeText(qrLink);
+                      setCopiedLink(true);
+                      showToast(t("common.copied"), "success");
+                      setTimeout(() => setCopiedLink(false), 2000);
+                    } catch {
+                      // Fallback pour navigateurs sans Clipboard API ou contexte non sécurisé
+                      const textarea = document.createElement('textarea');
+                      textarea.value = qrLink;
+                      textarea.style.position = 'fixed';
+                      textarea.style.opacity = '0';
+                      document.body.appendChild(textarea);
+                      textarea.select();
+                      document.execCommand('copy');
+                      document.body.removeChild(textarea);
+                      setCopiedLink(true);
+                      showToast(t("common.copied"), "success");
+                      setTimeout(() => setCopiedLink(false), 2000);
+                    }
+                  }}
+                  disabled={!qrLink}
+                  className="flex items-center gap-1 text-[10px] theme-primary-text font-bold underline disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  {copiedLink ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
+                  {t("scheduler.item.copy_link")}
+                </button>
+              </div>
             </div>
           )}
         </div>
