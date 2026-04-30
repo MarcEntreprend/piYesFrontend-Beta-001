@@ -111,8 +111,8 @@ export const translations = {
       keys: "Opérations",
     },
     auth: {
-      login_greeting:
-        "Salut ! Quel est votre e-mail ou votre numéro de téléphone ?",
+      greeting_fixed: "Salut",
+      login_greeting_text: "! Quelle est votre email ou numéro de téléphone ?",
       password_prompt: "Maintenant, entrez votre mot de passe.",
       email_placeholder: "E-mail ou numéro de téléphone",
       password_placeholder: "Votre mot de passe",
@@ -120,6 +120,11 @@ export const translations = {
       no_account: "Je n'ai pas encore de compte",
       forgot_password: "J'ai oublié mon mot de passe",
       back_to_identifier: "Retour",
+      hero_prefix: "Gérez vos finances,",
+      hero_highlight: "Simplement",
+      hero_suffix_normal: "et en toute",
+      hero_suffix_highlight: "sécurité !",
+      hero_subtitle: "Transférez de l'argent, gratuitement.",
       signup_title: "Création de compte",
       signup_subtitle: "Rejoignez la révolution bancaire en Haïti.",
       signup_name_label: "Nom complet",
@@ -976,6 +981,14 @@ export const translations = {
           title: "Demande de paiement",
           body: "{{name}} vous demande {{amount}} avant le {{date}} Confirmez via le QR/lien reçu.",
         },
+        transfer_out: {
+          title: "Transfert envoyé",
+          body: "Vous avez envoyé {{amount}} HTG à {{name}}.",
+        },
+        deposit_success: {
+          title: "Dépôt réussi",
+          body: "Votre dépôt de {{amount}} HTG a été effectué avec succès.",
+        },
       },
     },
     security: {
@@ -1433,7 +1446,7 @@ export const translations = {
         no_payments_received: "Aucun paiement reçu sur cette période",
         peak_hours_title: "Heures de pointe",
         peak_hours_help:
-          "Répartition de vos encaissements par heure de la journée. La barre violette indique l'heure où vous recevez le plus d'argent. Utilisez cette information pour planifier vos promotions ou rappels clients.",
+          "Répartition de vos encaissements par heure de la journée. La barre colorée indique l'heure où vous recevez le plus d'argent. Utilisez cette information pour planifier vos promotions ou rappels clients.",
         peak: "Pic :",
         peak_hours_footer:
           "Vos clients paient surtout entre {{start}} et {{end}}. Idéal pour envoyer des rappels ou promotions.",
@@ -1887,7 +1900,8 @@ export const translations = {
       keys: "Operasyon",
     },
     auth: {
-      login_greeting: "Salut ! Ki imèl oswa nimewo telefòn ou ?",
+      greeting_fixed: "Bonjou! ",
+      login_greeting_text: "Ki imèl oswa nimewo telefòn ou?",
       password_prompt: "Kounye a, mete modpas ou.",
       email_placeholder: "Imèl oswa nimewo telefòn",
       password_placeholder: "Modpas ou",
@@ -1895,6 +1909,11 @@ export const translations = {
       no_account: "Mwen poko genyen yon kont",
       forgot_password: "Mwen bliye modpas mwen",
       back_to_identifier: "Retounen",
+      hero_prefix: "Jere finans ou,",
+      hero_highlight: "Byen senp",
+      hero_suffix_normal: "ak",
+      hero_suffix_highlight: "kè poze!",
+      hero_subtitle: "Voye lajan, gratis!",
       signup_title: "Kreye yon kont",
       signup_subtitle: "Vini jwenn revolisyon labank an Ayiti.",
       signup_name_label: "Non konplè",
@@ -2657,47 +2676,56 @@ export const translations = {
       types: {
         transfer_in: {
           title: "Vire resevwa",
-          desc: "{{name}} voye kòb pou ou.",
+          body: "{{name}} voye kòb pou ou.",
         },
-        transfer_out: { title: "Vire voye", desc: "Vire pou {{name}} a fèt." },
+        transfer_out: {
+          title: "Ou voye yon transfè",
+          body: "Ou voye {{amount}} HTG bay {{name}}.",
+        },
         security: {
           title: "Nouvo koneksyon",
-          desc: "Yon lòt aparèy sou kont ou.",
+          body: "Yon lòt aparèy sou kont ou.",
         },
         promo: { title: "Of Espesyal", desc: "Gade sa ki nèf." },
         card: {
           title: "Acha ak kat",
-          desc: "{{merchant}} • Kat {{lastFour}}.",
+          body: "{{merchant}} • Kat {{lastFour}}.",
         },
         request: { title: "Demann peman", desc: "{{name}} mande w kòb." },
         FRIEND_REQUEST: {
           title: "Demann zanmi",
-          desc: "{{name}} voye yon demann zanmi pou ou.",
+          body: "{{name}} voye yon demann zanmi pou ou.",
         },
         FRIEND_ACCEPTED: {
           title: "Demann aksepte",
-          desc: "{{name}} aksepte demann zanmi ou an.",
+          body: "{{name}} aksepte demann zanmi ou an.",
         },
         transfer_received: {
-          title: "Transfè resevwa",
-          desc: "Ou resevwa {{amount}} HTG nan men {{name}}",
+          title: "Ou resevwa yon transfè",
+          body: "{{name}} voye {{amount}} HTG ba ou.",
         },
         scheduled_created: {
           title: "Rapèl kreye",
-          desc: "Yon rapèl {{amount}} fèt pou {{name}}. Ap tann konfimasyon.",
+          body: "Yon rapèl {{amount}} fèt pou {{name}}. Ap tann konfimasyon.",
         },
         scheduled_confirmed: {
           title: "Rapèl anrejistre",
-          desc: "Ou konfime yon peman {{amount}} pou {{name}} Dat limit",
+          body: "Ou konfime yon peman {{amount}} pou {{name}} Dat limit",
         },
         scheduled_cancelled: {
           title: "Rapèl anile",
-          desc: "Rapèl {{amount}} pou {{name}} an anile.",
+          body: "Rapèl {{amount}} pou {{name}} an anile.",
         },
         scheduled_request: {
           title: "Demann peman",
-          desc: "{{name}} mande w {{amount}} anvan {{date}}. Konfime ak QR/lyen ou resevwa a.",
+          body: "{{name}} mande w {{amount}} anvan {{date}}. Konfime ak QR/lyen ou resevwa a.",
         },
+        deposit_success: {
+          title: "Gen yon Depo ki fèt sou kont ou",
+          body: "Yon depo {{amount}} HTG fèt sou kont piYès ou an.",
+        },
+
+
       },
     },
     security: {
@@ -3111,7 +3139,7 @@ export const translations = {
         no_payments_received: "Ou pa resevwa okenn peman nan peryòd sa",
         peak_hours_title: "Lè ki gen plis aktivite",
         peak_hours_help:
-          "Lè w resevwa plis kòb nan jounen an. Ba vyolèt la montre lè ki gen plis kòb k ap antre.",
+          "Lè w resevwa plis kòb nan jounen an. Baton koulè fonse a montre lè ki gen plis kòb k ap antre.",
         peak: "Pik :",
         peak_hours_footer: "Kliyan ou yo peye plis ant {{start}} ak {{end}}.",
         transaction_distribution: "Kijan tranzaksyon yo separe",
@@ -3554,7 +3582,8 @@ export const translations = {
       keys: "Operations",
     },
     auth: {
-      login_greeting: "Hello! What's your email?",
+      greeting_fixed: "Hello",
+      login_greeting_text: "! What is your email or phone number?",
       password_prompt: "Now, enter your password.",
       email_placeholder: "your@email.com",
       password_placeholder: "Your password",
@@ -3562,6 +3591,11 @@ export const translations = {
       no_account: "I don't have an account yet",
       forgot_password: "Forgot password?",
       back_to_identifier: "Back",
+      hero_prefix: "Manage your finances,",
+      hero_highlight: "Simply",
+      hero_suffix_normal: "and",
+      hero_suffix_highlight: "securely !",
+      hero_subtitle: "Send money, for free.",
       signup_title: "Account Creation",
       signup_subtitle: "Join the banking revolution in Haiti.",
       signup_name_label: "Full Name",
@@ -4363,6 +4397,14 @@ export const translations = {
           title: "Payment Request",
           body: "{{name}} is asking for {{amount}} before {{date}}. Confirm via the QR/link received.",
         },
+        transfer_out: {
+          title: "You sent a transfer",
+          body: "You sent {{amount}} HTG to {{name}}.",
+        },
+        deposit_success: {
+          title: "Deposit Successful",
+          body: "Your deposit of {{amount}} HTG has been successfully credited to your account.",
+        },
       },
     },
     security: {
@@ -4837,7 +4879,7 @@ export const translations = {
         no_payments_received: "No payments received in this period",
         peak_hours_title: "Peak hours",
         peak_hours_help:
-          "Distribution of your receipts by hour of the day. The purple bar shows when most money comes in.",
+          "Distribution of your receipts by hour of the day. The solid colored bar shows when most money comes in.",
         peak: "Peak:",
         peak_hours_footer:
           "Your clients pay most between {{start}} and {{end}}.",
