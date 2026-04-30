@@ -197,6 +197,11 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
     const [accountType, setAccountType] = useState<"individual" | "business">(
         "individual",
     );
+
+    // Swipe between tabs
+    const [touchStartX, setTouchStartX] = useState<number | null>(null);
+    const accountTypes: ("individual" | "business")[] = ["individual", "business"];
+
     const [showPassword, setShowPassword] = useState(false);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -454,6 +459,28 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
 
     const content = getLegalContent();
 
+    // Swipe handlers
+    const handleTouchStart = (e: React.TouchEvent) => {
+        setTouchStartX(e.touches[0].clientX);
+    };
+
+    const handleTouchEnd = (e: React.TouchEvent) => {
+        if (!touchStartX) return;
+        const deltaX = e.changedTouches[0].clientX - touchStartX;
+        const currentIndex = accountTypes.indexOf(accountType);
+
+        if (Math.abs(deltaX) > 50) {
+            if (deltaX > 0 && currentIndex > 0) {
+                // Swipe droite → onglet précédent
+                setAccountType(accountTypes[currentIndex - 1]);
+            } else if (deltaX < 0 && currentIndex < accountTypes.length - 1) {
+                // Swipe gauche → onglet suivant
+                setAccountType(accountTypes[currentIndex + 1]);
+            }
+        }
+        setTouchStartX(null);
+    };
+
     return (
         <PageTransition direction="left" className="min-h-screen theme-card-bg flex flex-col">
             {/* Header */}
@@ -476,7 +503,11 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
                 </div>
             </header>
 
-            <main className="flex-1 px-8 overflow-y-auto no-scrollbar pb-12">
+            <main
+                className="flex-1 px-8 overflow-y-auto no-scrollbar pb-12"
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+            >
                 {/* Titre */}
                 <div className="space-y-2 mb-8">
                     <h1 className="text-3xl font-black theme-text-main tracking-tight">
