@@ -263,6 +263,7 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
 
       await api.syncFresh();
       await refresh();
+      sessionStorage.removeItem('piyes-history-state');
 
       if (tx.recipientId) {
         const contactData: any = {
