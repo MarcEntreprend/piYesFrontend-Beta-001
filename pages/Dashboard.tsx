@@ -509,24 +509,25 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
       setHasTriggered(false);
     }
 
-    // Handle Horizontal Swipe
+    // Handle Horizontal Swipe (change account)
     if (
       Math.abs(deltaX) > Math.abs(deltaY) &&
       Math.abs(deltaX) > SWIPE_THRESHOLD &&
       !isPulling
     ) {
-      if (zone === "header") {
-        const currentIndex = accountIds.indexOf(selectedAccountId);
-        if (deltaX < 0)
-          setSelectedAccountId(
-            accountIds[(currentIndex + 1) % accountIds.length],
-          );
-        else
-          setSelectedAccountId(
-            accountIds[
-            (currentIndex - 1 + accountIds.length) % accountIds.length
-            ],
-          );
+      const currentIndex = accountIds.indexOf(selectedAccountId);
+      if (deltaX < 0) {
+        // Swipe gauche → compte suivant
+        setSelectedAccountId(
+          accountIds[(currentIndex + 1) % accountIds.length],
+        );
+      } else {
+        // Swipe droite → compte précédent
+        setSelectedAccountId(
+          accountIds[
+          (currentIndex - 1 + accountIds.length) % accountIds.length
+          ],
+        );
       }
     }
   };
