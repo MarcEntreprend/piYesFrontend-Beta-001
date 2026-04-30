@@ -163,6 +163,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         navigate("/forgot-password", { state: { identifier } });
     };
 
+    const getGreeting = (): string => {
+        // Utiliser directement la clé de traduction
+        return t("auth.greeting_fixed");
+    };
+
     return (
         <PageTransition direction="left" className="min-h-screen theme-card-bg flex flex-col px-8 pt-12">
             {/* Top bar */}
@@ -196,20 +201,24 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             {step === 1 && (
                 <div className="mb-10 space-y-2 animate-in slide-in-from-top duration-500">
                     <h2 className="text-[28px] font-black theme-text-main leading-tight tracking-tight">
-                        Gérez vos fiiiiinances,
+                        {t("auth.hero_prefix")}
                         <br />
-                        <span className="theme-primary-text">Simplement</span> et en toute
-                        sécurité.
+                        <span className="theme-primary-text">{t("auth.hero_highlight")}</span>{" "}
+                        {t("auth.hero_suffix_normal")}{" "}
+                        <span className="theme-primary-text">{t("auth.hero_suffix_highlight")}</span>
                     </h2>
                     <p className="text-sm theme-text-secondary font-medium">
-                        Transférez de l'argent, gratuitement.
+                        {t("auth.hero_subtitle")}
                     </p>
                 </div>
             )}
 
             <div className="flex-1">
                 <h3 className="text-xl font-black theme-text-main mb-6 animate-in slide-in-from-left duration-300 tracking-tight">
-                    {step === 1 ? t("auth.login_greeting") : t("auth.password_prompt")}
+                    {step === 1
+                        ? `${getGreeting()}${t("auth.login_greeting_text")}`
+                        : t("auth.password_prompt")
+                    }
                 </h3>
                 {isOffline && (
                     <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-2xl flex items-center gap-2 text-red-600">
@@ -317,39 +326,45 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                         <div className="flex items-center gap-4">
                             <div className="h-px flex-1 theme-border border-t" />
                             <span className="text-[10px] font-black theme-text-secondary uppercase tracking-[0.2em]">
-                                ou se connecter avec
+                                {t("auth.signup_social_or")}
                             </span>
                             <div className="h-px flex-1 theme-border border-t" />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <Button
-                                type="button"
-                                variant="utility"
-                                onClick={() => setComingSoonModal(true)}
-                                leftIcon={
-                                    <img
-                                        src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png"
-                                        alt=""
-                                        className="w-5 h-5 grayscale"
-                                    />
-                                }
-                            >
-                                Google
-                            </Button>
-                            <Button
-                                type="button"
-                                variant="utility"
-                                onClick={() => setComingSoonModal(true)}
-                                leftIcon={
-                                    <img
-                                        src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
-                                        alt=""
-                                        className="w-5 h-5 dark:invert"
-                                    />
-                                }
-                            >
-                                Apple
-                            </Button>
+                        <div className="flex justify-center gap-4">
+                            <div className="flex-1 max-w-[160px]">
+                                <Button
+                                    type="button"
+                                    variant="utility"
+                                    onClick={() => setComingSoonModal(true)}
+                                    leftIcon={
+                                        <img
+                                            src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png"
+                                            alt=""
+                                            className="w-5 h-5 grayscale"
+                                        />
+                                    }
+                                    className="w-full"
+                                >
+                                    Google
+                                </Button>
+                            </div>
+                            <div className="flex-1 max-w-[160px]">
+                                <Button
+                                    type="button"
+                                    variant="utility"
+                                    onClick={() => setComingSoonModal(true)}
+                                    leftIcon={
+                                        <img
+                                            src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
+                                            alt=""
+                                            className="w-5 h-5 dark:invert"
+                                        />
+                                    }
+                                    className="w-full"
+                                >
+                                    Apple
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -366,13 +381,15 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 >
                     {t("common.continue")}
                 </Button>
-                <Button
-                    variant="text"
-                    onClick={() => navigate("/signup")}
-                    className="theme-text-secondary"
-                >
-                    {t("auth.no_account")}
-                </Button>
+                <div className="flex justify-center">
+                    <Button
+                        variant="text"
+                        onClick={() => navigate("/signup")}
+                        className="theme-text-secondary"
+                    >
+                        {t("auth.no_account")}
+                    </Button>
+                </div>
             </div>
 
             {/* Coming Soon Modal */}
