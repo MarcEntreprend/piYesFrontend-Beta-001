@@ -1,11 +1,11 @@
 
 import React from 'react';
-import { 
-  ArrowUpRight, 
-  ArrowDownLeft, 
-  Plus, 
-  User, 
-  LayoutGrid, 
+import {
+  ArrowUpRight,
+  ArrowDownLeft,
+  Plus,
+  User,
+  LayoutGrid,
   QrCode,
   CreditCard,
   Home,
