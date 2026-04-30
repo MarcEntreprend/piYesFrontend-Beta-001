@@ -28,6 +28,7 @@ import StepIndicator from "../components/StepIndicator";
 import { formatPhoneDisplay } from "../shared/phoneFormatter";
 import { displayMoney, parseMoneyInputToCents } from "../shared/money";
 import { MoneyInput } from "../components/MoneyInput";
+import { cacheService } from "@/services/cacheService";
 
 type Step = "number" | "amount" | "confirm" | "receipt";
 
@@ -139,6 +140,8 @@ const MobileRecharge: React.FC = () => {
       setReceiptId(res.id);
       setStep("receipt");
       await refresh();
+      cacheService.clearHistoryCache();
+      sessionStorage.removeItem('piyes-history-state');
       showToast(t("recharge.success_msg"), "success");
     } catch (e: any) {
       console.error("Recharge error:", e);

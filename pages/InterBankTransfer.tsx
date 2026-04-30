@@ -34,6 +34,7 @@ import { financeService } from "../services/financeService";
 import StepIndicator from "../components/StepIndicator";
 import PageHeader from "../components/PageHeader";
 import { MoneyInput } from '../components/MoneyInput';
+import { cacheService } from "@/services/cacheService";
 
 interface InterBankTransferProps {
   user: User;
@@ -204,6 +205,8 @@ const InterBankTransfer: React.FC<InterBankTransferProps> = ({
       // Trigger global sync refresh
       await api.syncFresh();
       await refresh();
+      cacheService.clearHistoryCache();
+      sessionStorage.removeItem('piyes-history-state');
 
       setResult({ status: "success", tx });
     } catch (e: any) {

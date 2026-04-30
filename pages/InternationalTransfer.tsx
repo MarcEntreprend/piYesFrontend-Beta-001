@@ -33,6 +33,7 @@ import PageHeader from "../components/PageHeader";
 import StepIndicator from "../components/StepIndicator";
 import { MoneyInput } from "../components/MoneyInput";
 import { displayMoney } from "../shared/money";
+import { cacheService } from '../services/cacheService';
 
 interface InternationalTransferProps {
   user: User;
@@ -116,6 +117,8 @@ const InternationalTransfer: React.FC<InternationalTransferProps> = ({
       // Trigger global sync refresh
       await api.syncFresh();
       await refresh();
+      cacheService.clearHistoryCache();
+      sessionStorage.removeItem('piyes-history-state');
 
       setSuccessTx(tx);
     } catch (e) {
