@@ -463,7 +463,7 @@ export const ScheduledPaymentItem: React.FC<ScheduledPaymentItemProps> = ({
               <button
                 onClick={handleCancel}
                 disabled={cancelling}
-                className="w-full flex items-center justify-center gap-2 py-3 bg-gray-100 dark:bg-gray-800 text-gray-500 rounded-xl text-xs font-bold active:scale-95 transition-all border border-gray-200 dark:border-gray-700"
+                className="w-full flex items-center justify-center gap-2 py-3 bg-red-50 theme-border text-red-500 rounded-xl text-xs font-bold active:scale-95 transition-all border border-red-100"
               >
                 {cancelling ? (
                   <Loader2 size={14} className="animate-spin" />

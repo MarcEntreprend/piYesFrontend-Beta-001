@@ -122,7 +122,7 @@ const MarketplaceDashboard: React.FC = () => {
         {/* Navigation Tabs  */}
         <SegmentedControl
           options={[
-            { id: "overview", label: "Vue d'ensemble" },
+            { id: "overview", label: t("boutique.dashboard.overview") },
             { id: "ads", label: t("boutique.dashboard.manage_posts") },
             { id: "payments", label: t("boutique.dashboard.payments") },
           ]}
