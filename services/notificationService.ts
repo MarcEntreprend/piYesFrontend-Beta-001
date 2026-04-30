@@ -6,19 +6,20 @@ import { http } from "./httpClient";
 export interface Notification {
   id: string;
   type:
-    | "transfer_in"
-    | "transfer_out"
-    | "security"
-    | "promo"
-    | "card"
-    | "request"
-    | "transfer_received"
-    | "FRIEND_REQUEST"
-    | "FRIEND_ACCEPTED"
-    | "scheduled_request"
-    | "scheduled_confirmed"
-    | "scheduled_cancelled"
-    | "scheduled_created";
+  | "transfer_in"
+  | "transfer_out"
+  | "security"
+  | "promo"
+  | "card"
+  | "request"
+  | "transfer_received"
+  | "FRIEND_REQUEST"
+  | "FRIEND_ACCEPTED"
+  | "scheduled_request"
+  | "scheduled_confirmed"
+  | "scheduled_cancelled"
+  | "scheduled_created"
+  | "deposit_success";
   title: string;
   body: string;
   timestamp: string;
@@ -92,12 +93,12 @@ class NotificationService {
     return saved
       ? JSON.parse(saved)
       : {
-          push: true,
-          email: false,
-          sms: true,
-          security: true,
-          promotions: true,
-        };
+        push: true,
+        email: false,
+        sms: true,
+        security: true,
+        promotions: true,
+      };
   }
 
   async updatePreferences(prefs: NotificationPrefs): Promise<void> {
