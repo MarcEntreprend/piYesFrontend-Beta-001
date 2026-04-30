@@ -71,6 +71,16 @@ class CacheService {
     localStorage.removeItem(this.PREFIX + key);
   }
 
+  clearHistoryCache() {
+    const prefix = this.PREFIX + 'history_';
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(prefix)) {
+        localStorage.removeItem(key);
+      }
+    }
+  }
+
   clearAll() {
     Object.keys(localStorage).forEach(key => {
       if (key.startsWith(this.PREFIX)) {
@@ -97,9 +107,9 @@ class CacheService {
     localStorage.removeItem('piyes-is-locked');
     localStorage.removeItem('piyes-device-verified');
     localStorage.removeItem('piyes-last-activity');
-    
+
     sessionStorage.clear();
-    
+
     // Clear all cookies if possible (limited by httpOnly)
     document.cookie.split(";").forEach((c) => {
       document.cookie = c
@@ -118,7 +128,7 @@ class CacheService {
     try {
       const cache = await caches.open(ASSET_CACHE_NAME);
       const cachedResponse = await cache.match(url);
-      
+
       if (cachedResponse) {
         return url; // Already cached
       }

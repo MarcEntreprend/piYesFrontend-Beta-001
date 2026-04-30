@@ -33,6 +33,7 @@ import PageHeader from "../components/PageHeader";
 import StepIndicator from "../components/StepIndicator";
 import { MoneyInput } from "../components/MoneyInput";
 import { displayMoney } from "../shared/money";
+import { cacheService } from '../services/cacheService';
 
 interface WithdrawFlowProps {
   user: User;
@@ -134,6 +135,8 @@ const WithdrawFlow: React.FC<WithdrawFlowProps> = ({ user, onUpdateUser }) => {
       // Trigger global sync refresh to update balance everywhere
       await api.syncFresh();
       await refresh();
+      cacheService.clearHistoryCache();
+      sessionStorage.removeItem('piyes-history-state');
 
       setLoading(false);
       setStep("code");

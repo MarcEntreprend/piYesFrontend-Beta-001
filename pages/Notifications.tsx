@@ -17,6 +17,7 @@ import {
   Trash2,
   X,
   Plus,
+  ArrowDown,
 } from "lucide-react";
 import { useTranslation, useToast } from "../App";
 import { useNotifications } from "../hooks/useNotifications";
@@ -101,6 +102,8 @@ const Notifications: React.FC = () => {
         return <ArrowDownLeft size={20} className="text-green-500" />;
       case "deposit_success":
         return <Plus size={20} className="text-green-500" />;
+      case "withdraw_success":
+        return <ArrowDown size={20} className="theme-primary-text" />;
       case "transfer_out":
         return <ArrowUpRight size={20} className="theme-primary-text" />;
       case "security":

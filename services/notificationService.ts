@@ -19,7 +19,8 @@ export interface Notification {
   | "scheduled_confirmed"
   | "scheduled_cancelled"
   | "scheduled_created"
-  | "deposit_success";
+  | "deposit_success"
+  | "withdraw_success";
   title: string;
   body: string;
   timestamp: string;

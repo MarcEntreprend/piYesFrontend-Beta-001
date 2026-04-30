@@ -29,6 +29,7 @@ import { formatPhoneDisplay } from "../shared/phoneFormatter";
 import { TransactionType } from "../shared/types";
 import { displayMoney } from "../shared/money";
 import { MoneyInput } from "@/components/MoneyInput";
+import { cacheService } from '../services/cacheService';
 import {
   formatRecipientValue,
   isOwnKey,
@@ -263,6 +264,7 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
 
       await api.syncFresh();
       await refresh();
+      cacheService.clearHistoryCache();
       sessionStorage.removeItem('piyes-history-state');
 
       if (tx.recipientId) {

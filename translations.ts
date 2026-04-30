@@ -989,6 +989,10 @@ export const translations = {
           title: "Dépôt réussi",
           body: "Votre dépôt de {{amount}} HTG a été effectué avec succès.",
         },
+        withdraw_success: {
+          title: "Retrait réussi",
+          body: "Votre retrait de {{amount}} HTG a été effectué.",
+        },
       },
     },
     security: {
@@ -2724,6 +2728,10 @@ export const translations = {
           title: "Gen yon Depo ki fèt sou kont ou",
           body: "Yon depo {{amount}} HTG fèt sou kont piYès ou an.",
         },
+        withdraw_success: {
+          title: "Ou sot fè yon Retrè",
+          body: "Retrè {{amount}} HTG ou an fèt.",
+        },
 
 
       },
@@ -4404,6 +4412,10 @@ export const translations = {
         deposit_success: {
           title: "Deposit Successful",
           body: "Your deposit of {{amount}} HTG has been successfully credited to your account.",
+        },
+        withdraw_success: {
+          title: "Withdrawal Successful",
+          body: "Your withdrawal of {{amount}} HTG has been successfully processed.",
         },
       },
     },

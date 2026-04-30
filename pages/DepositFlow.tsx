@@ -24,6 +24,7 @@ import PageHeader from "../components/PageHeader";
 import StepIndicator from "../components/StepIndicator";
 import { MoneyInput } from "../components/MoneyInput";
 import { displayMoney } from "../shared/money";
+import { cacheService } from "@/services/cacheService";
 
 interface DepositFlowProps {
   user: User;
@@ -73,6 +74,7 @@ const DepositFlow: React.FC<DepositFlowProps> = ({ user, onUpdateUser }) => {
       await refresh();
 
       // Invalider le cache de l'historique pour forcer le rechargement
+      cacheService.clearHistoryCache();
       sessionStorage.removeItem('piyes-history-state');
 
       setLoading(false);

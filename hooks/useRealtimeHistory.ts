@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { supabase } from '../services/supabaseClient';
+import { cacheService } from '../services/cacheService';
 
 /**
  * Hook qui écoute les nouvelles transactions et force un refresh
@@ -30,7 +31,8 @@ export const useRealtimeHistory = (
                 },
                 (payload) => {
                     console.log('[RealtimeHistory] New transaction:', payload.new);
-                    // Invalider les caches
+                    // Invalider les caches mémoire et persistants
+                    cacheService.clearHistoryCache();
                     const cacheKeys = [
                         'sync',
                         'history_50_0',

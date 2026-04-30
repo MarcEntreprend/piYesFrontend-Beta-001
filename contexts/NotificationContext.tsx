@@ -86,13 +86,14 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
                 rawNotif.type === 'transfer_received' ? '/history' :
                   rawNotif.type === 'transfer_out' ? '/history' :
                     rawNotif.type === 'deposit_success' ? '/history' :
-                      rawNotif.type === 'request' ? '/request-payment' :
-                        rawNotif.type === 'scheduled_request' ? '/scheduler?tab=outgoing' :
-                          rawNotif.type === 'scheduled_confirmed' ? '/scheduler?tab=outgoing' :
-                            rawNotif.type === 'scheduled_created' ? '/scheduler?tab=incoming' :
-                              rawNotif.type === 'scheduled_cancelled' ? '/scheduler?tab=outgoing' :
-                                rawNotif.type === 'FRIEND_REQUEST' ? '/contacts' :
-                                  rawNotif.type === 'FRIEND_ACCEPTED' ? '/contacts' : '/'
+                      rawNotif.type === 'withdraw_success' ? '/history' :
+                        rawNotif.type === 'request' ? '/request-payment' :
+                          rawNotif.type === 'scheduled_request' ? '/scheduler?tab=outgoing' :
+                            rawNotif.type === 'scheduled_confirmed' ? '/scheduler?tab=outgoing' :
+                              rawNotif.type === 'scheduled_created' ? '/scheduler?tab=incoming' :
+                                rawNotif.type === 'scheduled_cancelled' ? '/scheduler?tab=outgoing' :
+                                  rawNotif.type === 'FRIEND_REQUEST' ? '/contacts' :
+                                    rawNotif.type === 'FRIEND_ACCEPTED' ? '/contacts' : '/'
               ),
               targetId: rawNotif.targetId || rawNotif.id,
               ...rawNotif.data,
