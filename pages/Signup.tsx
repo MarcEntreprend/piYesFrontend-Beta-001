@@ -828,35 +828,41 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
                         </span>
                         <div className="h-px flex-1 theme-border border-t" />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <Button
-                            type="button"
-                            variant="utility"
-                            onClick={() => setComingSoonModal(true)}
-                            leftIcon={
-                                <img
-                                    src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png"
-                                    alt=""
-                                    className="w-5 h-5 grayscale"
-                                />
-                            }
-                        >
-                            {t("auth.signup_google")}
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="utility"
-                            onClick={() => setComingSoonModal(true)}
-                            leftIcon={
-                                <img
-                                    src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
-                                    alt=""
-                                    className="w-5 h-5 dark:invert"
-                                />
-                            }
-                        >
-                            {t("auth.signup_apple")}
-                        </Button>
+                    <div className="flex justify-center gap-4">
+                        <div className="flex-1 max-w-[160px]">
+                            <Button
+                                type="button"
+                                variant="utility"
+                                onClick={() => setComingSoonModal(true)}
+                                leftIcon={
+                                    <img
+                                        src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png"
+                                        alt=""
+                                        className="w-5 h-5 grayscale"
+                                    />
+                                }
+                                className="w-full"
+                            >
+                                {t("auth.signup_google")}
+                            </Button>
+                        </div>
+                        <div className="flex-1 max-w-[160px]">
+                            <Button
+                                type="button"
+                                variant="utility"
+                                onClick={() => setComingSoonModal(true)}
+                                leftIcon={
+                                    <img
+                                        src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
+                                        alt=""
+                                        className="w-5 h-5 dark:invert"
+                                    />
+                                }
+                                className="w-full"
+                            >
+                                {t("auth.signup_apple")}
+                            </Button>
+                        </div>
                     </div>
                     <Button
                         variant="text"
