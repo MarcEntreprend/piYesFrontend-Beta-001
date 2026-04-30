@@ -1,5 +1,4 @@
 // contexts/NotificationContext.tsx
-// ce context est responsable de la gestion des notifications
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { Notification, notificationService } from '../services/notificationService';
@@ -86,13 +85,14 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
               route: (
                 rawNotif.type === 'transfer_received' ? '/history' :
                   rawNotif.type === 'transfer_out' ? '/history' :
-                    rawNotif.type === 'request' ? '/request-payment' :
-                      rawNotif.type === 'scheduled_request' ? '/scheduler?tab=outgoing' :
-                        rawNotif.type === 'scheduled_confirmed' ? '/scheduler?tab=outgoing' :
-                          rawNotif.type === 'scheduled_created' ? '/scheduler?tab=incoming' :
-                            rawNotif.type === 'scheduled_cancelled' ? '/scheduler?tab=outgoing' :
-                              rawNotif.type === 'FRIEND_REQUEST' ? '/contacts' :
-                                rawNotif.type === 'FRIEND_ACCEPTED' ? '/contacts' : '/'
+                    rawNotif.type === 'deposit_success' ? '/history' :
+                      rawNotif.type === 'request' ? '/request-payment' :
+                        rawNotif.type === 'scheduled_request' ? '/scheduler?tab=outgoing' :
+                          rawNotif.type === 'scheduled_confirmed' ? '/scheduler?tab=outgoing' :
+                            rawNotif.type === 'scheduled_created' ? '/scheduler?tab=incoming' :
+                              rawNotif.type === 'scheduled_cancelled' ? '/scheduler?tab=outgoing' :
+                                rawNotif.type === 'FRIEND_REQUEST' ? '/contacts' :
+                                  rawNotif.type === 'FRIEND_ACCEPTED' ? '/contacts' : '/'
               ),
               targetId: rawNotif.targetId || rawNotif.id,
               ...rawNotif.data,
