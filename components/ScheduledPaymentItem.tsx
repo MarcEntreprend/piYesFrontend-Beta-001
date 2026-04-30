@@ -26,6 +26,7 @@ interface ScheduledPaymentItemProps {
   currentUserId: string;
   onCancel?: (id: string) => void;
   onRemindersUpdate?: (id: string, reminders: ReminderSlot[]) => void;
+  onRefresh?: () => void;
   isSelected?: boolean;
   isSelectionMode?: boolean;
   onSelect?: (id: string) => void;
@@ -44,6 +45,7 @@ export const ScheduledPaymentItem: React.FC<ScheduledPaymentItemProps> = ({
   currentUserId,
   onCancel,
   onRemindersUpdate,
+  onRefresh,
   isSelected = false,
   isSelectionMode = false,
   onSelect,
@@ -232,6 +234,7 @@ export const ScheduledPaymentItem: React.FC<ScheduledPaymentItemProps> = ({
     }
 
     navigate(`/transfer?${params.toString()}`);
+    onRefresh?.();
   };
 
   // ── Badge statut ──────────────────────────────────────────────────────────
