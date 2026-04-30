@@ -12,6 +12,8 @@ import {
     Eye,
     EyeOff,
     CheckCircle2,
+    CheckIcon,
+    CheckCircle,
     ShieldCheck,
     Loader2,
     X,
@@ -24,6 +26,7 @@ import {
     Briefcase,
     CreditCard,
     Users,
+    Check,
 } from "lucide-react";
 import { useTranslation, useToast } from "../App";
 import { api } from "../services/apiService";
@@ -762,7 +765,7 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
                                 />
                                 <motion.div
                                     whileTap={{ scale: 0.9 }}
-                                    className={`w-6 h-6 rounded-lg border-2 transition-all duration-300 flex items-center justify-center shadow-sm ${agreedToTerms
+                                    className={`w-6 h-6 rounded-full border-2 transition-all duration-300 flex items-center justify-center shadow-sm ${agreedToTerms
                                         ? "bg-(--primary-color) border-transparent"
                                         : "theme-bubble-bg theme-border group-hover:border-(--primary-color)"
                                         }`}
@@ -773,10 +776,10 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
                                             animate={{ scale: 1 }}
                                             transition={{ type: "spring", stiffness: 500, damping: 20 }}
                                         >
-                                            <CheckCircle2
+                                            <CheckCircle
                                                 size={16}
                                                 className="text-white"
-                                                fill="currentColor"
+                                                fill="var(--primary-color)"
                                             />
                                         </motion.div>
                                     )}
