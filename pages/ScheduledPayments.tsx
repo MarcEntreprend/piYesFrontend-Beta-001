@@ -55,6 +55,10 @@ const ScheduledPayments: React.FC = () => {
   const searchParams = useMemo(() => new URLSearchParams(search), [search]);
 
   const [activeTab, setActiveTab] = useState<SchedulerTab>("incoming");
+  // Swipe between tabs
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const tabs: SchedulerTab[] = ["outgoing", "incoming"];
+
   const [searchTerm, setSearchTerm] = useState("");
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
@@ -186,6 +190,28 @@ const ScheduledPayments: React.FC = () => {
   useEffect(() => {
     fetchContacts();
   }, []);
+
+  // Swipe handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartX) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX;
+    const currentIndex = tabs.indexOf(activeTab);
+
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX > 0 && currentIndex > 0) {
+        // Swipe droite → onglet précédent
+        setActiveTab(tabs[currentIndex - 1]);
+      } else if (deltaX < 0 && currentIndex < tabs.length - 1) {
+        // Swipe gauche → onglet suivant
+        setActiveTab(tabs[currentIndex + 1]);
+      }
+    }
+    setTouchStartX(null);
+  };
 
   // Filtrer en excluant les annulés (ou ceux en grace period qui fadent)
   const filteredPayments = useMemo(() => {
@@ -470,7 +496,11 @@ const ScheduledPayments: React.FC = () => {
         )}
       </header>
 
-      <div className="flex-1 animate-in fade-in duration-500 overflow-y-auto no-scrollbar">
+      <div
+        className="flex-1 animate-in fade-in duration-500 overflow-y-auto no-scrollbar"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {!isSelectionMode && (
           <div className="mx-4 mt-4 mb-6 rounded-3xl theme-card-bg border theme-border overflow-hidden shadow-sm">
             <div className="p-5 space-y-5">
