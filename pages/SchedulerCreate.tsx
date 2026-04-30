@@ -11,10 +11,11 @@ import {
   UserPlus,
   Check,
   XCircle,
+  Copy,
 } from "lucide-react";
 import { api } from "../services/apiService";
 import { Contact, ReminderSlot } from "../shared/types";
-import { useTranslation, useGlobalSync } from "../App";
+import { useTranslation, useGlobalSync, useToast } from "../App";
 import Modal from "../components/Modal";
 import { ContactSearch } from "../components/ContactSearch";
 import PageHeader from "../components/PageHeader";
@@ -84,6 +85,9 @@ const SchedulerCreate: React.FC = () => {
     id: string;
   } | null>(null);
   const [qrUrl, setQrUrl] = useState("");
+
+  const [copiedLink, setCopiedLink] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     api.getContacts().then(setContacts);
@@ -283,13 +287,34 @@ const SchedulerCreate: React.FC = () => {
 
           <div className="w-full space-y-3">
             <button
-              onClick={() => {
+              onClick={async () => {
                 const link = `https://piyes.ht/schedule?token=${created.qrToken}`;
-                navigator.clipboard.writeText(link);
-                alert(t("scheduler.create.copy_success"));
+                try {
+                  await navigator.clipboard.writeText(link);
+                  setCopiedLink(true);
+                  showToast(t("common.copied"), "success");
+                  setTimeout(() => setCopiedLink(false), 2000);
+                } catch {
+                  const textarea = document.createElement('textarea');
+                  textarea.value = link;
+                  textarea.style.position = 'fixed';
+                  textarea.style.opacity = '0';
+                  document.body.appendChild(textarea);
+                  textarea.select();
+                  document.execCommand('copy');
+                  document.body.removeChild(textarea);
+                  setCopiedLink(true);
+                  showToast(t("common.copied"), "success");
+                  setTimeout(() => setCopiedLink(false), 2000);
+                }
               }}
-              className="w-full py-4 theme-bubble-bg theme-text-main rounded-2xl font-bold border theme-border active:scale-95 transition-all text-sm"
+              className="w-full py-4 theme-bubble-bg theme-text-main rounded-2xl font-bold border theme-border active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
             >
+              {copiedLink ? (
+                <Check size={16} className="text-green-500" />
+              ) : (
+                <Copy size={16} />
+              )}
               {t("scheduler.create.copy_link")}
             </button>
             <button
