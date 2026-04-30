@@ -1,6 +1,6 @@
 //pages/ScheduledPayments.tsx
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router";
 import {
   ArrowLeft,
@@ -94,25 +94,25 @@ const ScheduledPayments: React.FC = () => {
   const [currentUserId, setCurrentUserId] = useState("");
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const loadPayments = async () => {
-      setLoadingPayments(true);
-      try {
-        const [data, sync] = await Promise.all([
-          api.getScheduledPaymentsFresh(), // Force refresh pour voir les pending immédiatement
-          api.sync(),
-        ]);
-
-        setPayments(data);
-        setCurrentUserId(sync.user.id);
-        setCurrentUser(sync.user);
-      } catch (e) {
-        console.error("Failed to load scheduled payments", e);
-      }
-      setLoadingPayments(false);
-    };
-    loadPayments();
+  const loadPayments = useCallback(async () => {
+    setLoadingPayments(true);
+    try {
+      const [data, sync] = await Promise.all([
+        api.getScheduledPaymentsFresh(),
+        api.sync(),
+      ]);
+      setPayments(data);
+      setCurrentUserId(sync.user.id);
+      setCurrentUser(sync.user);
+    } catch (e) {
+      console.error("Failed to load scheduled payments", e);
+    }
+    setLoadingPayments(false);
   }, []);
+
+  useEffect(() => {
+    loadPayments();
+  }, [loadPayments]);
 
   // Polling toutes les 10s — détecte les confirmations en temps réel (côté receiver)
   useEffect(() => {
@@ -154,7 +154,7 @@ const ScheduledPayments: React.FC = () => {
       } catch {
         /* silently ignore */
       }
-    }, 10000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [t, showToast]);
@@ -580,6 +580,7 @@ const ScheduledPayments: React.FC = () => {
                     currentUserId={currentUserId}
                     onCancel={handleCancelPayment}
                     onRemindersUpdate={handleRemindersUpdate}
+                    onRefresh={loadPayments}
                     isSelected={selectedIds.has(payment.id)}
                     isSelectionMode={isSelectionMode}
                     onSelect={toggleSelection}
