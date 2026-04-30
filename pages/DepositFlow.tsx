@@ -72,6 +72,9 @@ const DepositFlow: React.FC<DepositFlowProps> = ({ user, onUpdateUser }) => {
       await api.syncFresh();
       await refresh();
 
+      // Invalider le cache de l'historique pour forcer le rechargement
+      sessionStorage.removeItem('piyes-history-state');
+
       setLoading(false);
       setResult({ status: "success", tx });
     } catch (e: any) {
