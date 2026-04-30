@@ -880,7 +880,7 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
                               ? t("contacts.detail.mutual_contact")
                               : t("contacts.detail.simple_contact")}
                           {selectedContact.isVerified && (
-                            <CheckCircle size={14} className="text-blue-500" />
+                            <CheckCircle size={14} className="text-red" />
                           )}
                         </p>
                         <button

@@ -200,10 +200,10 @@ const SearchInput: React.FC<SearchInputProps> = ({
               {localResults.map((contact) => {
                 const isContactSelf = isOwnKey(
                   contact.tag ||
-                    contact.phone ||
-                    contact.email ||
-                    contact.randomKey ||
-                    "",
+                  contact.phone ||
+                  contact.email ||
+                  contact.randomKey ||
+                  "",
                   currentUser,
                 );
                 return (
@@ -232,10 +232,10 @@ const SearchInput: React.FC<SearchInputProps> = ({
                         >
                           {highlightMatch(
                             contact.tag ||
-                              contact.phone ||
-                              contact.email ||
-                              contact.randomKey ||
-                              "",
+                            contact.phone ||
+                            contact.email ||
+                            contact.randomKey ||
+                            "",
                             query,
                           )}
                         </p>
@@ -313,7 +313,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
                             )}
                           </p>
                           {user.verificationStatus === "verified" && (
-                            <CheckCircle size={14} className="text-blue-500" />
+                            <CheckCircle size={14} className="text-red" />
                           )}
                         </div>
                         <p
