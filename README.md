@@ -170,6 +170,11 @@ piyes-wallet-frontend/
 ```bash
 npm install # Install dependencies
 npm run dev # Run the app
+
+or 
+
+npm run serve
+and then http://192.168.15.2:5173/
 ```
 
 ---

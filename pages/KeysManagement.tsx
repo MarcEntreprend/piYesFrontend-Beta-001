@@ -97,6 +97,10 @@ const KeysManagement: React.FC = () => {
   const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null);
   const [isRegenerating, setIsRegenerating] = useState(false);
 
+  // Swipe between tabs
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const keyTypes: KeyType[] = ["email", "phone", "tag", "random"];
+
   // Isolated states for each tab
   const [emailValue, setEmailValue] = useState("");
   const [phoneValue, setPhoneValue] = useState("");
@@ -113,6 +117,28 @@ const KeysManagement: React.FC = () => {
 
   const navigate = useNavigate();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Swipe handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartX) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX;
+    const currentIndex = keyTypes.indexOf(newKeyType);
+
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX > 0 && currentIndex > 0) {
+        // Swipe droite → onglet précédent
+        setNewKeyType(keyTypes[currentIndex - 1]);
+      } else if (deltaX < 0 && currentIndex < keyTypes.length - 1) {
+        // Swipe gauche → onglet suivant
+        setNewKeyType(keyTypes[currentIndex + 1]);
+      }
+    }
+    setTouchStartX(null);
+  };
 
   useEffect(() => {
     fetchKeys();
@@ -1085,9 +1111,13 @@ const KeysManagement: React.FC = () => {
               className="rounded-2xl"
             />
 
-            <div className="space-y-4">
+            <div
+              className="space-y-4"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
               {newKeyType === "email" && (
-                <div className="space-y-2">
+                <div className="space-y-2 animate-in slide-in-from-right duration-200">
                   <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
                     {t("pix.labels.email")}
                   </label>
@@ -1102,7 +1132,7 @@ const KeysManagement: React.FC = () => {
               )}
 
               {newKeyType === "phone" && (
-                <div className="space-y-2">
+                <div className="space-y-2 animate-in slide-in-from-right duration-200">
                   <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
                     {t("pix.labels.phone")}
                   </label>
@@ -1132,7 +1162,7 @@ const KeysManagement: React.FC = () => {
               )}
 
               {newKeyType === "tag" && (
-                <div className="space-y-2">
+                <div className="space-y-2 animate-in slide-in-from-right duration-200">
                   <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
                     {t("pix.labels.tag")}
                   </label>
@@ -1178,7 +1208,7 @@ const KeysManagement: React.FC = () => {
               )}
 
               {newKeyType === "random" && (
-                <div className="space-y-4">
+                <div className="space-y-4 animate-in slide-in-from-right duration-200">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
                       {t("pix.labels.random")}
@@ -1190,7 +1220,6 @@ const KeysManagement: React.FC = () => {
                         value={randomValue}
                         className="w-full theme-bubble-bg p-4 pr-12 rounded-2xl outline-none theme-text-main border theme-border font-mono text-xs font-bold"
                       />
-
                       <button
                         onClick={generateRandomKey}
                         disabled={isRegenerating}
