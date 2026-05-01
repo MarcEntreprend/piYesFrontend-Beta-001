@@ -56,6 +56,42 @@ const History: React.FC = () => {
   const isFetching = useRef(false);
   const { highlight } = useHighlight(); //  hook useHighlight 
 
+  // Fonction pour obtenir le titre d'affichage d'une transaction
+  // (copie simplifiée de la logique de ReceiptDetail)
+  const getTransactionTitle = (tx: Transaction): string => {
+    // Si une description utilisateur existe, l'afficher
+    if (tx.description && tx.description.trim() !== "") {
+      return tx.description;
+    }
+
+    // Sinon, générer un titre automatique basé sur le type
+    const txType = tx.type?.toUpperCase() || "";
+    const description = tx.description || "";
+
+    // P2P sous-types (priorité : rappel > lien > QR > clé)
+    if (txType === "TRANSFER" || txType === "P2P") {
+      if (description.includes("Rappel")) return "Rappel de transfert";
+      if (description.includes("lien") || description.includes("Link")) return "Paiement par lien";
+      if (description.toLowerCase().includes("qr")) return "Paiement par QR Code";
+      return "Transfert via clé";
+    }
+
+    switch (txType) {
+      case "MOBILE_RECHARGE":
+      case "RECHARGE":
+        return "Recharge mobile";
+      case "DEPOSIT":
+        return "Dépôt sur compte";
+      case "WITHDRAW":
+      case "WITHDRAWAL":
+        return "Retrait de fonds";
+      case "INTERNATIONAL":
+        return "Transfert international";
+      default:
+        return "";
+    }
+  };
+
   // États pour le swipe et la persistance
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const historyStateKey = 'piyes-history-state'; // Clé unique pour sessionStorage
@@ -536,7 +572,7 @@ const History: React.FC = () => {
                               </div>
                             </div>
                             <p className="theme-text-secondary text-xs truncate mt-0.5">
-                              {tx.description}
+                              {getTransactionTitle(tx)}
                             </p>
                             <p className="theme-text-secondary text-[10px] opacity-60 mt-0.5">
                               {new Date(tx.date).toLocaleTimeString(
