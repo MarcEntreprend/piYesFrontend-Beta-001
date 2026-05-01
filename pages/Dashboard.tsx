@@ -668,6 +668,35 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     ];
   };
 
+  // Fonction pour obtenir le titre d'affichage d'une transaction (copiée de History)
+  const getTransactionTitle = (tx: Transaction): string => {
+    if (tx.description && tx.description.trim() !== "") {
+      return tx.description;
+    }
+    const txType = tx.type?.toUpperCase() || "";
+    const description = tx.description || "";
+    if (txType === "TRANSFER" || txType === "P2P") {
+      if (description.includes("Rappel")) return "Rappel de transfert";
+      if (description.includes("lien") || description.includes("Link")) return "Paiement par lien";
+      if (description.toLowerCase().includes("qr")) return "Paiement par QR Code";
+      return "Transfert via clé";
+    }
+    switch (txType) {
+      case "MOBILE_RECHARGE":
+      case "RECHARGE":
+        return "Recharge mobile";
+      case "DEPOSIT":
+        return "Dépôt sur compte";
+      case "WITHDRAW":
+      case "WITHDRAWAL":
+        return "Retrait de fonds";
+      case "INTERNATIONAL":
+        return "Transfert international";
+      default:
+        return "";
+    }
+  };
+
   return (
     <div
       ref={scrollContainerRef}
@@ -1310,7 +1339,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                           </div>
                         </div>
                         <p className="text-[10px] theme-text-secondary truncate mt-0.5">
-                          {tx.description}
+                          {getTransactionTitle(tx)}
                         </p>
                         <p className="text-[10px] theme-text-secondary opacity-60 mt-0.5">
                           {new Date(tx.date).toLocaleDateString("fr-HT")} •{" "}
