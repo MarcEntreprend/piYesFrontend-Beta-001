@@ -1,6 +1,6 @@
 //pages/ScheduledPayments.tsx
 
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router";
 import {
   ArrowLeft,
@@ -33,6 +33,7 @@ import ScheduledPaymentItem from "../components/ScheduledPaymentItem";
 import SegmentedControl from "../components/SegmentedControl";
 import { HighlightedItem, useHighlight } from '../components/HighlightedItem';
 import { displayMoney } from "../shared/money";
+import PageHeader from "../components/PageHeader";
 
 type SchedulerTab = "outgoing" | "incoming";
 
@@ -79,6 +80,8 @@ const ScheduledPayments: React.FC = () => {
 
   // IDs des annulés en cours de "grace period" (affichés 30s avant disparition)
   const [fadingOutIds, setFadingOutIds] = useState<Set<string>>(new Set());
+
+  const hasInitializedTab = useRef(false);
 
   // Sync tab with URL
   useEffect(() => {
@@ -178,14 +181,20 @@ const ScheduledPayments: React.FC = () => {
     loadPayments(false); // false = utiliser le cache si disponible
   }, [loadPayments]);
 
-  // Déterminer l'onglet à ouvrir par défaut après chargement des données
+  // Déterminer l'onglet à ouvrir UNIQUEMENT au premier chargement de la page
   useEffect(() => {
     // Attendre que les paiements soient chargés
     if (loadingPayments) return;
 
-    // Si un onglet est forcé par l'URL, ne pas modifier
+    // Si déjà initialisé, ne plus jamais changer l'onglet automatiquement
+    if (hasInitializedTab.current) return;
+
+    // Si un onglet est forcé par l'URL, ne pas modifier et marquer comme initialisé
     const urlTab = searchParams.get("tab");
-    if (urlTab === "outgoing" || urlTab === "incoming") return;
+    if (urlTab === "outgoing" || urlTab === "incoming") {
+      hasInitializedTab.current = true;
+      return;
+    }
 
     // Compter les items "confirmed" (non payés, non reçus) dans chaque onglet
     const outgoingConfirmedCount = payments.filter(
@@ -210,6 +219,9 @@ const ScheduledPayments: React.FC = () => {
       // Aucun confirmed
       setActiveTab("incoming");
     }
+
+    // Marquer comme initialisé pour ne plus jamais changer automatiquement
+    hasInitializedTab.current = true;
   }, [payments, loadingPayments, searchParams]);
 
   // Polling toutes les 10s — détecte les confirmations en temps réel (côté receiver)
@@ -549,64 +561,34 @@ const ScheduledPayments: React.FC = () => {
 
   return (
     <div className="theme-card-bg min-h-screen flex flex-col pb-32">
-      <header className="px-6 pt-12 pb-2 theme-card-bg sticky top-0 z-30 border-b theme-border">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() =>
-                isSelectionMode
-                  ? (setIsSelectionMode(false), setSelectedIds(new Set()))
-                  : navigate(-1)
-              }
-              className="p-2 -ml-2 theme-text-secondary active:scale-90 transition-transform"
-            >
-              {isSelectionMode ? <X size={24} /> : <ArrowLeft size={24} />}
-            </button>
-
-            <h1 className="text-xl font-bold theme-text-main">
-              {isSelectionMode
-                ? t("scheduler.list.selected_count", {
-                  count: selectedIds.size,
-                })
-                : t("scheduler.title")}
-            </h1>
-          </div>
-
-          {!isSelectionMode && (
-            <div className="flex gap-2">
-              <button
-                onClick={() => navigate("/scheduler/create")}
-                className="p-2 theme-text-secondary active:scale-90 transition-transform"
-              >
-                <Plus size={20} />
-              </button>
-            </div>
-          )}
-        </div>
-
+      <PageHeader
+        title={isSelectionMode
+          ? t("scheduler.list.selected_count", { count: selectedIds.size })
+          : t("scheduler.title")
+        }
+        onBack={() => isSelectionMode ? (setIsSelectionMode(false), setSelectedIds(new Set())) : undefined}
+        rightElement={!isSelectionMode && (
+          <button
+            onClick={() => navigate("/scheduler/create")}
+            className="p-2 theme-text-secondary active:scale-90 transition-transform"
+          >
+            <Plus size={20} />
+          </button>
+        )}
+      >
         {!isSelectionMode && (
-          <div className="pb-4 px-1">
+          <div className="mt-2">
             <SegmentedControl
               options={[
                 {
                   id: "outgoing",
                   label: t("scheduler.tabs.to_pay"),
-                  badge:
-                    outgoingCount > 0
-                      ? outgoingCount > 9
-                        ? "9+"
-                        : outgoingCount
-                      : undefined,
+                  badge: outgoingCount > 0 ? (outgoingCount > 9 ? "9+" : outgoingCount) : undefined,
                 },
                 {
                   id: "incoming",
                   label: t("scheduler.tabs.sent"),
-                  badge:
-                    incomingCount > 0
-                      ? incomingCount > 9
-                        ? "9+"
-                        : incomingCount
-                      : undefined,
+                  badge: incomingCount > 0 ? (incomingCount > 9 ? "9+" : incomingCount) : undefined,
                 },
               ]}
               value={activeTab}
@@ -615,7 +597,7 @@ const ScheduledPayments: React.FC = () => {
             />
           </div>
         )}
-      </header>
+      </PageHeader>
 
       <div
         className="flex-1 animate-in fade-in duration-500 overflow-y-auto no-scrollbar"
