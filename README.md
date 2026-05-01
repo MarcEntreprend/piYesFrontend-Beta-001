@@ -173,8 +173,8 @@ npm run dev # Run the app
 
 or 
 
-npm run serve
-and then http://192.168.15.2:5173/
+npm run serve #Run it so it can be accessed on other devices on the same network
+and then http://[IP_ADDRESS]/
 ```
 
 ---
