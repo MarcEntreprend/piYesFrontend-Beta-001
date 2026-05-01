@@ -566,7 +566,14 @@ const ScheduledPayments: React.FC = () => {
           ? t("scheduler.list.selected_count", { count: selectedIds.size })
           : t("scheduler.title")
         }
-        onBack={() => isSelectionMode ? (setIsSelectionMode(false), setSelectedIds(new Set())) : undefined}
+        onBack={() => {
+          if (isSelectionMode) {
+            setIsSelectionMode(false);
+            setSelectedIds(new Set());
+          } else {
+            navigate(-1);
+          }
+        }}
         rightElement={!isSelectionMode && (
           <button
             onClick={() => navigate("/scheduler/create")}
