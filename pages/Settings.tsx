@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router";
 import {
   ArrowLeft,
+  Copy,
   User as UserIcon,
   Shield,
   LogOut,
@@ -26,7 +27,7 @@ import {
   QrCode as QrIcon,
   Share2,
 } from "lucide-react";
-import { useTranslation } from "../App";
+import { useToast, useTranslation } from "../App";
 import { Language } from "../translations";
 import { User } from "../shared/types";
 import Modal from "../components/Modal";
@@ -36,6 +37,8 @@ import PageHeader from "../components/PageHeader";
 import Button from "../components/Button";
 import AvatarViewer from "../components/AvatarViewer";
 import { QRCodeSVG } from "qrcode.react";
+
+
 
 interface SettingsProps {
   user: User;
@@ -69,6 +72,8 @@ const Settings: React.FC<SettingsProps> = ({
   const [showLogoutAllConfirm, setShowLogoutAllConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
+  const { showToast } = useToast();
+  const [copiedTag, setCopiedTag] = useState(false);
 
   const themes = [
     { id: "default", label: t("settings.themes.default"), color: "#830AD1" },
@@ -216,6 +221,35 @@ const Settings: React.FC<SettingsProps> = ({
             <span className="text-sm font-bold theme-primary-text">
               {user.tag || "@piyes.user"}
             </span>
+            <button
+              onClick={async () => {
+                const textToCopy = user.tag || "";
+                if (!textToCopy) return;
+                try {
+                  await navigator.clipboard.writeText(textToCopy);
+                  setCopiedTag(true);
+                  showToast(t("common.copied"), "success");
+                  setTimeout(() => setCopiedTag(false), 2000);
+                } catch {
+                  // Fallback pour HTTP
+                  const textarea = document.createElement("textarea");
+                  textarea.value = textToCopy;
+                  textarea.style.position = "fixed";
+                  textarea.style.opacity = "0";
+                  document.body.appendChild(textarea);
+                  textarea.select();
+                  document.execCommand("copy");
+                  document.body.removeChild(textarea);
+                  setCopiedTag(true);
+                  showToast(t("common.copied"), "success");
+                  setTimeout(() => setCopiedTag(false), 2000);
+                }
+              }}
+              className="p-1 theme-text-secondary hover:theme-primary-text active:scale-90 transition-all"
+              aria-label={t("common.copy")}
+            >
+              {copiedTag ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+            </button>
           </div>
           <p className="text-[10px] theme-text-secondary font-medium uppercase tracking-widest">
             {t("profile_hub.account_number")} {user.accountNumber}
@@ -516,12 +550,43 @@ const Settings: React.FC<SettingsProps> = ({
               <button
                 onClick={() => {
                   const transferUrl = `https://piyes.ht/pay?to=${user.tag?.replace("@", "")}&type=tag`;
+
+                  // Fonction de copie universelle (fallback)
+                  const copyToClipboard = (text: string) => {
+                    // Tentative 1 : API Clipboard moderne
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                      navigator.clipboard.writeText(text);
+                      showToast("Lien copié !", "success");
+                      return;
+                    }
+                    // Tentative 2 : Fallback avec textarea + execCommand (fonctionne sur HTTP)
+                    const textarea = document.createElement("textarea");
+                    textarea.value = text;
+                    textarea.style.position = "fixed";
+                    textarea.style.top = "-9999px";
+                    textarea.style.left = "-9999px";
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    textarea.setSelectionRange(0, 99999);
+                    const success = document.execCommand("copy");
+                    document.body.removeChild(textarea);
+                    if (success) {
+                      showToast("Lien copié !", "success");
+                    } else {
+                      showToast("Impossible de copier", "error");
+                    }
+                  };
+
                   if (navigator.share) {
                     navigator.share({
                       title: "Mon piYès Tag",
                       text: `Payez-moi sur piYès via mon tag: ${user.tag}`,
                       url: transferUrl,
+                    }).catch(() => {
+                      copyToClipboard(transferUrl);
                     });
+                  } else {
+                    copyToClipboard(transferUrl);
                   }
                 }}
                 className="flex-1 theme-bubble-bg theme-text-main py-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all border theme-border"
