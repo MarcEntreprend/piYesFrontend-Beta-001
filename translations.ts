@@ -1168,13 +1168,15 @@ export const translations = {
         btn_create: "Créer la demande planifiée",
       },
       tabs: {
-        to_pay: "À Régler",
+        to_pay: "À Payer",
         sent: "À Recevoir",
       },
       stats: {
         to_receive: "Total à recevoir",
         to_pay: "Total à payer",
         confirmed: "Confirmé",
+        paid: "Payé",
+        received: "Reçu",
       },
       list: {
         search_placeholder: "Rechercher par titre ou contact...",
@@ -2900,9 +2902,11 @@ export const translations = {
         sent: "Pou m resevwa",
       },
       stats: {
-        to_receive: "Total resevwa",
-        to_pay: "Total peye",
+        to_receive: "Total pou w resevwa",
+        to_pay: "Total pou w peye",
         confirmed: "Konfime",
+        paid: "Deja Peye",
+        received: "Deja Resevwa",
       },
       list: {
         search_placeholder: "Chache na lis la...",
@@ -4594,6 +4598,8 @@ export const translations = {
         to_receive: "Total to receive",
         to_pay: "Total to pay",
         confirmed: "Confirmed",
+        paid: "Paid",
+        received: "Received",
       },
       list: {
         search_placeholder: "Search by title or contact...",

@@ -693,6 +693,7 @@ const App: React.FC = () => {
     localStorage.removeItem("piyes_show_balance");
     setIsLocked(false);
     setIsDeviceVerified(false);
+    localStorage.removeItem("piyes_scheduler_cache");
   };
 
   useEffect(() => {

@@ -94,7 +94,54 @@ const ScheduledPayments: React.FC = () => {
   const [currentUserId, setCurrentUserId] = useState("");
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  const loadPayments = useCallback(async () => {
+  // Clé pour le cache localStorage
+  const SCHEDULER_CACHE_KEY = "piyes_scheduler_cache";
+
+  // Sauvegarder les paiements dans le cache
+  const savePaymentsToCache = (paymentsData: ScheduledPayment[], userId: string, userData: User | null) => {
+    try {
+      const cacheData = {
+        payments: paymentsData,
+        currentUserId: userId,
+        currentUser: userData,
+        timestamp: Date.now(),
+        expiry: Date.now() + 5 * 60 * 1000, // 5 minutes
+      };
+      localStorage.setItem(SCHEDULER_CACHE_KEY, JSON.stringify(cacheData));
+    } catch (e) {
+      console.error("Failed to save scheduler cache", e);
+    }
+  };
+
+  // Charger les paiements depuis le cache
+  const loadPaymentsFromCache = useCallback(() => {
+    try {
+      const cached = localStorage.getItem(SCHEDULER_CACHE_KEY);
+      if (cached) {
+        const data = JSON.parse(cached);
+        if (data.expiry > Date.now()) {
+          setPayments(data.payments);
+          setCurrentUserId(data.currentUserId);
+          setCurrentUser(data.currentUser);
+          setLoadingPayments(false);
+          return true;
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load scheduler cache", e);
+    }
+    return false;
+  }, []);
+
+  // Charger depuis l'API (avec mise à jour du cache)
+  const loadPayments = useCallback(async (forceRefresh = false) => {
+    // Si pas forcé, essayer le cache d'abord
+    if (!forceRefresh && loadPaymentsFromCache()) {
+      // Rafraîchir en arrière-plan sans bloquer l'UI
+      refreshPaymentsInBackground();
+      return;
+    }
+
     setLoadingPayments(true);
     try {
       const [data, sync] = await Promise.all([
@@ -104,15 +151,66 @@ const ScheduledPayments: React.FC = () => {
       setPayments(data);
       setCurrentUserId(sync.user.id);
       setCurrentUser(sync.user);
+      savePaymentsToCache(data, sync.user.id, sync.user);
     } catch (e) {
       console.error("Failed to load scheduled payments", e);
     }
     setLoadingPayments(false);
+  }, [loadPaymentsFromCache]);
+
+  // Rafraîchissement en arrière-plan (silencieux)
+  const refreshPaymentsInBackground = useCallback(async () => {
+    try {
+      const [data, sync] = await Promise.all([
+        api.getScheduledPaymentsFresh(),
+        api.sync(),
+      ]);
+      setPayments(data);
+      setCurrentUserId(sync.user.id);
+      setCurrentUser(sync.user);
+      savePaymentsToCache(data, sync.user.id, sync.user);
+    } catch (e) {
+      console.error("Background refresh failed", e);
+    }
   }, []);
 
   useEffect(() => {
-    loadPayments();
+    loadPayments(false); // false = utiliser le cache si disponible
   }, [loadPayments]);
+
+  // Déterminer l'onglet à ouvrir par défaut après chargement des données
+  useEffect(() => {
+    // Attendre que les paiements soient chargés
+    if (loadingPayments) return;
+
+    // Si un onglet est forcé par l'URL, ne pas modifier
+    const urlTab = searchParams.get("tab");
+    if (urlTab === "outgoing" || urlTab === "incoming") return;
+
+    // Compter les items "confirmed" (non payés, non reçus) dans chaque onglet
+    const outgoingConfirmedCount = payments.filter(
+      (p) => p.type === "outgoing" && p.status === "confirmed"
+    ).length;
+
+    const incomingConfirmedCount = payments.filter(
+      (p) => p.type === "incoming" && p.status === "confirmed"
+    ).length;
+
+    // Règles :
+    // 1. Si un seul onglet a des confirmed → ouvrir celui-ci
+    // 2. Si les deux ont des confirmed → ouvrir "outgoing" (to_pay)
+    // 3. Si aucun confirmed → ouvrir "incoming" (sent)
+    if (outgoingConfirmedCount > 0 && incomingConfirmedCount === 0) {
+      setActiveTab("outgoing");
+    } else if (outgoingConfirmedCount === 0 && incomingConfirmedCount > 0) {
+      setActiveTab("incoming");
+    } else if (outgoingConfirmedCount > 0 && incomingConfirmedCount > 0) {
+      setActiveTab("outgoing");
+    } else {
+      // Aucun confirmed
+      setActiveTab("incoming");
+    }
+  }, [payments, loadingPayments, searchParams]);
 
   // Polling toutes les 10s — détecte les confirmations en temps réel (côté receiver)
   useEffect(() => {
@@ -121,7 +219,7 @@ const ScheduledPayments: React.FC = () => {
 
     const interval = setInterval(async () => {
       try {
-        const data = await api.getScheduledPayments();
+        const data = await api.getScheduledPaymentsFresh();
 
         // Détecter les items qui viennent de passer pending → confirmed
         data.forEach((newItem) => {
@@ -151,6 +249,9 @@ const ScheduledPayments: React.FC = () => {
 
         prevPayments = data;
         setPayments(data);
+
+        // Sauvegarder dans le cache localStorage
+        savePaymentsToCache(data, currentUserId, currentUser);
       } catch {
         /* silently ignore */
       }
@@ -226,14 +327,33 @@ const ScheduledPayments: React.FC = () => {
 
   const stats = useMemo(() => {
     const relevant = payments.filter(
-      (p) => p.type === activeTab && p.status !== "cancelled",
+      (p) => p.type === activeTab && p.status !== "cancelled" && p.status !== "pending",
     );
+
+    if (activeTab === "outgoing") {
+      // Total à payer = confirmed uniquement (ce qui reste à payer)
+      const totalToPay = relevant
+        .filter((p) => p.status === "confirmed")
+        .reduce((acc, p) => acc + p.amount, 0);
+      const alreadyPaid = relevant
+        .filter((p) => p.status === "paid")
+        .reduce((acc, p) => acc + p.amount, 0);
+      return {
+        total: totalToPay,
+        paidAmount: alreadyPaid,
+      };
+    }
+
+    // Incoming : Total à recevoir = confirmed uniquement (ce qui reste à recevoir)
+    const totalToReceive = relevant
+      .filter((p) => p.status === "confirmed")
+      .reduce((acc, p) => acc + p.amount, 0);
+    const alreadyReceived = relevant
+      .filter((p) => p.status === "paid")
+      .reduce((acc, p) => acc + p.amount, 0);
     return {
-      total: relevant.reduce((acc, p) => acc + p.amount, 0),
-      count: relevant.length, // tous les items actifs
-      confirmedAmount: relevant
-        .filter((p) => p.status === "confirmed" || p.status === "paid")
-        .reduce((acc, p) => acc + p.amount, 0),
+      total: totalToReceive,        // ce qui reste à recevoir (confirmed)
+      paidAmount: alreadyReceived,  // déjà reçu (paid)
     };
   }, [payments, activeTab]);
 
@@ -366,6 +486,7 @@ const ScheduledPayments: React.FC = () => {
       // Forcer refresh pour voir le nouvel item outgoing immédiatement
       const data = await api.getScheduledPaymentsFresh();
       setPayments(data);
+      savePaymentsToCache(data, currentUserId, currentUser);
 
       // Trouver le nouvel item outgoing confirmé pour le mettre en surbrillance
       // On cherche par receiverUserId pour être précis plutôt que par nom
@@ -504,6 +625,7 @@ const ScheduledPayments: React.FC = () => {
         {!isSelectionMode && (
           <div className="mx-4 mt-4 mb-6 rounded-3xl theme-card-bg border theme-border overflow-hidden shadow-sm">
             <div className="p-5 space-y-5">
+
               {/* Ligne des montants */}
               <div className="flex justify-between items-end">
                 <div className="space-y-1">
@@ -521,10 +643,10 @@ const ScheduledPayments: React.FC = () => {
                 </div>
                 <div className="text-right space-y-1">
                   <p className="text-[10px] font-black theme-text-secondary uppercase tracking-widest">
-                    {t("scheduler.stats.confirmed")}
+                    {activeTab === "outgoing" ? t("scheduler.stats.paid") : t("scheduler.stats.received")}
                   </p>
                   <p className="text-xl font-black text-green-600">
-                    {displayMoney(stats.confirmedAmount * 100)}
+                    {displayMoney(stats.paidAmount * 100)}
                     <span className="text-xs font-bold text-green-400 ml-1">
                       {t("currency.symbol")}
                     </span>
@@ -538,13 +660,13 @@ const ScheduledPayments: React.FC = () => {
                   <div
                     className="h-full theme-primary-bg rounded-full transition-all duration-700 ease-out shadow-[0_0_8px_rgba(131,10,209,0.5)]"
                     style={{
-                      width: `${(stats.confirmedAmount / (stats.total || 1)) * 100}%`,
+                      width: `${(stats.paidAmount / ((stats.total + stats.paidAmount) || 1)) * 100}%`,
                     }}
                   />
                 </div>
                 <div className="absolute -top-5 right-0">
                   <span className="text-[9px] font-black theme-primary-text opacity-70">
-                    {Math.round((stats.confirmedAmount / (stats.total || 1)) * 100)}%
+                    {Math.round((stats.paidAmount / ((stats.total + stats.paidAmount) || 1)) * 100)}%
                   </span>
                 </div>
               </div>
