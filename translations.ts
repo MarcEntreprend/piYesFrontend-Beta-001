@@ -1466,9 +1466,8 @@ export const translations = {
           "Visualisation de vos transactions selon leur nature : transferts P2P, dépôts, retraits, recharges, etc. Le pourcentage indique la part de chaque type dans le volume total.",
         savings_costs_title: "Économies & Coûts",
         piyes_fees_paid_title: "Frais piYès payés",
-        piyes_fees_paid_help:
-          "Total des frais de service (3%) appliqués sur vos transactions envoyées durant la période. Ces frais couvrent la sécurité, la rapidité et la disponibilité du service.",
-        on_sent_transactions: "Sur vos transactions envoyées (3%)",
+        piyes_fees_paid_help: "Total des frais appliqués sur vos transactions envoyées durant la période. Les frais varient selon le type : 0% pour les transferts entre utilisateurs piYès, 0,5% pour les virements interbancaires, 1% pour les transferts internationaux. Les autres opérations (dépôt, retrait, recharge) sont gratuites.",
+        on_sent_transactions: "Selon le type de transaction (P2P: 0%, Interbancaire: 0,5%, International: 1%)",
         estimated_savings_cash_title: "Économie estimée vs cash",
         estimated_savings_cash_help:
           "Estimation des coûts évités en utilisant piYès plutôt que le cash : manipulation des billets, erreurs de rendu, risque de vol, et temps perdu. Calculé à 2× vos frais piYès à titre indicatif.",
