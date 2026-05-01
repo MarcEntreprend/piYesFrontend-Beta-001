@@ -1067,8 +1067,8 @@ export const translations = {
       new_recipient: "NOUVEAU DESTINATAIRE",
       recipient_not_found: "Destinataire non trouvé",
       recipient_not_found_error: "Destinataire introuvable",
-      prefilled_link: "Demande de paiement préremplie (lien)",
-      prefilled_qr: "Demande de paiement préremplie (QR code)",
+      prefilled_link_desc: "Demande de paiement préremplie (lien)",
+      prefilled_qr_desc: "Demande de paiement préremplie (QR code)",
       from_scheduler: "Paiement depuis rappel",
       scheduler_payment: "Rappel de paiement",
       qr_expired_error:

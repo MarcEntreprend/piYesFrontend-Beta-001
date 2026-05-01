@@ -51,6 +51,7 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
   const [isExpired, setIsExpired] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [copiedLink, setCopiedLink] = useState(false);   // ✅ Ajout du state pour feedback
 
   const { showToast } = useToast();
 
@@ -169,7 +170,7 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
     setStep(2);
   };
 
-  const handleCopyLink = () => {
+  const handleCopyLink = async () => {
     let to = user.accountNumber;
     let type = "id";
 
@@ -194,8 +195,41 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
     }
 
     const link = `https://piyes.ht/pay?to=${encodeURIComponent(to)}&type=${type}&amount=${amount}`;
-    navigator.clipboard.writeText(link);
-    alert(t("request.copy_link"));
+
+    // Tentative 1 : API Clipboard moderne
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiedLink(true);
+      showToast(t("request.copy_link"), "success");
+      setTimeout(() => setCopiedLink(false), 2000);
+      return;
+    } catch (err) {
+      console.warn("Clipboard API failed, trying fallback:", err);
+    }
+
+    // Tentative 2 : Fallback (textarea + execCommand) pour HTTP non sécurisé
+    try {
+      const textarea = document.createElement("textarea");
+      textarea.value = link;
+      textarea.style.position = "fixed";
+      textarea.style.top = "-9999px";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      textarea.setSelectionRange(0, 99999);
+      const success = document.execCommand("copy");
+      document.body.removeChild(textarea);
+
+      if (success) {
+        setCopiedLink(true);
+        showToast(t("request.copy_link"), "success");
+        setTimeout(() => setCopiedLink(false), 2000);
+      } else {
+        throw new Error("execCommand copy failed");
+      }
+    } catch (err) {
+      showToast(t("common.error"), "error");
+    }
   };
 
   const handleSelectUser = (contact: Partial<Contact>) => {
@@ -375,8 +409,8 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
             )}
 
             <div className="space-y-4">
-              <Button variant="utility" fullWidth onClick={handleCopyLink} leftIcon={<Copy size={18} />}>
-                {t("request.copy_link")}
+              <Button variant="utility" fullWidth onClick={handleCopyLink} leftIcon={copiedLink ? <Check size={18} /> : <Copy size={18} />}>
+                {copiedLink ? t("common.copied") : t("request.copy_link")}
               </Button>
               <button onClick={() => setStep(1)} className="w-full text-center theme-text-secondary text-xs font-bold">
                 {t("request.modify")}

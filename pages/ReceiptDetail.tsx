@@ -55,10 +55,7 @@ const ReceiptDetail: React.FC = () => {
     };
   }, [id, searchParams]);
 
-  // --- Tous les hooks sont regroupés ici, avant tout return conditionnel ---
-
-
-  // Note automatique basée sur le type de transaction
+  // Note automatique basée sur le type de transaction (titre)
   const automaticNote = useMemo(() => {
     if (!receipt) return '';
 
@@ -66,63 +63,92 @@ const ReceiptDetail: React.FC = () => {
     const txTypeNormalized = typeof txTypeRaw === 'string' ? txTypeRaw.toUpperCase() : txTypeRaw;
     const description = receipt.description || '';
 
-    // Sous-types P2P détectés via la description
+    // Helper pour remplacer - et > par →
+    const formatTitle = (title: string) => title.replace(/[-]/g, '→').replace(/[>]/g, '→');
+
+    // --- P2P sous-types (priorité : rappel > lien > QR > clé) ---
     if (txTypeNormalized === 'TRANSFER' || txTypeNormalized === 'P2P') {
-      if (description.includes('via clé') || description.includes('Transfert à')) return 'Transfert via clé';
-      if (description.includes('Rappel')) return 'Rappel de transfert';
-      if (description.includes('lien') || description.includes('Link')) return 'Paiement par lien';
-      if (description.includes('QR')) return 'Paiement par QR Code';
+      if (description.includes('Rappel')) return formatTitle('Rappel de transfert');
+      if (description.includes('lien') || description.includes('Link')) return formatTitle('Paiement par lien');
+      // Détection améliorée du QR code (insensible à la casse)
+      if (description.toLowerCase().includes('qr')) return formatTitle('Paiement par QR Code');
+      return formatTitle('Transfert via clé');
     }
 
     switch (txTypeNormalized) {
       case 'MOBILE_RECHARGE':
       case 'RECHARGE':
-        return 'Recharge mobile';
+        return formatTitle('Recharge mobile');
       case 'DEPOSIT':
-        return 'Dépôt sur compte';
+        return formatTitle('Dépôt sur compte');
       case 'WITHDRAWAL':
       case 'WITHDRAW':
-        return 'Retrait de fonds';
-      case 'P2P_KEY':
-        return 'Transfert via clé';
-      case 'P2P_SCHEDULE':
-        return 'Rappel de transfert';
-      case 'P2P_LINK':
-        return 'Paiement par lien';
-      case 'P2P_QR':
-        return 'Paiement par QR Code';
-      case 'INTERNATIONAL':
-        return 'Transfert international';
+        return formatTitle('Retrait de fonds');
+      case 'INTERNATIONAL': {
+        const country = receipt.receiver?.country || receipt.country;
+        if (country) return formatTitle(`Transfert international : Haïti → ${country}`);
+        return formatTitle('Transfert international');
+      }
       case 'INTERBANK_IN': {
-        const receiverBank = receipt.receiver?.bank || 'Autre institution';
-        return `Transfert inter-bancaire : piYès → ${receiverBank}`;
+        const senderBank = receipt.sender?.bank || 'Autre institution';
+        return formatTitle(`Transfert interbancaire : ${senderBank} → piYès`);
       }
       case 'INTERBANK_OUT': {
-        const senderBank = receipt.sender?.bank || 'Autre institution';
-        return `Transfert inter-bancaire : ${senderBank} → piYès`;
+        const receiverBank = receipt.receiver?.bank || 'Autre institution';
+        return formatTitle(`Transfert interbancaire : piYès → ${receiverBank}`);
       }
       default:
-        // Fallback pour TRANSFER non reconnu
+        // Fallback pour TRANSFER non reconnu → détection interbancaire par comparaison des banques
         if (txTypeNormalized === 'TRANSFER') {
-          // Vérifier si c'est interbancaire
           const senderBank = receipt.sender?.bank?.toLowerCase() || '';
           const receiverBank = receipt.receiver?.bank?.toLowerCase() || '';
           if (senderBank.includes('piyès') && receiverBank && !receiverBank.includes('piyès')) {
-            return `Transfert inter-bancaire : piYès → ${receipt.receiver?.bank || 'Autre institution'}`;
+            return formatTitle(`Transfert interbancaire : piYès → ${receipt.receiver?.bank || 'Autre institution'}`);
           }
           if (!senderBank.includes('piyès') && receiverBank.includes('piyès')) {
-            return `Transfert inter-bancaire : ${receipt.sender?.bank || 'Autre institution'} → piYès`;
+            return formatTitle(`Transfert interbancaire : ${receipt.sender?.bank || 'Autre institution'} → piYès`);
           }
-          // P2P standard si aucun sous-type détecté
-          return 'Transfert via clé';
+          return formatTitle('Transfert via clé');
         }
         return '';
     }
   }, [receipt]);
 
+  // Description enrichie pour les cas système (recharge, dépôt) – sinon commentaire utilisateur
+  const enhancedDescription = useMemo(() => {
+    if (!receipt) return '';
+
+    const txTypeRaw = receipt.receipt_type;
+    const txTypeNormalized = typeof txTypeRaw === 'string' ? txTypeRaw.toUpperCase() : txTypeRaw;
+
+    // Recharge mobile : afficher le numéro (description backend)
+    if (txTypeNormalized === 'MOBILE_RECHARGE' || txTypeNormalized === 'RECHARGE') {
+      if (receipt.description) return receipt.description;
+      return 'Numéro mobile';
+    }
+
+    // Dépôt : afficher le nom de l'agent (via receipt.receiver.name)
+    if (txTypeNormalized === 'DEPOSIT') {
+      if (receipt.receiver?.name) return `Agence ${receipt.receiver.name}`;
+      if (receipt.description) return receipt.description;
+      return '';
+    }
+
+    // Retrait : pas de description
+    if (txTypeNormalized === 'WITHDRAWAL' || txTypeNormalized === 'WITHDRAW') {
+      return '';
+    }
+
+    // Pour tous les autres, utiliser le commentaire utilisateur s'il existe ET qu'il n'est pas générique
+    const defaultDesc = receipt.description || '';
+    // Ignorer les descriptions génériques comme "Transfer to XXX" ou "Paiement pour ..." (redondantes)
+    const isGenericDesc = /^Transfer to |^Paiement pour /i.test(defaultDesc);
+    if (!isGenericDesc) return defaultDesc;
+    return '';
+  }, [receipt]);
+
   const feeDisplayText = useMemo(() => {
     if (!receipt) return '✨ Aucun frais appliqué !';
-    // Détermine le contexte des frais
     const txTypeRaw = receipt.receipt_type;
     const txTypeNormalized = typeof txTypeRaw === 'string' ? txTypeRaw.toUpperCase() : txTypeRaw;
     const isInternational = txTypeNormalized === 'INTERNATIONAL';
@@ -151,7 +177,6 @@ const ReceiptDetail: React.FC = () => {
     return `🌍 Frais internationaux : seulement ${displayPercent(totalPercent)}. piYès vous offre le meilleur taux.`;
   }, [receipt]);
 
-  // Fonctions utilitaires (pas des hooks, peuvent rester ici)
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
     const day = d.getDate().toString().padStart(2, '0');
@@ -191,32 +216,15 @@ const ReceiptDetail: React.FC = () => {
     }
   };
 
-  // --- Fin des hooks et fonctions utilitaires ---
-
-  if (loading) return (
-    <div className="theme-card-bg min-h-screen flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-[#830AD1]/30 border-t-[#830AD1] rounded-full animate-spin"></div>
-    </div>
-  );
-
-  if (!receipt) return <div className="p-8 text-center theme-text-secondary">{t('common.error')}</div>;
-
-  const typeLabel = t(`receipt.types.${receipt.receipt_type}` as any) || receipt.receipt_type;
-
-  // --- Reste du code original (handleShare, generateReceiptImageBlob, exportReceipt, etc.) ---
-  // (Je n'ai pas modifié ces parties ; elles restent telles quelles)
-
   const handleShare = async () => {
     setExporting(true);
     try {
-      // Générer l'image du reçu
       const imgBlob = await generateReceiptImageBlob();
       if (!imgBlob) throw new Error('Failed to generate image');
 
       const fileName = `recu-piyes-${receipt.external_id || receipt.id}.png`;
 
       if (Capacitor.isNativePlatform()) {
-        // Mobile : utiliser Capacitor Share
         const base64Data = await new Promise<string>((resolve) => {
           const reader = new FileReader();
           reader.onloadend = () => {
@@ -226,7 +234,6 @@ const ReceiptDetail: React.FC = () => {
           reader.readAsDataURL(imgBlob);
         });
 
-        // Sauvegarder temporairement dans le cache
         await Filesystem.writeFile({
           path: fileName,
           data: base64Data,
@@ -245,7 +252,6 @@ const ReceiptDetail: React.FC = () => {
           dialogTitle: 'Partager le reçu',
         });
       } else if (navigator.share && navigator.canShare) {
-        // Desktop avec Web Share API
         const file = new File([imgBlob], fileName, { type: 'image/png' });
         if (navigator.canShare({ files: [file] })) {
           await navigator.share({
@@ -254,7 +260,6 @@ const ReceiptDetail: React.FC = () => {
             files: [file],
           });
         } else {
-          // Fallback : téléchargement
           const url = URL.createObjectURL(imgBlob);
           const link = document.createElement('a');
           link.href = url;
@@ -263,13 +268,11 @@ const ReceiptDetail: React.FC = () => {
           URL.revokeObjectURL(url);
         }
       } else {
-        // Fallback desktop : copier le lien
         navigator.clipboard.writeText(window.location.href);
         alert('Lien copié dans le presse-papier');
       }
     } catch (err) {
       console.error('Error sharing:', err);
-      // Fallback : copier le lien
       navigator.clipboard.writeText(window.location.href);
       alert('Lien copié dans le presse-papier');
     } finally {
@@ -277,10 +280,6 @@ const ReceiptDetail: React.FC = () => {
     }
   };
 
-  /**
-   * Génère un blob PNG du reçu à partir d'un HTML statique propre,
-   * sans couleurs oklch (incompatibles avec html2canvas).
-   */
   const generateReceiptImageBlob = async (): Promise<Blob | null> => {
     const formattedDate = formatDate(receipt.date);
     const typeLabel = receipt.receipt_type;
@@ -376,10 +375,10 @@ const ReceiptDetail: React.FC = () => {
               <div class="party-detail">Compte: ${receipt.sender.masked_account || '••••00-6'}</div>
             </div>` : ''}
             
-            ${receipt.description ? `
+            ${(automaticNote || enhancedDescription) ? `
             <div class="note-section">
               <div class="note-label">Note</div>
-              <div class="note-value">${receipt.description}</div>
+              <div class="note-value">${automaticNote || ''}${automaticNote && enhancedDescription ? '<br/>' : ''}${enhancedDescription || ''}</div>
             </div>` : ''}
             
             <div class="divider"></div>
@@ -406,7 +405,6 @@ const ReceiptDetail: React.FC = () => {
     `;
 
     try {
-      // Ouvrir dans iframe caché pour capturer
       const iframe = document.createElement('iframe');
       iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:400px;height:auto;border:none;visibility:hidden;';
       document.body.appendChild(iframe);
@@ -415,7 +413,6 @@ const ReceiptDetail: React.FC = () => {
       iframe.contentDocument!.write(html);
       iframe.contentDocument!.close();
 
-      // Attendre le rendu
       await new Promise(r => setTimeout(r, 300));
 
       const { default: html2canvas } = await import('html2canvas');
@@ -424,7 +421,6 @@ const ReceiptDetail: React.FC = () => {
         useCORS: true,
         backgroundColor: '#ffffff',
         width: 400,
-        // Pas de oklch ici — HTML statique avec couleurs hex uniquement
       });
 
       document.body.removeChild(iframe);
@@ -449,9 +445,7 @@ const ReceiptDetail: React.FC = () => {
       const fileName = `recu-piyes-${receipt.external_id || receipt.id}.${fileExtension}`;
 
       if (format === 'image') {
-        // Export PNG
         if (isNative) {
-          // Mobile : sauvegarder directement
           const base64Data = await new Promise<string>((resolve) => {
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -469,7 +463,6 @@ const ReceiptDetail: React.FC = () => {
 
           alert(`Reçu sauvegardé : ${fileName}`);
         } else {
-          // Desktop : téléchargement
           const url = URL.createObjectURL(imgBlob);
           const link = document.createElement('a');
           link.href = url;
@@ -478,26 +471,22 @@ const ReceiptDetail: React.FC = () => {
           URL.revokeObjectURL(url);
         }
       } else {
-        // Export PDF
         if (isNative) {
-          // Mobile : générer PDF et sauvegarder directement (sans ouvrir de fenêtre)
           const { default: jsPDF } = await import('jspdf');
 
-          // Convertir le blob en base64 pour l'image
           const base64Image = await new Promise<string>((resolve) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result as string);
             reader.readAsDataURL(imgBlob);
           });
 
-          // Créer un canvas temporaire pour obtenir les dimensions
           const img = new Image();
           await new Promise((resolve) => {
             img.onload = resolve;
             img.src = base64Image;
           });
 
-          const imgWidth = 210; // A4 width in mm
+          const imgWidth = 210;
           const imgHeight = (img.height * imgWidth) / img.width;
 
           const pdf = new jsPDF({
@@ -518,7 +507,6 @@ const ReceiptDetail: React.FC = () => {
 
           alert(`Reçu sauvegardé : ${fileName}`);
         } else {
-          // Desktop : ouvrir dans une nouvelle fenêtre pour impression
           const base64 = await new Promise<string>((resolve) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result as string);
@@ -561,6 +549,18 @@ const ReceiptDetail: React.FC = () => {
     }
   };
 
+  if (loading) return (
+    <div className="theme-card-bg min-h-screen flex items-center justify-center">
+      <div className="w-10 h-10 border-4 border-[#830AD1]/30 border-t-[#830AD1] rounded-full animate-spin"></div>
+    </div>
+  );
+
+  if (!receipt) return <div className="p-8 text-center theme-text-secondary">{t('common.error')}</div>;
+
+  const typeLabel = t(`receipt.types.${receipt.receipt_type}` as any) || receipt.receipt_type;
+
+  console.log("[RECEIPT DEBUG] description brute =", receipt.description);
+
   return (
     <div className="theme-card-bg min-h-screen pb-20">
       <PageHeader
@@ -577,7 +577,6 @@ const ReceiptDetail: React.FC = () => {
         className="sticky top-0 theme-card-bg z-10 border-b theme-border"
       />
 
-      {/* Message de succès */}
       {exportSuccess && (
         <div className="mx-6 mt-4 p-3 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center gap-2 text-green-700 dark:text-green-400">
           <CheckCircle size={18} />
@@ -588,7 +587,6 @@ const ReceiptDetail: React.FC = () => {
       <div className="px-6 py-4">
         <div ref={receiptRef} className="bg-white text-gray-900 rounded-3xl overflow-hidden shadow-sm border border-gray-200 flex flex-col">
           <div className="p-8 space-y-8 flex-1">
-            {/* Header */}
             <div className="text-center space-y-6">
               <div className="flex flex-col items-center gap-1">
                 <span className="text-3xl font-black tracking-tighter text-[#4318FF]">piYès</span>
@@ -616,7 +614,6 @@ const ReceiptDetail: React.FC = () => {
 
             <div className="border-t border-dashed border-gray-300"></div>
 
-            {/* Transaction Details */}
             <div className="grid grid-cols-2 gap-y-6 gap-x-4">
               <div className="space-y-1.5">
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Code d'autorisation</p>
@@ -636,7 +633,6 @@ const ReceiptDetail: React.FC = () => {
 
             <div className="border-t border-dashed border-gray-300"></div>
 
-            {/* Parties */}
             <div className="space-y-4">
               {receipt.receiver && (
                 <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-2">
@@ -666,7 +662,7 @@ const ReceiptDetail: React.FC = () => {
                 </div>
               )}
 
-              {(automaticNote || receipt.description) && (
+              {(automaticNote || enhancedDescription) && (
                 <div className="bg-yellow-50 rounded-xl p-5 border border-yellow-200 mt-6">
                   {automaticNote && (
                     <>
@@ -674,9 +670,9 @@ const ReceiptDetail: React.FC = () => {
                       <p className="text-sm font-bold text-yellow-900 leading-relaxed">{automaticNote}</p>
                     </>
                   )}
-                  {receipt.description && (
+                  {enhancedDescription && (
                     <p className="text-xs font-medium italic text-yellow-800 leading-relaxed mt-2">
-                      {receipt.description}
+                      {enhancedDescription}
                     </p>
                   )}
                 </div>
@@ -685,14 +681,12 @@ const ReceiptDetail: React.FC = () => {
 
             <div className="border-t border-dashed border-gray-300"></div>
 
-            {/* External ID */}
             <div className="space-y-2">
               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Identifiant Externe</p>
               <p className="text-[11px] font-mono text-gray-400 break-all leading-relaxed">{receipt.external_id}</p>
             </div>
           </div>
 
-          {/* Footer */}
           <div className="bg-gray-50 border-t border-gray-200 p-8 text-center space-y-4">
             <div className="space-y-1">
               <p className="text-base font-black text-[#4318FF]">piYès</p>

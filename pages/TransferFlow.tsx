@@ -246,13 +246,14 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
         throw new Error(t("transfer.recipient_not_found_error"));
       }
 
-      let description = note.trim() || undefined;
-      if (!description && source === "link") description = t("transfer.prefilled_link_desc");
-      else if (!description && source === "qr") description = t("transfer.prefilled_qr_desc");
-      else if (!description && source === "scheduler") {
+      // Toujours une chaîne : vide si l'utilisateur n'a rien saisi
+      let description = note.trim() || "";
+      // Pour les rappels schedulés, un texte par défaut peut être utile
+      if (!description && source === "scheduler") {
         const schedulerNote = searchParams.get("description");
         description = schedulerNote || t("transfer.scheduler_payment_desc");
       }
+      // Pour link et qr, description reste "" → backend ne mettra pas de texte par défaut
 
       const tx = await api.transfer(
         netAmount,
