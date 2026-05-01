@@ -198,6 +198,9 @@ const Report: React.FC = () => {
     title: string;
     body: string;
   } | null>(null);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const periodOrder = ["month", "3months", "6months", "year", "custom"] as const;
+  const periodTabsRef = useRef<HTMLDivElement>(null);
 
   // ── Export bancaire : modal de choix de période ──────────────────────────
   const [showExportModal, setShowExportModal] = useState(false);
@@ -247,6 +250,21 @@ const Report: React.FC = () => {
 
   useEffect(() => {
     if (period !== "custom") fetchReport();
+  }, [period]);
+
+  useEffect(() => {
+    if (periodTabsRef.current) {
+      const activeButton = periodTabsRef.current.querySelector(
+        `button[data-period="${period}"]`
+      ) as HTMLElement;
+      if (activeButton) {
+        activeButton.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
+    }
   }, [period]);
 
   // Adapter fetchReport
@@ -629,10 +647,35 @@ const Report: React.FC = () => {
 
   const d = reportData!;
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartX) return;
+    const deltaX = e.touches[0].clientX - touchStartX;
+    if (Math.abs(deltaX) > 50) {
+      const currentIndex = periodOrder.indexOf(period);
+      if (deltaX > 0 && currentIndex > 0) {
+        setPeriod(periodOrder[currentIndex - 1]);
+        setShowDatePicker(false);
+      } else if (deltaX < 0 && currentIndex < periodOrder.length - 1) {
+        setPeriod(periodOrder[currentIndex + 1]);
+        setShowDatePicker(false);
+      }
+      setTouchStartX(null);
+    }
+  };
+
+  const handleTouchEnd = () => setTouchStartX(null);
+
   return (
     <div
       className="theme-card-bg min-h-screen pb-24 animate-in fade-in duration-500"
       ref={reportRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       {/* ── Info Modal ─────────────────────────────────────────────────────── */}
       {infoModal && (
@@ -698,10 +741,14 @@ const Report: React.FC = () => {
       <div className="p-6 space-y-8">
         {/* ── Period selector ─────────────────────────────────────────────── */}
         <div className="space-y-3">
-          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+          <div
+            ref={periodTabsRef}
+            className="flex gap-2 overflow-x-auto no-scrollbar pb-1"
+          >
             {PERIOD_OPTIONS.map((opt) => (
               <button
                 key={opt.id}
+                data-period={opt.id}
                 onClick={() => {
                   setPeriod(opt.id);
                   setShowDatePicker(false);
@@ -715,6 +762,7 @@ const Report: React.FC = () => {
               </button>
             ))}
             <button
+              data-period="custom"
               onClick={() => {
                 setShowDatePicker(!showDatePicker);
                 if (!showDatePicker) setPeriod("custom");
