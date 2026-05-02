@@ -80,6 +80,8 @@ interface ReportData {
   totalFeesPaid: number;
   savingsVsBank: number;
   savingsVsMoncash: number;
+  totalBankFeesIfTraditional: number;
+  simulatedMoncashFees: number;
   frequencyBreakdown: { once: number; repeat: number; frequent: number };
 }
 
@@ -1246,7 +1248,10 @@ const Report: React.FC = () => {
             </h2>
           </div>
 
+
           <div className="space-y-3">
+
+            {/* Carte verte : Coûts supportés par piYès */}
             <div
               className="theme-bubble-bg rounded-[28px] border theme-border p-5 flex items-center gap-4 cursor-pointer active:scale-[0.99] transition-all"
               onClick={() =>
@@ -1256,8 +1261,8 @@ const Report: React.FC = () => {
                 })
               }
             >
-              <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center shrink-0">
-                <Percent size={20} className="text-red-500" />
+              <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center shrink-0">
+                <Percent size={20} className="text-green-600" />
               </div>
               <div className="flex-1">
                 <p className="text-xs font-black theme-text-main">
@@ -1269,7 +1274,7 @@ const Report: React.FC = () => {
               </div>
               <div className="text-right">
                 <div className="text-right">
-                  <p className="text-lg font-black text-red-500">
+                  <p className="text-lg font-black text-green-600">
                     {(d.totalFeesPaid / Math.max(d.totalSent, 1) * 100).toFixed(2)}%
                   </p>
                   <p className="text-[9px] theme-text-secondary">
@@ -1279,7 +1284,7 @@ const Report: React.FC = () => {
               </div>
             </div>
 
-            {/* Carte verte : Économie vs banques traditionnelles */}
+            {/* Carte bleue : Économie vs banques traditionnelles */}
             <div
               className="theme-bubble-bg rounded-[28px] border theme-border p-5 flex items-center gap-4 cursor-pointer active:scale-[0.99] transition-all"
               onClick={() =>
@@ -1289,8 +1294,8 @@ const Report: React.FC = () => {
                 })
               }
             >
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-                <Building2 size={20} className="text-emerald-600" />
+              <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center shrink-0">
+                <Building2 size={20} className="text-blue-600" />
               </div>
               <div className="flex-1">
                 <p className="text-xs font-black theme-text-main">
@@ -1301,13 +1306,16 @@ const Report: React.FC = () => {
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-lg font-black text-emerald-600">
+                <p className="text-lg font-black text-green-600">
                   +{fmtAmt(d.savingsVsBank)} G.
+                </p>
+                <p className="text-[9px] text-red-500">
+                  (sinon ~{fmtAmt(d.totalBankFeesIfTraditional)} G.)
                 </p>
               </div>
             </div>
 
-            {/* Carte bleue : Économie simulée vs MonCash */}
+            {/* Carte rouge : Économie simulée vs MonCash */}
             <div
               className="theme-bubble-bg rounded-[28px] border theme-border p-5 flex items-center gap-4 cursor-pointer active:scale-[0.99] transition-all"
               onClick={() =>
@@ -1317,8 +1325,8 @@ const Report: React.FC = () => {
                 })
               }
             >
-              <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center shrink-0">
-                <Award size={20} className="text-blue-500" />
+              <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center shrink-0">
+                <Award size={20} className="text-red-500" />
               </div>
               <div className="flex-1">
                 <p className="text-xs font-black theme-text-main">
@@ -1329,8 +1337,11 @@ const Report: React.FC = () => {
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-lg font-black text-blue-500">
+                <p className="text-lg font-black text-green-600">
                   +{fmtAmt(d.savingsVsMoncash)} G.
+                </p>
+                <p className="text-[9px] text-red-500">
+                  (sinon ~{fmtAmt(d.simulatedMoncashFees)} G.)
                 </p>
               </div>
             </div>
