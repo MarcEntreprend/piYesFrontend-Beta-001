@@ -175,6 +175,9 @@ or
 
 #Run it so it can be accessed on other devices on the same network
 # and then http://[IP_ADDRESS]/
+
+npm install
+npm run build
 npm run serve 
 ```
 
