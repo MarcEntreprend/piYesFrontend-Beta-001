@@ -79,6 +79,7 @@ interface ReportData {
   avgTransactionAmount: number;
   totalFeesPaid: number;
   savingsVsBank: number;
+  savingsVsMoncash: number;
   frequencyBreakdown: { once: number; repeat: number; frequent: number };
 }
 
@@ -1267,9 +1268,14 @@ const Report: React.FC = () => {
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-lg font-black text-red-500">
-                  {fmtAmt(d.totalFeesPaid)} G.
-                </p>
+                <div className="text-right">
+                  <p className="text-lg font-black text-red-500">
+                    {(d.totalFeesPaid / Math.max(d.totalSent, 1) * 100).toFixed(2)}%
+                  </p>
+                  <p className="text-[9px] theme-text-secondary">
+                    ({fmtAmt(d.totalFeesPaid)} G.)
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -1301,12 +1307,13 @@ const Report: React.FC = () => {
               </div>
             </div>
 
+            {/* Carte bleue : Économie simulée vs MonCash */}
             <div
               className="theme-bubble-bg rounded-[28px] border theme-border p-5 flex items-center gap-4 cursor-pointer active:scale-[0.99] transition-all"
               onClick={() =>
                 setInfoModal({
-                  title: t("reports.labels.estimated_savings_moncash_title"),
-                  body: t("reports.labels.estimated_savings_moncash_help"),
+                  title: t("reports.labels.savings_vs_moncash_title"),
+                  body: t("reports.labels.savings_vs_moncash_help"),
                 })
               }
             >
@@ -1315,15 +1322,15 @@ const Report: React.FC = () => {
               </div>
               <div className="flex-1">
                 <p className="text-xs font-black theme-text-main">
-                  {t("reports.labels.estimated_savings_moncash_title")}
+                  {t("reports.labels.savings_vs_moncash_title")}
                 </p>
                 <p className="text-[10px] theme-text-secondary">
-                  {t("reports.labels.moncash_fees_estimated")}
+                  {t("reports.labels.savings_vs_moncash_sub")}
                 </p>
               </div>
               <div className="text-right">
                 <p className="text-lg font-black text-blue-500">
-                  +{fmtAmt(d.totalSent * 0.02)} G.
+                  +{fmtAmt(d.savingsVsMoncash)} G.
                 </p>
               </div>
             </div>
