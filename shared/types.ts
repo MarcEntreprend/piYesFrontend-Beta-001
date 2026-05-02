@@ -1,21 +1,22 @@
 // shared/types.ts
 export enum TransactionType {
-  DEPOSIT = 'DEPOSIT',
-  WITHDRAW = 'WITHDRAW',
-  TRANSFER = 'TRANSFER',
-  CARD_PAYMENT = 'CARD_PAYMENT',
-  INTERNATIONAL = 'INTERNATIONAL',
-  RECHARGE = 'RECHARGE',
-  REQUEST = 'REQUEST',
-  SCHEDULED = 'SCHEDULED'
+  DEPOSIT = "DEPOSIT",
+  WITHDRAW = "WITHDRAW",
+  TRANSFER = "TRANSFER",
+  CARD_PAYMENT = "CARD_PAYMENT",
+  INTERNATIONAL = "INTERNATIONAL",
+  RECHARGE = "RECHARGE",
+  REQUEST = "REQUEST",
+  SCHEDULED = "SCHEDULED",
+  INTERBANK_OUT = "INTERBANK_OUT",
 }
 
 export enum TransactionRole {
-  PAYER = 'PAYER',
-  RECEIVER = 'RECEIVER'
+  PAYER = "PAYER",
+  RECEIVER = "RECEIVER",
 }
 
-export type VerificationStatus = 'unverified' | 'pending' | 'verified';
+export type VerificationStatus = "unverified" | "pending" | "verified";
 
 export interface User {
   id: string;
@@ -23,7 +24,7 @@ export interface User {
   tag: string;
   firstName?: string;
   lastName?: string;
-  accountType?: 'individual' | 'business';
+  accountType?: "individual" | "business";
   email: string;
   accountNumber: string;
   balance: number;
@@ -61,10 +62,20 @@ export interface BusinessProfile {
 }
 
 export interface PrivacySettings {
-  blockRequestsFrom: 'none' | 'everyone' | 'contacts' | 'non_contacts' | 'specific';
-  blockTransfersFrom: 'none' | 'everyone' | 'contacts' | 'non_contacts' | 'specific';
+  blockRequestsFrom:
+  | "none"
+  | "everyone"
+  | "contacts"
+  | "non_contacts"
+  | "specific";
+  blockTransfersFrom:
+  | "none"
+  | "everyone"
+  | "contacts"
+  | "non_contacts"
+  | "specific";
   blockedEntities: string[]; // tags or IDs
-  visibility: 'everyone' | 'contacts_only' | 'mutual_only' | 'private';
+  visibility: "everyone" | "contacts_only" | "mutual_only" | "private";
   allowAnonymousTransfers: boolean;
   hideTagInReceipts: boolean;
   requestsOnlyFromFriends: boolean;
@@ -72,14 +83,14 @@ export interface PrivacySettings {
 
 export interface Account {
   id: string;
-  provider: 'piyes' | 'buh' | 'moncash' | 'unibank' | string;
+  provider: "piyes" | "buh" | "moncash" | "unibank" | string;
   label: string;
   balance: number;
   color: string;
   accountNumber: string;
   logoText: string;
   logoUrl?: string;
-  status?: 'active' | 'pending' | 'failed' | 'inactive';
+  status?: "active" | "pending" | "failed" | "inactive";
   isVerified?: boolean;
   kycStatus?: string;
   createdAt?: string;
@@ -107,13 +118,13 @@ export interface Beneficiary {
   name: string;
   bankName: string;
   accountNumber: string;
-  type: 'domestic' | 'international';
+  type: "domestic" | "international";
   avatarUrl?: string;
   isFavorite: boolean;
 }
 
 export interface ReminderSlot {
-  date: string;         // ISO date string YYYY-MM-DD
+  date: string; // ISO date string YYYY-MM-DD
   time1Active: boolean; // 08h30
   time2Active: boolean; // 12h30
 }
@@ -122,14 +133,14 @@ export interface ScheduledPayment {
   id: string;
   userId?: string;
   title: string;
-  counterparty: string;         // nom texte du payeur
-  payerUserId?: string;         // userId du payeur (si user piYès)
-  receiverUserId?: string;      // userId du receiver
+  counterparty: string; // nom texte du payeur
+  payerUserId?: string; // userId du payeur (si user piYès)
+  receiverUserId?: string; // userId du receiver
   amount: number;
   dueDate: string;
-  status: 'pending' | 'confirmed' | 'paid' | 'cancelled';
-  type: 'incoming' | 'outgoing';
-  frequency?: 'once' | 'weekly' | 'monthly';
+  status: "pending" | "confirmed" | "paid" | "cancelled";
+  type: "incoming" | "outgoing";
+  frequency?: "once" | "weekly" | "monthly";
   reminders?: ReminderSlot[];
   confirmedAt?: string | null;
   qrToken?: string | null;
@@ -140,30 +151,30 @@ export interface ScheduledPayment {
 
 export interface ReceivingAccount {
   id: string;
-  currency: 'USD' | 'EUR' | 'HTG' | 'DOP';
+  currency: "USD" | "EUR" | "HTG" | "DOP";
   label: string;
   accountNumber: string;
   routingNumber?: string;
   swiftCode?: string;
   balance: number;
-  status: 'active' | 'pending';
+  status: "active" | "pending";
 }
 
 export interface CapitalOffer {
   id: string;
-  type: 'advance' | 'loan';
+  type: "advance" | "loan";
   amount: number;
   interestRate: number;
   termMonths: number;
   monthlyPayment: number;
   totalRepayment: number;
-  status: 'available' | 'accepted' | 'repaid';
+  status: "available" | "accepted" | "repaid";
 }
 
 export interface TaxDocument {
   id: string;
   year: number;
-  type: 'annual_statement' | 'tax_withholding';
+  type: "annual_statement" | "tax_withholding";
   issueDate: string;
   fileSize: string;
   downloadUrl: string;
@@ -175,7 +186,7 @@ export interface TaxDocument {
 export interface Receipt {
   id: string;
   amount: number;
-  status: 'success' | 'pending' | 'failed' | string;
+  status: "success" | "pending" | "failed" | string;
   date: string;
   receipt_type: string;
   auth_code?: string;
@@ -261,7 +272,7 @@ export interface Conversation {
   adTitle: string;
   adPrice: number;
   adImage: string;
-  role: 'buyer' | 'seller';
+  role: "buyer" | "seller";
   counterparty: {
     id: string;
     name: string;
@@ -284,26 +295,26 @@ export interface Transaction {
   counterpartyName: string;
   auth_code?: string;
   external_id?: string;
-  status?: 'PENDING' | 'COMPLETED' | 'FAILED';
+  status?: "PENDING" | "COMPLETED" | "FAILED";
   moncashTransactionId?: string;
 }
 
 export enum CardStatus {
-  ACTIVE = 'active',
-  BLOCKED = 'blocked',
-  EXPIRED = 'expired'
+  ACTIVE = "active",
+  BLOCKED = "blocked",
+  EXPIRED = "expired",
 }
 
 export enum CardType {
-  VIRTUAL = 'virtual',
-  PHYSICAL = 'physical',
-  EXTERNAL = 'external'
+  VIRTUAL = "virtual",
+  PHYSICAL = "physical",
+  EXTERNAL = "external",
 }
 
 export interface Card {
   id: string;
   type: CardType;
-  brand: 'visa' | 'mastercard' | 'piyes';
+  brand: "visa" | "mastercard" | "piyes";
   lastFour: string;
   expiryDate: string;
   status: CardStatus;
@@ -335,7 +346,7 @@ export interface Contact {
   randomKey?: string;
   avatarUrl?: string;
   isFavorite?: boolean;
-  type?: 'individual' | 'company';
+  type?: "individual" | "company";
   companyName?: string;
   activityType?: string;
   address?: string;
@@ -344,9 +355,9 @@ export interface Contact {
 }
 
 export enum FriendshipStatus {
-  PENDING = 'pending',
-  FRIENDS = 'friends',
-  BLOCKED = 'blocked'
+  PENDING = "pending",
+  FRIENDS = "friends",
+  BLOCKED = "blocked",
 }
 
 export interface Friendship {
@@ -373,7 +384,7 @@ export interface AuthResponse {
 }
 
 export const getInitials = (name: string): string => {
-  if (!name) return '??';
+  if (!name) return "??";
   const parts = name.trim().split(/\s+/);
   if (parts.length > 1) {
     return (parts[0][0] + parts[1][0]).toUpperCase();
@@ -398,5 +409,7 @@ export interface ReportData {
   totalFeesPaid: number;
   savingsVsBank: number;
   savingsVsMoncash: number;
+  totalBankFeesIfTraditional: number;
+  simulatedMoncashFees: number;
   frequencyBreakdown: { once: number; repeat: number; frequent: number };
 }
