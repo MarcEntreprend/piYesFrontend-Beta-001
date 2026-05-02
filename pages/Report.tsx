@@ -26,6 +26,7 @@ import {
   Award,
   Target,
   X,
+  Building2,
 } from "lucide-react";
 import {
   BarChart,
@@ -77,6 +78,7 @@ interface ReportData {
   byType: TypeData[];
   avgTransactionAmount: number;
   totalFeesPaid: number;
+  savingsVsBank: number;
   frequencyBreakdown: { once: number; repeat: number; frequent: number };
 }
 
@@ -1271,29 +1273,30 @@ const Report: React.FC = () => {
               </div>
             </div>
 
+            {/* Carte verte : Économie vs banques traditionnelles */}
             <div
               className="theme-bubble-bg rounded-[28px] border theme-border p-5 flex items-center gap-4 cursor-pointer active:scale-[0.99] transition-all"
               onClick={() =>
                 setInfoModal({
-                  title: t("reports.labels.estimated_savings_cash_title"),
-                  body: t("reports.labels.estimated_savings_cash_help"),
+                  title: t("reports.labels.savings_vs_bank_title"),
+                  body: t("reports.labels.savings_vs_bank_help"),
                 })
               }
             >
-              <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center shrink-0">
-                <DollarSign size={20} className="text-green-500" />
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+                <Building2 size={20} className="text-emerald-600" />
               </div>
               <div className="flex-1">
                 <p className="text-xs font-black theme-text-main">
-                  {t("reports.labels.estimated_savings_cash_title")}
+                  {t("reports.labels.savings_vs_bank_title")}
                 </p>
                 <p className="text-[10px] theme-text-secondary">
-                  {t("reports.labels.cash_handling_errors")}
+                  {t("reports.labels.savings_vs_bank_sub")}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-lg font-black text-green-500">
-                  +{fmtAmt(d.totalFeesPaid * 2)} G.
+                <p className="text-lg font-black text-emerald-600">
+                  +{fmtAmt(d.savingsVsBank)} G.
                 </p>
               </div>
             </div>
