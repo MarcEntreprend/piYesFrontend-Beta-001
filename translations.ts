@@ -1836,6 +1836,8 @@ export const translations = {
       required: "Obligatwa",
       today: "Jodi a",
       yesterday: "Ayè",
+      day_before_yesterday: "Avanti ayè",
+      last_week: "Semèn pase",
       at: "nan",
       generated_on: "Fèt le {{date}} {{at}} {{time}}",
       development: "Sèvis sa ap prepare kounye a.",
@@ -2049,7 +2051,7 @@ export const translations = {
         not_specified: "Pa ranpli",
         last_interaction: "Dènye entèraksyon",
         none: "Okenn",
-        send: "Voye",
+        send: "Voye lajan",
         share_confirm: "Ou vle pataje kontak sa ?",
         shared_success: "Kontak la pataje !",
         remove_friend_confirm: "Ou vle retire kontak sa nan zanmi w yo ?",
@@ -3058,10 +3060,20 @@ export const translations = {
     history: {
       title: "Istwa",
       search_placeholder: "Chache yon tranzaksyon",
+      end_of_history: "Pa gen lòt tranzaksyon ankò",
       actions: {
         view_reports: "Gade Rapò yo",
         close: "Fèmen",
       },
+    },
+    periods: {
+      today: "Jodi a",
+      yesterday: "Yè",
+      day_before_yesterday: "Avanyè",
+      last_week: "Semèn pase a",
+      week_of: "Semèn {{date}}",
+      month_of: "{{month}}",
+      month_year: "{{month}} {{year}}",
     },
     reports: {
       title: "Rapò & Relevè",
@@ -4811,12 +4823,32 @@ export const translations = {
     history: {
       title: "History",
       search_placeholder: "Search for a transaction",
+      empty: "No transactions yet",
+      end_of_history: "End of history",
+      filters: {
+        all: "All",
+        received: "Received",
+        sent: "Sent",
+        deposits: "Deposits",
+        withdrawals: "Withdrawals",
+        intl: "Intl",
+      },
+      periods: {
+        today: "Today",
+        yesterday: "Yesterday",
+        day_before_yesterday: "Day before yesterday",
+        last_week: "Last week",
+        week_of: "Week of {{date}}",
+        month_of: "{{month}}",
+        month_year: "{{month}} {{year}}",
+      },
       actions: {
         view_reports: "View Reports",
         close: "Close",
       },
       verified_intl: "Verified Intl",
     },
+
     reports: {
       title: "Reports & Statements",
       period_label: "Period:",

@@ -32,7 +32,7 @@ export const useGroupedTransactions = (transactions: Transaction[], t: (path: st
     transactions.forEach(tx => {
       const date = new Date(tx.date);
       const txDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      
+
       let title = '';
       let key = '';
 
