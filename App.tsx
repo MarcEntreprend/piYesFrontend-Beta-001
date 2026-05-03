@@ -637,14 +637,14 @@ const App: React.FC = () => {
         if (errorMsg.includes("TIMEOUT") || errorMsg.includes("timeout")) {
           showToast(t("auth.login_error_timeout"), "error"); //timeout
         } else if (errorMsg.includes("CONNECTION_REFUSED") || errorMsg.includes("Failed to fetch")) {
-          showToast(t("auth.login_error_backend_down"), "error"); // Connexion refusée / backend non démarré
+          showToast(t("auth.login_error_backend_down"), "error"); // Connexion refusée / backend non démarré, "Failed to fetch"
         } else if (errorMsg.includes("CORS") || errorMsg.includes("blocked")) {
           showToast(t("auth.login_error_cors"), "error"); // CORS bloqué
         } else {
-          showToast(t("auth.login_error_network"), "error"); // Erreur réseau générique
+          showToast(t("auth.login_error_network"), "error"); // erreur réseau, mais pas timeout, ni connexion refusée, ni CORS
         }
       } else {
-        showToast(msg || t("auth.login_error"), "error"); // Autre erreur
+        showToast(msg || t("auth.login_error"), "error"); // Autre erreur (erreur API avec statut, erreur HTTP avec un vrai status (ex: 400, 401, 403, 500).)
       }
 
       //  Échec : notifier Login que l'opération est terminée (pour réactiver le bouton)
