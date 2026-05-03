@@ -1,3 +1,4 @@
+// pages/BankHistory.tsx
 import React, {
   useState,
   useEffect,
@@ -32,6 +33,9 @@ import {
 import { useTranslation } from "../App";
 import { useGroupedTransactions } from "../hooks/useGroupedTransactions";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRealtimeHistory } from '../hooks/useRealtimeHistory';
+import { cacheService } from '../services/cacheService';
+
 
 const BankHistory: React.FC = () => {
   const { accountId } = useParams();
@@ -46,6 +50,8 @@ const BankHistory: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [collapsedGroups, setCollapsedGroups] = useState<
     Record<string, boolean>
   >({});
@@ -100,6 +106,26 @@ const BankHistory: React.FC = () => {
     [offset, hasMore, accountId],
   );
 
+  useEffect(() => {
+    const userStr = localStorage.getItem('piyes-user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setUserId(user.id);
+      } catch (e) { }
+    }
+  }, []);
+
+  const handleNewTransaction = useCallback(() => {
+    console.log('[BankHistory] New transaction detected, reloading...');
+    setOffset(0);
+    setHasMore(true);
+    setAllTransactions([]);
+    loadTransactions(true);
+  }, [loadTransactions]);
+
+  useRealtimeHistory(userId, handleNewTransaction);
+
   const [searchTerm, setSearchTerm] = useState("");
 
   const filtered = useMemo(() => {
@@ -107,16 +133,16 @@ const BankHistory: React.FC = () => {
 
     if (activeFilter !== "all") {
       base = allTransactions.filter((tx) => {
-        if (activeFilter === "received")
-          return (
-            tx.role === TransactionRole.RECEIVER &&
-            tx.type === TransactionType.TRANSFER
-          );
-        if (activeFilter === "sent")
-          return (
-            tx.role === TransactionRole.PAYER &&
-            tx.type === TransactionType.TRANSFER
-          );
+        if (activeFilter === "received") {
+          // Reçus : P2P reçu OU interbancaire reçu
+          return (tx.type === TransactionType.TRANSFER && tx.role === TransactionRole.RECEIVER) ||
+            (tx.type === TransactionType.INTERBANK_OUT && tx.role === TransactionRole.RECEIVER);
+        }
+        if (activeFilter === "sent") {
+          // Envoyés : P2P envoyé OU interbancaire envoyé
+          return (tx.type === TransactionType.TRANSFER && tx.role === TransactionRole.PAYER) ||
+            (tx.type === TransactionType.INTERBANK_OUT && tx.role === TransactionRole.PAYER);
+        }
         if (activeFilter === "deposits")
           return tx.type === TransactionType.DEPOSIT;
         if (activeFilter === "withdrawals")
@@ -139,6 +165,7 @@ const BankHistory: React.FC = () => {
     return base;
   }, [allTransactions, activeFilter, searchTerm]);
 
+  // charge le compte et les transactions
   useEffect(() => {
     const fetchAccount = async () => {
       const accounts = await api.getAccounts();
@@ -148,6 +175,22 @@ const BankHistory: React.FC = () => {
     fetchAccount();
     loadTransactions(true);
   }, [accountId]);
+
+  // charge les transactions quand l'utilisateur revient sur la page
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        // Invalider le cache des transactions avant de recharger
+        cacheService.clearHistoryCache();
+        setOffset(0);
+        setHasMore(true);
+        setAllTransactions([]);
+        loadTransactions(true);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [loadTransactions]);;
 
   useEffect(() => {
     if (
@@ -217,6 +260,27 @@ const BankHistory: React.FC = () => {
     setCollapsedGroups((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  // Swipe handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartX) return;
+    const deltaX = e.touches[0].clientX - touchStartX;
+    if (Math.abs(deltaX) > 50) {
+      const currentIndex = filters.findIndex(f => f.id === activeFilter);
+      if (deltaX > 0 && currentIndex > 0) {
+        setActiveFilter(filters[currentIndex - 1].id);
+      } else if (deltaX < 0 && currentIndex < filters.length - 1) {
+        setActiveFilter(filters[currentIndex + 1].id);
+      }
+      setTouchStartX(null);
+    }
+  };
+
+  const handleTouchEnd = () => setTouchStartX(null);
+
   const getTransactionIcon = (tx: Transaction) => {
     if (tx.type === TransactionType.DEPOSIT)
       return <Plus size={18} className="text-green-600" />;
@@ -243,7 +307,12 @@ const BankHistory: React.FC = () => {
   ];
 
   return (
-    <div className="theme-card-bg min-h-screen pb-20">
+    <div
+      className="theme-card-bg min-h-screen pb-20"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <header
         className="px-6 pt-12 pb-2 sticky top-0 z-30 transition-colors duration-500 shadow-sm border-b theme-border"
         style={{ backgroundColor: account?.color || "var(--card-bg)" }}
@@ -297,11 +366,10 @@ const BankHistory: React.FC = () => {
             <button
               key={f.id}
               onClick={() => setActiveFilter(f.id)}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
-                activeFilter === f.id
-                  ? "bg-white text-gray-900 shadow-md"
-                  : "bg-white/10 text-white border border-white/10"
-              }`}
+              className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${activeFilter === f.id
+                ? "bg-white text-gray-900 shadow-md"
+                : "bg-white/10 text-white border border-white/10"
+                }`}
             >
               {f.label}
             </button>
@@ -351,14 +419,10 @@ const BankHistory: React.FC = () => {
                         key={tx.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex justify-between items-start cursor-pointer active:bg-gray-50 dark:active:bg-white/5 p-3 -mx-3 rounded-2xl transition-all relative overflow-hidden group"
-                        onClick={() =>
-                          navigate(
-                            `/receipt/${tx.id}?type=${tx.type}&role=${tx.role}`,
-                          )
-                        }
+                        className="flex items-start gap-4 cursor-pointer p-3 rounded-2xl transition-all duration-700 relative overflow-hidden group mb-1 active:bg-gray-50 dark:active:bg-white/5"
+                        onClick={() => navigate(`/receipt/${tx.id}?type=${tx.type}&role=${tx.role}`)}
                       >
-                        <div className="w-12 h-12 theme-bubble-bg rounded-2xl flex items-center justify-center theme-text-secondary border theme-border group-hover:scale-110 transition-transform shrink-0">
+                        <div className="w-12 h-12 theme-bubble-bg rounded-full flex items-center justify-center theme-text-secondary border theme-border group-hover:scale-110 transition-transform shrink-0">
                           {getTransactionIcon(tx)}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -367,14 +431,8 @@ const BankHistory: React.FC = () => {
                               {tx.counterpartyName}
                             </p>
                             <div className="shrink-0 text-right w-25">
-                              <span
-                                className={`font-black whitespace-nowrap block ${tx.role === TransactionRole.PAYER ? "theme-text-main" : "text-green-600"} ${tx.amount.toString().split(".")[0].length > 5 ? "text-[10px]" : "text-sm"}`}
-                              >
-                                {tx.role === TransactionRole.PAYER ? "-" : "+"}{" "}
-                                {tx.amount.toLocaleString(
-                                  language === "ht" ? "ht-HT" : "fr-HT",
-                                )}{" "}
-                                {t("currency.symbol")}
+                              <span className={`font-black whitespace-nowrap block ${tx.role === TransactionRole.PAYER ? "theme-text-main" : "text-green-600"} ${tx.amount.toString().split(".")[0].length > 5 ? "text-[10px]" : "text-sm"}`}>
+                                {tx.role === TransactionRole.PAYER ? "-" : "+"} {tx.amount.toLocaleString(language === "ht" ? "ht-HT" : "fr-HT")} {t("currency.symbol")}
                               </span>
                             </div>
                           </div>
@@ -382,10 +440,7 @@ const BankHistory: React.FC = () => {
                             {tx.description}
                           </p>
                           <p className="theme-text-secondary text-[10px] opacity-60 mt-0.5">
-                            {new Date(tx.date).toLocaleTimeString(
-                              language === "ht" ? "ht-HT" : "fr-HT",
-                              { hour: "2-digit", minute: "2-digit" },
-                            )}
+                            {new Date(tx.date).toLocaleTimeString(language === "ht" ? "ht-HT" : "fr-HT", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
                           </p>
                         </div>
                       </motion.div>

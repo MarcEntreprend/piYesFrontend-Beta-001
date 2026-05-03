@@ -3329,7 +3329,7 @@ export const translations = {
       unlink_success: "Bank dekonekte avèk siksè",
       unlink_error: "Erè pandan dekoneksyon an",
       no_external_history:
-        "Pa gen okenn transfè entèbankè yo jwenn pou kont sa a.",
+        "Pa gen tranzaksyon",
     },
     interbank: {
       title: "Vire ant Bank",
