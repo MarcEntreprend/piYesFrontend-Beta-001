@@ -1306,8 +1306,8 @@ const Report: React.FC = () => {
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-lg font-black text-green-600">
-                  +{fmtAmt(d.savingsVsBank)} G.
+                <p className={`text-lg font-black ${d.savingsVsBank >= 0 ? "text-green-600" : "text-red-500"}`}>
+                  {d.savingsVsBank >= 0 ? "+" : "-"}{fmtAmt(Math.abs(d.savingsVsBank))} G.
                 </p>
                 <p className="text-[9px] text-red-500">
                   (sinon ~{fmtAmt(d.totalBankFeesIfTraditional)} G.)
@@ -1337,8 +1337,8 @@ const Report: React.FC = () => {
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-lg font-black text-green-600">
-                  +{fmtAmt(d.savingsVsMoncash)} G.
+                <p className={`text-lg font-black ${d.savingsVsMoncash >= 0 ? "text-green-600" : "text-red-500"}`}>
+                  {d.savingsVsMoncash >= 0 ? "+" : "-"}{fmtAmt(Math.abs(d.savingsVsMoncash))} G.
                 </p>
                 <p className="text-[9px] text-red-500">
                   (sinon ~{fmtAmt(d.simulatedMoncashFees)} G.)
