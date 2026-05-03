@@ -27,6 +27,7 @@ import {
   Clock,
   Smartphone,
   AlertCircle,
+  UserIcon,
 } from "lucide-react";
 import { api } from "../services/apiService";
 import {
@@ -710,6 +711,29 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
             onToggleFavorite={handleToggleFavorite}
           />
         </div>
+
+        {/* Empty state - uniquement si pas de recherche, chargement terminé, et aucun contact */}
+        {!searchQuery.trim() && !loading && combinedAllContacts.length === 0 && (
+          <div className="text-center py-16 px-6">
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full theme-bubble-bg flex items-center justify-center">
+              <UserIcon size={40} className="theme-text-secondary opacity-40" />
+            </div>
+            <p className="text-base font-bold theme-text-main mb-1">
+              {t("contacts.no_contacts_yet")}
+            </p>
+            <p className="text-xs theme-text-secondary">
+              {t("contacts.add_contact_hint")}
+            </p>
+            <Button
+              onClick={() => setShowAddModal(true)}
+              variant="primary"
+              className="mt-6"
+              leftIcon={<UserPlus size={16} />}
+            >
+              {t("contacts.add_first_contact")}
+            </Button>
+          </div>
+        )}
 
         {/* QUICK ACTIONS MODAL */}
         <Modal

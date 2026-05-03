@@ -271,6 +271,9 @@ export const translations = {
       sync: "Synchroniser",
       syncing: "Synchronisation...",
       no_results: "Aucun contact trouvé",
+      no_contacts_yet: "Aucun contact pour le moment",
+      add_contact_hint: "Ajoutez votre premier contact pour commencer",
+      add_first_contact: "Ajouter un contact",
       new: "Nouveau",
       add_info_label: "Tag, email, téléphone ou autre clé",
       non_user_warning:
@@ -2068,6 +2071,9 @@ export const translations = {
       sync: "Senkronize",
       syncing: "Senkronizasyon...",
       no_results: "Nou pa jwenn okenn kontak",
+      no_contacts_yet: "Pa gen kontak pou moman an",
+      add_contact_hint: "Ajoute premye kontak ou pou kòmanse",
+      add_first_contact: "Ajoute yon kontak",
       new: "Nouvo",
       add_info_label: "Tag, imèl, telefòn oswa lòt kle",
       non_user_warning:
@@ -3766,6 +3772,9 @@ export const translations = {
       sync: "Sync",
       syncing: "Syncing...",
       no_results: "No contacts found",
+      no_contacts_yet: "No contacts yet",
+      add_contact_hint: "Add your first contact to get started",
+      add_first_contact: "Add a contact",
       new: "New",
       add_info_label: "Tag, email, phone or other key",
       non_user_warning:

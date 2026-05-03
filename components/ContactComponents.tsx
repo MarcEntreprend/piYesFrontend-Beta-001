@@ -206,27 +206,15 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           >
             {type === "all" ? (
               <div className="theme-bubble-bg rounded-4xl overflow-hidden border theme-border mx-4">
-                {contacts.length === 0 ? (
-                  <div className="p-8 text-center">
-                    <UserIcon
-                      size={40}
-                      className="mx-auto mb-2 text-gray-300"
-                    />
-                    <p className="text-sm theme-text-secondary">
-                      {t("contacts.no_results")}
-                    </p>
-                  </div>
-                ) : (
-                  contacts.map((contact) => (
-                    <ContactItem
-                      key={contact.id}
-                      contact={contact}
-                      variant="list"
-                      onClick={() => onContactClick(contact)}
-                      onToggleFavorite={() => onToggleFavorite?.(contact)}
-                    />
-                  ))
-                )}
+                {contacts.map((contact) => (
+                  <ContactItem
+                    key={contact.id}
+                    contact={contact}
+                    variant="list"
+                    onClick={() => onContactClick(contact)}
+                    onToggleFavorite={() => onToggleFavorite?.(contact)}
+                  />
+                ))}
               </div>
             ) : (
               <div className="flex gap-4 overflow-x-auto px-6 pb-2 no-scrollbar">
