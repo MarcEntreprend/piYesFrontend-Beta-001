@@ -11,6 +11,10 @@ import {
   Home,
   Loader2,
   HelpCircle,
+  Scan,
+  Clipboard,
+  LinkIcon,
+  X,
 } from "lucide-react";
 import { api } from "../services/apiService";
 import { financeService } from "../services/financeService";
@@ -30,6 +34,8 @@ import { TransactionType } from "../shared/types";
 import { displayMoney } from "../shared/money";
 import { MoneyInput } from "@/components/MoneyInput";
 import { cacheService } from '../services/cacheService';
+import Modal from "../components/Modal";
+import QrScanner from "../components/QrScanner";
 import {
   formatRecipientValue,
   isOwnKey,
@@ -80,6 +86,14 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
   } | null>(null);
   const [resolvingRecipient, setResolvingRecipient] = useState(false);
   const [recipientError, setRecipientError] = useState<string | null>(null);
+  // QR Scanner
+  const [showQRScanner, setShowQRScanner] = useState(false);
+
+  // Paste Link Modal
+  const [showPasteModal, setShowPasteModal] = useState(false);
+  const [pastedLink, setPastedLink] = useState("");
+  const [isAnalyzingLink, setIsAnalyzingLink] = useState(false);
+
   const navigate = useNavigate();
 
   const getPriorityKey = (contact: Contact | Partial<Contact>) => {
@@ -316,6 +330,103 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
     setStep(2);
   };
 
+  const handleScanResult = (decodedText: string) => {
+    setShowQRScanner(false);
+
+    try {
+      const url = new URL(decodedText);
+      if (url.hostname.includes("piyes.ht")) {
+        const scheduleToken = url.searchParams.get("token");
+        if (url.pathname.includes("/schedule") && scheduleToken) {
+          navigate(`/scheduler?tab=outgoing&confirm=${scheduleToken}`);
+          return;
+        }
+        const to = url.searchParams.get("to");
+        const type = url.searchParams.get("type");
+        const amount = url.searchParams.get("amount");
+        const expiry = url.searchParams.get("expiry");
+
+        if (to) {
+          let recipientKey = to;
+          if (type === "tag") recipientKey = "@" + to;
+          else if (type === "email") recipientKey = decodeURIComponent(to);
+
+          setKeyValue(recipientKey);
+          if (amount) setAmount(amount);
+          if (expiry) {
+            const expiryTime = parseInt(expiry);
+            if (Date.now() > expiryTime) {
+              setQrExpired(true);
+              return;
+            }
+          }
+          setStep(amount ? 3 : 2);
+          return;
+        }
+      }
+      // Si ce n'est pas une URL piYès, on traite comme une clé brute
+      setKeyValue(decodedText);
+      setStep(2);
+    } catch (e) {
+      setKeyValue(decodedText);
+      setStep(2);
+    }
+  };
+
+  const handleAnalyzeLink = async () => {
+    if (!pastedLink) return;
+    setIsAnalyzingLink(true);
+
+    try {
+      const url = new URL(pastedLink);
+      if (url.hostname.includes("piyes.ht")) {
+        const scheduleToken = url.searchParams.get("token");
+        if (url.pathname.includes("/schedule") && scheduleToken) {
+          setShowPasteModal(false);
+          setPastedLink("");
+          try {
+            await api.getScheduleByToken(scheduleToken);
+            navigate(`/scheduler?tab=outgoing&confirm=${scheduleToken}`);
+          } catch (e) {
+            alert("Rappel introuvable ou lien expiré.");
+          }
+          return;
+        }
+
+        const to = url.searchParams.get("to");
+        const type = url.searchParams.get("type");
+        const amount = url.searchParams.get("amount");
+        const expiry = url.searchParams.get("expiry");
+
+        if (to) {
+          let recipientKey = to;
+          if (type === "tag") recipientKey = "@" + to;
+          else if (type === "email") recipientKey = decodeURIComponent(to);
+
+          setKeyValue(recipientKey);
+          if (amount) setAmount(amount);
+          if (expiry) {
+            const expiryTime = parseInt(expiry);
+            if (Date.now() > expiryTime) {
+              setQrExpired(true);
+            }
+          }
+          setShowPasteModal(false);
+          setPastedLink("");
+          setStep(amount ? 3 : 2);
+        } else {
+          alert(t("pix.paste_modal.error_invalid"));
+        }
+      } else {
+        alert(t("pix.paste_modal.error_invalid"));
+      }
+    } catch (e) {
+      alert(t("pix.paste_modal.error_invalid"));
+    } finally {
+      setIsAnalyzingLink(false);
+    }
+  };
+
   const getRecipientDisplay = () => {
     if (selectedContact) return selectedContact.name;
     return keyValue;
@@ -428,6 +539,24 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
               setQuery={setSearchQuery}
               currentUser={user}
             />
+
+            {/* --- Boutons Caméra et Coller un lien --- */}
+            <div className="flex items-center justify-end gap-2 px-6 mt-2">
+              <button
+                onClick={() => setShowQRScanner(true)}
+                className="flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-bold theme-bubble-bg theme-text-main shadow-sm transition-all active:scale-95"
+              >
+                <Scan size={14} />
+                <span>Caméra</span>
+              </button>
+              <button
+                onClick={() => setShowPasteModal(true)}
+                className="flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-bold theme-bubble-bg theme-text-main shadow-sm transition-all active:scale-95"
+              >
+                <Clipboard size={14} />
+                <span>Coller un lien</span>
+              </button>
+            </div>
 
             {!searchQuery.trim() && (
               <div className="space-y-6 mt-4">
@@ -681,6 +810,65 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
         onClose={() => setShowSupport(false)}
         context={t("actions.transfer")}
       />
+
+      {/* PASTE LINK MODAL */}
+      <Modal isOpen={showPasteModal} onClose={() => setShowPasteModal(false)}>
+        <div className="p-8 space-y-8">
+          <div className="flex justify-between items-center">
+            <div className="space-y-1">
+              <h3 className="text-xl font-bold theme-text-main">
+                Coller un lien piYès
+              </h3>
+              <p className="text-xs theme-text-secondary">
+                Collez un lien de paiement ou de rappel
+              </p>
+            </div>
+            <button
+              onClick={() => setShowPasteModal(false)}
+              className="p-2 theme-bubble-bg rounded-full theme-text-secondary"
+            >
+              <X />
+            </button>
+          </div>
+          <div className="space-y-4">
+            <div className="relative">
+              <Clipboard
+                className="absolute left-4 top-1/2 -translate-y-1/2 theme-text-secondary opacity-30"
+                size={18}
+              />
+              <input
+                type="text"
+                autoFocus
+                placeholder="https://piyes.ht/pay?to=..."
+                value={pastedLink}
+                onChange={(e) => setPastedLink(e.target.value)}
+                className="w-full theme-bubble-bg p-4 pl-12 rounded-2xl outline-none theme-text-main border theme-border focus:border-(--primary-color) transition-all text-xs"
+              />
+            </div>
+            <button
+              onClick={handleAnalyzeLink}
+              disabled={isAnalyzingLink || !pastedLink}
+              className="w-full theme-primary-bg text-white py-4 rounded-full font-bold active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2"
+            >
+              {isAnalyzingLink ? (
+                <Loader2 className="animate-spin" size={18} />
+              ) : (
+                <LinkIcon size={18} />
+              )}
+              Analyser et transférer
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* QR Scanner */}
+      {showQRScanner && (
+        <QrScanner
+          onScan={handleScanResult}
+          onClose={() => setShowQRScanner(false)}
+        />
+      )}
+
     </div>
   );
 };
