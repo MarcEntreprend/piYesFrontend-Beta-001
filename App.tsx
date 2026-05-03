@@ -631,16 +631,20 @@ const App: React.FC = () => {
           t("auth.login_error_invalid_credentials"),
           "error",
         );
-      } else if (code === "ACCOUNT_DISABLED" || msg.includes("désactivé")) {
-        showToast(t("auth.login_error_account_disabled"), "error");
-      } else if (
-        e?.status === 0 ||
-        msg.includes("fetch") ||
-        msg.includes("network")
-      ) {
-        showToast(t("auth.login_error_network"), "error");
+      } else if (e?.status === 0 || msg.includes("fetch") || msg.includes("network")) {
+        // Détection plus fine des erreurs réseau
+        const errorMsg = e?.message || "";
+        if (errorMsg.includes("TIMEOUT") || errorMsg.includes("timeout")) {
+          showToast(t("auth.login_error_timeout"), "error"); //timeout
+        } else if (errorMsg.includes("CONNECTION_REFUSED") || errorMsg.includes("Failed to fetch")) {
+          showToast(t("auth.login_error_backend_down"), "error"); // Connexion refusée / backend non démarré
+        } else if (errorMsg.includes("CORS") || errorMsg.includes("blocked")) {
+          showToast(t("auth.login_error_cors"), "error"); // CORS bloqué
+        } else {
+          showToast(t("auth.login_error_network"), "error"); // Erreur réseau générique
+        }
       } else {
-        showToast(msg || t("auth.login_error"), "error");
+        showToast(msg || t("auth.login_error"), "error"); // Autre erreur
       }
 
       //  Échec : notifier Login que l'opération est terminée (pour réactiver le bouton)
