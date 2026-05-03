@@ -735,6 +735,30 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         </div>
       </div>
 
+      {/* Indicateur Pull-to-Refresh flottant (au-dessus de tout) */}
+      {(isPulling || isRefreshingPull || pullDistance > 0) && (
+        <div
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none transition-all duration-100"
+          style={{
+            opacity: isPulling || isRefreshingPull ? 1 : Math.min(pullDistance / 30, 0.8),
+            transform: `translateY(${Math.min(pullDistance * 0.5, 50)}px)`,
+          }}
+        >
+          <div className="bg-white dark:bg-gray-900 rounded-full p-3 shadow-2xl border theme-border backdrop-blur-md">
+            <RefreshCw
+              size={24}
+              className={`theme-primary-text transition-all duration-75 ${isRefreshingPull ? "animate-spin" : ""
+                }`}
+              style={{
+                transform: isRefreshingPull
+                  ? "rotate(0deg)"
+                  : `rotate(${Math.min((pullDistance / PULL_THRESHOLD) * 360, 360)}deg)`,
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       <SearchResultsPanel
         isOpen={isSearchFocused}
         onClose={() => setIsSearchFocused(false)}
