@@ -212,6 +212,41 @@ const Report: React.FC = () => {
   const [exportFormat, setExportFormat] = useState<"pdf" | "xlsx" | null>(null);
   const [exportMonth, setExportMonth] = useState(new Date().getMonth());
   const [exportYear, setExportYear] = useState(new Date().getFullYear());
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Clé de cache localStorage
+  const getCacheKey = () => `report_cache_${period}${period === "custom" ? `_${customFrom}_${customTo}` : ""}`;
+
+  // Sauvegarder les données dans localStorage
+  const saveToCache = (data: ReportData) => {
+    try {
+      const cacheData = {
+        data,
+        timestamp: Date.now(),
+        expiry: Date.now() + 5 * 60 * 1000, // 5 minutes
+      };
+      localStorage.setItem(getCacheKey(), JSON.stringify(cacheData));
+    } catch (e) {
+      console.error("Failed to save report cache", e);
+    }
+  };
+
+  // Charger les données depuis localStorage
+  const loadFromCache = (): ReportData | null => {
+    try {
+      const cached = localStorage.getItem(getCacheKey());
+      if (cached) {
+        const { data, expiry } = JSON.parse(cached);
+        if (expiry > Date.now()) {
+          return data;
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load report cache", e);
+    }
+    return null;
+  };
+
   const exportYears = useMemo(() => {
     const y = new Date().getFullYear();
     return Array.from({ length: 5 }, (_, i) => y - i);
@@ -254,10 +289,6 @@ const Report: React.FC = () => {
   };
 
   useEffect(() => {
-    if (period !== "custom") fetchReport();
-  }, [period]);
-
-  useEffect(() => {
     if (periodTabsRef.current) {
       const activeButton = periodTabsRef.current.querySelector(
         `button[data-period="${period}"]`
@@ -272,9 +303,14 @@ const Report: React.FC = () => {
     }
   }, [period]);
 
-  // Adapter fetchReport
-  const fetchReport = async () => {
-    setLoading(true);
+  //  fetchReport avec cache + background refresh
+  const fetchReport = async (background = false) => {
+    if (!background) {
+      setLoading(true);
+    } else {
+      setIsRefreshing(true);
+    }
+
     try {
       const params =
         period === "custom" && customFrom && customTo
@@ -282,12 +318,27 @@ const Report: React.FC = () => {
           : period;
       const data = await api.getReportSummary(params);
       setReportData(data);
+      saveToCache(data);
     } catch (e) {
       console.error("Report fetch error:", e);
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   };
+
+  // Chargement initial avec cache
+  useEffect(() => {
+    const cachedData = loadFromCache();
+    if (cachedData) {
+      setReportData(cachedData);
+      setLoading(false);
+      // Rafraîchir en arrière-plan
+      fetchReport(true);
+    } else {
+      fetchReport(false);
+    }
+  }, [period, customFrom, customTo]);
 
   // ── Derived data ────────────────────────────────────────────────────────────
   const receivedTrend = useMemo(
