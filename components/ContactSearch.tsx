@@ -155,7 +155,7 @@ export const ContactSearch: React.FC<ContactSearchProps> = ({
                 {contact.isVerified && !isContactSelf && (
                   <CheckCircle
                     size={16}
-                    className="text-blue-500 fill-red"
+                    className="text-blue-500"
                   />
                 )}
                 {isContactSelf && (

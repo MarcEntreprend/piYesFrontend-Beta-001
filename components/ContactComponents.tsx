@@ -126,7 +126,7 @@ export const ContactItem: React.FC<ContactItemProps> = ({
         {/* Verified Icon */}
         {contact.isVerified && (
           <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm border theme-border">
-            <CheckCircle size={14} className="text-blue-500 fill-blue-500" />
+            <CheckCircle size={14} className="text-blue-500" />
           </div>
         )}
       </div>
