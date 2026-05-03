@@ -25,6 +25,7 @@ import {
   Smartphone,
   RotateCcw,
   Repeat,
+  X
 } from "lucide-react";
 import { api } from "../services/apiService";
 import { Transaction, TransactionType, TransactionRole } from "../shared/types";
@@ -55,6 +56,12 @@ const History: React.FC = () => {
   const [offset, setOffset] = useState(0);
   const isFetching = useRef(false);
   const { highlight } = useHighlight(); //  hook useHighlight 
+
+  // Selection mode states
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  // Timer pour long press
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fonction pour obtenir le titre d'affichage d'une transaction
   // (copie simplifiée de la logique de ReceiptDetail)
@@ -331,11 +338,66 @@ const History: React.FC = () => {
     }));
   }, [activeFilter]);
 
+  // Annuler la sélection quand l'onglet change
+  useEffect(() => {
+    if (isSelectionMode) {
+      setIsSelectionMode(false);
+      setSelectedIds(new Set());
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
+      }
+    }
+  }, [activeFilter]);
+
+  // Cleanup du timer long press
+  useEffect(() => {
+    return () => {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+      }
+    };
+  }, []);
+
   const groupedTransactions = useGroupedTransactions(filtered, t, language);
 
   const toggleGroup = (key: string) => {
     setCollapsedGroups((prev) => ({ ...prev, [key]: !prev[key] }));
   };
+
+  // fonctions de gestion des items selectionnés
+  // Selection handlers
+  const toggleSelection = (id: string) => {
+    const next = new Set(selectedIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelectedIds(next);
+    if (next.size === 0) setIsSelectionMode(false);
+  };
+
+  const handleLongPressStart = (id: string) => {
+    // Désactiver la sélection dans l'onglet "all"
+    if (activeFilter === "all") return;
+
+    longPressTimerRef.current = setTimeout(() => {
+      setIsSelectionMode(true);
+      toggleSelection(id);
+    }, 500); // 500ms = long press
+  };
+
+  const handleLongPressEnd = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
+
+  const handleCancelSelection = () => {
+    setIsSelectionMode(false);
+    setSelectedIds(new Set());
+  };
+
+  //-----------------------------------------------
 
   // Gestion du swipe
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -425,6 +487,13 @@ const History: React.FC = () => {
     let listener: any = null;
 
     CapacitorApp.addListener('backButton', () => {
+      // Si en mode sélection, annuler la sélection d'abord
+      if (isSelectionMode) {
+        setIsSelectionMode(false);
+        setSelectedIds(new Set());
+        return;
+      }
+
       if (activeFilter !== 'all') {
         setActiveFilter('all');
       } else {
@@ -439,7 +508,22 @@ const History: React.FC = () => {
         listener.remove();
       }
     };
-  }, [activeFilter, navigate]);
+  }, [activeFilter, navigate, isSelectionMode]);
+
+  // UseMemo pour calculer les transactions sélectionnées et les statistiques
+  const selectedTransactions = useMemo(() => {
+    return filtered.filter(tx => selectedIds.has(tx.id));
+  }, [filtered, selectedIds]);
+
+  const selectionStats = useMemo(() => {
+    const amounts = selectedTransactions.map(tx => tx.amount);
+    if (amounts.length === 0) return null;
+    const sum = amounts.reduce((a, b) => a + b, 0);
+    const avg = sum / amounts.length;
+    const min = Math.min(...amounts);
+    const max = Math.max(...amounts);
+    return { sum, avg, min, max };
+  }, [selectedTransactions]);
 
   return (
     <div
@@ -452,6 +536,14 @@ const History: React.FC = () => {
       <div className="sticky top-0 z-30 theme-card-bg border-b theme-border">
         <PageHeader
           title={t("history.title")}
+          onBack={() => {
+            if (isSelectionMode) {
+              setIsSelectionMode(false);
+              setSelectedIds(new Set());
+            } else {
+              navigate(-1);
+            }
+          }}
           rightElement={
             <button
               onClick={() => navigate("/report")}
@@ -546,12 +638,21 @@ const History: React.FC = () => {
                           layoutId={tx.id}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className={`flex items-start gap-4 cursor-pointer p-3 -mx-3 rounded-2xl transition-all duration-700 relative overflow-hidden group active:bg-gray-50 dark:active:bg-white/5`}
-                          onClick={() =>
-                            navigate(
-                              `/receipt/${tx.id}?type=${tx.type}&role=${tx.role}`,
-                            )
-                          }
+                          className={`flex items-start gap-4 cursor-pointer p-3 rounded-2xl transition-all duration-700 relative overflow-hidden group mb-1
+    ${selectedIds.has(tx.id) ? 'bg-(--primary-color)/10 ring-2 ring-(--primary-color)' : ''}
+    active:bg-gray-50 dark:active:bg-white/5`}
+                          onClick={() => {
+                            if (isSelectionMode) {
+                              toggleSelection(tx.id);
+                            } else {
+                              navigate(`/receipt/${tx.id}?type=${tx.type}&role=${tx.role}`);
+                            }
+                          }}
+                          onTouchStart={() => handleLongPressStart(tx.id)}
+                          onTouchEnd={handleLongPressEnd}
+                          onMouseDown={() => handleLongPressStart(tx.id)}
+                          onMouseUp={handleLongPressEnd}
+                          onMouseLeave={handleLongPressEnd}
                         >
                           <div className="w-12 h-12 theme-bubble-bg rounded-full flex items-center justify-center theme-text-secondary border theme-border group-hover:scale-110 transition-transform shrink-0">
                             {getTransactionIcon(tx)}
@@ -645,6 +746,45 @@ const History: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Selection Bottom Bar */}
+      {isSelectionMode && selectionStats && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[90%] max-w-sm theme-card-bg shadow-2xl rounded-4xl p-4 border theme-border z-100 animate-in slide-in-from-bottom duration-300">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleCancelSelection}
+                className="p-2 theme-text-secondary active:scale-90"
+              >
+                <X size={20} />
+              </button>
+              <span className="text-xs font-bold theme-text-secondary">
+                {selectedIds.size} {selectedIds.size > 1 ? t("history.selection.transactions_count_plural") : t("history.selection.transactions_count")}
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 text-center">
+            <div className="theme-bubble-bg rounded-2xl p-2">
+              <p className="text-[9px] font-black theme-text-secondary uppercase">{t("history.selection.sum")}</p>
+              <p className="text-sm font-black theme-text-main">{displayMoney(selectionStats.sum * 100)} {t("currency.symbol")}</p>
+            </div>
+            <div className="theme-bubble-bg rounded-2xl p-2">
+              <p className="text-[9px] font-black theme-text-secondary uppercase">{t("history.selection.average")}</p>
+              <p className="text-sm font-black theme-text-main">{displayMoney(selectionStats.avg * 100)} {t("currency.symbol")}</p>
+            </div>
+            <div className="theme-bubble-bg rounded-2xl p-2">
+              <p className="text-[9px] font-black theme-text-secondary uppercase">{t("history.selection.min")}</p>
+              <p className="text-sm font-black theme-text-main">{displayMoney(selectionStats.min * 100)} {t("currency.symbol")}</p>
+            </div>
+            <div className="theme-bubble-bg rounded-2xl p-2">
+              <p className="text-[9px] font-black theme-text-secondary uppercase">{t("history.selection.max")}</p>
+              <p className="text-sm font-black theme-text-main">{displayMoney(selectionStats.max * 100)} {t("currency.symbol")}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

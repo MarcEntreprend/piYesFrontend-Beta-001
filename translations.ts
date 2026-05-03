@@ -1345,6 +1345,14 @@ export const translations = {
         view_reports: "Voir les Rapports",
         close: "Fermer",
       },
+      selection: {
+        sum: "Somme",
+        average: "Moyenne",
+        min: "Minimum",
+        max: "Maximum",
+        transactions_count: "transaction",
+        transactions_count_plural: "transactions"
+      },
     },
     reports: {
       title: "Rapports & Relevés",
@@ -3064,6 +3072,14 @@ export const translations = {
       actions: {
         view_reports: "Gade Rapò yo",
         close: "Fèmen",
+      },
+      selection: {
+        sum: "Sum",
+        average: "Average",
+        min: "Minimum",
+        max: "Maximum",
+        transactions_count: "transaction",
+        transactions_count_plural: "transactions"
       },
     },
     periods: {
@@ -4845,6 +4861,14 @@ export const translations = {
       actions: {
         view_reports: "View Reports",
         close: "Close",
+      },
+      selection: {
+        sum: "Sum",
+        average: "Average",
+        min: "Minimum",
+        max: "Maximum",
+        transactions_count: "transaction",
+        transactions_count_plural: "transactions"
       },
       verified_intl: "Verified Intl",
     },
