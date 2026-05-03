@@ -744,7 +744,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
             transform: `translateY(${Math.min(pullDistance * 0.5, 50)}px)`,
           }}
         >
-          <div className="bg-white dark:bg-gray-900 rounded-full p-3 shadow-2xl border theme-border backdrop-blur-md">
+          <div className="theme-card-bg rounded-full p-3 shadow-2xl border theme-border backdrop-blur-md">
             <RefreshCw
               size={24}
               className={`theme-primary-text transition-all duration-75 ${isRefreshingPull ? "animate-spin" : ""
