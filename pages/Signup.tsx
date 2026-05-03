@@ -572,44 +572,45 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
                                 required
                             />
 
-                            {/* Téléphone et Email côte à côte avec "OU" */}
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                    {/* Téléphone - occupe l'espace disponible */}
-                                    <div className="flex-1">
-                                        <InputField
-                                            name="phone"
-                                            label={t("auth.signup_phone_label")}
-                                            icon={<Smartphone size={18} />}
-                                            type="tel"
-                                            placeholder="+509 XXXX XXXX"
-                                            isValid={indVal.phone}
-                                            value={indForm.phone}
-                                            onChange={handleIndChange}
-                                            showValidationErrors={showValidationErrors}
-                                        />
+                            {/* Téléphone au-dessus, Email en dessous avec "OU" centré */}
+                            <div className="space-y-4">
+                                {/* Téléphone */}
+                                <InputField
+                                    name="phone"
+                                    label={t("auth.signup_phone_label")}
+                                    icon={<Smartphone size={18} />}
+                                    type="tel"
+                                    placeholder="+509 XXXX XXXX"
+                                    isValid={indVal.phone}
+                                    value={indForm.phone}
+                                    onChange={handleIndChange}
+                                    showValidationErrors={showValidationErrors}
+                                />
+
+                                {/* Séparateur "OU" centré */}
+                                <div className="relative">
+                                    <div className="absolute inset-0 flex items-center">
+                                        <div className="w-full border-t theme-border"></div>
                                     </div>
-
-                                    {/* "OU" - simple texte, centré verticalement */}
-                                    <span className="text-[10px] font-black theme-text-secondary uppercase tracking-widest pt-0">
-                                        {t("common.or")}
-                                    </span>
-
-                                    {/* Email - occupe l'espace disponible */}
-                                    <div className="flex-1">
-                                        <InputField
-                                            name="email"
-                                            label={t("auth.signup_email_label")}
-                                            icon={<Mail size={18} />}
-                                            type="email"
-                                            placeholder="jean@exemple.com"
-                                            isValid={indVal.email}
-                                            value={indForm.email}
-                                            onChange={handleIndChange}
-                                            showValidationErrors={showValidationErrors}
-                                        />
+                                    <div className="relative flex justify-center text-xs">
+                                        <span className="px-3 theme-card-bg theme-text-secondary uppercase tracking-widest font-black">
+                                            {t("common.or")}
+                                        </span>
                                     </div>
                                 </div>
+
+                                {/* Email */}
+                                <InputField
+                                    name="email"
+                                    label={t("auth.signup_email_label")}
+                                    icon={<Mail size={18} />}
+                                    type="email"
+                                    placeholder="jean@exemple.com"
+                                    isValid={indVal.email}
+                                    value={indForm.email}
+                                    onChange={handleIndChange}
+                                    showValidationErrors={showValidationErrors}
+                                />
 
                                 {/* Message de validation */}
                                 {!indVal.identityOk && (indForm.email.length > 0 || indForm.phone.length > 0) && (
