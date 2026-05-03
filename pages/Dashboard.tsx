@@ -738,7 +738,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
       {/* Indicateur Pull-to-Refresh flottant (au-dessus de tout) */}
       {(isPulling || isRefreshingPull || pullDistance > 0) && (
         <div
-          className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none transition-all duration-100"
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-9999 pointer-events-none transition-all duration-100"
           style={{
             opacity: isPulling || isRefreshingPull ? 1 : Math.min(pullDistance / 30, 0.8),
             transform: `translateY(${Math.min(pullDistance * 0.5, 50)}px)`,
