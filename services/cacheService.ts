@@ -107,6 +107,7 @@ class CacheService {
     localStorage.removeItem('piyes-is-locked');
     localStorage.removeItem('piyes-device-verified');
     localStorage.removeItem('piyes-last-activity');
+    localStorage.removeItem("piyes_cleared_notifications");
 
     sessionStorage.clear();
 

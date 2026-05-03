@@ -695,6 +695,8 @@ const App: React.FC = () => {
     cacheService.clearSensitiveData();
     clearNativeContactsCache(); // Clear native contacts cache on logout (sensitive data)
     localStorage.removeItem("piyes_show_balance");
+    localStorage.removeItem("piyes_scheduler_cache");
+    localStorage.removeItem("piyes_cleared_notifications");
     setIsLocked(false);
     setIsDeviceVerified(false);
     localStorage.removeItem("piyes_scheduler_cache");
