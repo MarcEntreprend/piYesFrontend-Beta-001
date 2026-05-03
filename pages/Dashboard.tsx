@@ -170,10 +170,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   }, []);
 
   // Pull-to-Refresh States
-  const [pullY, setPullY] = useState(0);
+  const [pullDistance, setPullDistance] = useState(0);
   const [isPulling, setIsPulling] = useState(false);
   const [hasTriggered, setHasTriggered] = useState(false);
-  const PULL_THRESHOLD = 90;
+  const [isRefreshingPull, setIsRefreshingPull] = useState(false);
+  const PULL_THRESHOLD = 80; // seuil en pixels
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Promotion Carousel States
@@ -449,46 +450,44 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   };
 
   const onTouchStart = (e: React.TouchEvent) => {
+    // Annuler si en cours de refresh manuel
+    if (isRefreshingPull) return;
     touchStartPos.current = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY,
     };
     setHasTriggered(false);
+    setPullDistance(0);
+    setIsPulling(false);
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
-    if (!touchStartPos.current || isSearchFocused || isRefreshing) return;
+    if (!touchStartPos.current || isRefreshingPull) return;
 
     const currentY = e.touches[0].clientY;
     const currentX = e.touches[0].clientX;
     const deltaY = currentY - touchStartPos.current.y;
     const deltaX = currentX - touchStartPos.current.x;
 
-    // Check if we are at the top and pulling down intentionally
-    // Relaxed threshold for horizontal movement (1.2x instead of 2x) to feel more natural
+    // Vérifier si on est en haut de la page et que le mouvement est principalement vertical
     if (
       window.scrollY <= 0 &&
       deltaY > 0 &&
       Math.abs(deltaY) > Math.abs(deltaX) * 1.2
     ) {
-      // Sensitivity threshold: only start "isPulling" after 10px of travel to avoid accidental triggers during scrolls
-      if (deltaY > 10) {
-        setIsPulling(true);
-        // Logarithmic resistance
-        const resistance = Math.max(0, 0.45 - deltaY / 1000);
-        const newY = deltaY * resistance;
-        setPullY(newY);
+      e.preventDefault(); // empêcher le scroll natif
+      setIsPulling(true);
+      // Appliquer une résistance logarithmique pour la distance
+      let newDistance = deltaY * 0.5;
+      if (newDistance > PULL_THRESHOLD) newDistance = PULL_THRESHOLD + Math.sqrt(newDistance - PULL_THRESHOLD);
+      setPullDistance(Math.min(newDistance, PULL_THRESHOLD + 30));
 
-        // Vibrate once when reaching threshold
-        if (newY >= PULL_THRESHOLD && !hasTriggered) {
-          if ("vibrate" in navigator) navigator.vibrate(10);
-          setHasTriggered(true);
-        } else if (newY < PULL_THRESHOLD && hasTriggered) {
-          setHasTriggered(false);
-        }
-
-        // Prevent browser default pull-to-refresh gesture
-        if (e.cancelable) e.preventDefault();
+      // Déclencher vibration au seuil
+      if (newDistance >= PULL_THRESHOLD && !hasTriggered) {
+        if ("vibrate" in navigator) navigator.vibrate(10);
+        setHasTriggered(true);
+      } else if (newDistance < PULL_THRESHOLD && hasTriggered) {
+        setHasTriggered(false);
       }
     }
   };
@@ -499,34 +498,38 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     const deltaY = e.changedTouches[0].clientY - touchStartPos.current.y;
     touchStartPos.current = null;
 
-    // Handle Pull to Refresh Trigger
+    // Gestion du Pull-to-Refresh
     if (isPulling) {
-      if (pullY >= PULL_THRESHOLD) {
-        refresh();
+      if (pullDistance >= PULL_THRESHOLD && !isRefreshingPull) {
+        // Déclencher le refresh
+        setIsRefreshingPull(true);
+        refresh().finally(() => {
+          setIsRefreshingPull(false);
+          setPullDistance(0);
+          setIsPulling(false);
+          setHasTriggered(false);
+        });
+      } else {
+        // Annuler, retour à zéro
+        setPullDistance(0);
+        setIsPulling(false);
+        setHasTriggered(false);
       }
-      setPullY(0);
-      setIsPulling(false);
-      setHasTriggered(false);
     }
 
-    // Handle Horizontal Swipe (change account)
+    // Gestion du swipe horizontal (changement de compte) – inchangée
     if (
       Math.abs(deltaX) > Math.abs(deltaY) &&
       Math.abs(deltaX) > SWIPE_THRESHOLD &&
-      !isPulling
+      !isPulling &&
+      !isRefreshingPull
     ) {
       const currentIndex = accountIds.indexOf(selectedAccountId);
       if (deltaX < 0) {
-        // Swipe gauche → compte suivant
-        setSelectedAccountId(
-          accountIds[(currentIndex + 1) % accountIds.length],
-        );
+        setSelectedAccountId(accountIds[(currentIndex + 1) % accountIds.length]);
       } else {
-        // Swipe droite → compte précédent
         setSelectedAccountId(
-          accountIds[
-          (currentIndex - 1 + accountIds.length) % accountIds.length
-          ],
+          accountIds[(currentIndex - 1 + accountIds.length) % accountIds.length]
         );
       }
     }
@@ -704,47 +707,32 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
       onTouchMove={onTouchMove}
       onTouchEnd={(e) => onTouchEnd(e, "body")}
       className="flex flex-col animate-in fade-in duration-500 pb-32 min-h-screen theme-card-bg overflow-x-hidden relative"
-      style={{
-        transform: pullY > 0 ? `translateY(${pullY}px)` : "none",
-        transition: isPulling
-          ? "none"
-          : "transform 0.4s cubic-bezier(0.19, 1, 0.22, 1)",
-      }}
     >
       {/* Background Continuity Filler */}
       <div
         className={`absolute top-[-100vh] left-0 right-0 h-screen z-0 ${headerColor}`}
       ></div>
 
-      {/* Pull-to-Refresh Indicator */}
+      {/*Pull-to-Refresh : icône circulaire */}
       <div
-        className="absolute left-0 right-0 flex flex-col items-center justify-center transition-all duration-300 z-10"
+        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-200"
         style={{
-          top: -80,
-          height: 80,
-          opacity: isPulling || isRefreshing ? 1 : 0,
-          transform: `scale(${isPulling ? Math.min(pullY / PULL_THRESHOLD, 1.1) : 1})`,
+          opacity: isPulling || isRefreshingPull ? 1 : 0,
+          transform: `translateY(${Math.min(pullDistance * 0.6, 60)}px)`,
         }}
       >
-        <div
-          className={`p-2.5 rounded-full theme-card-bg border theme-border shadow-xl transition-all duration-300 ${pullY >= PULL_THRESHOLD && !isRefreshing ? "rotate-180 scale-110" : ""}`}
-        >
-          {isRefreshing ? (
-            <Loader2 className="theme-primary-text animate-spin" size={24} />
-          ) : (
-            <ArrowDown
-              className="theme-primary-text transition-transform"
-              size={24}
-            />
-          )}
+        <div className="bg-white dark:bg-gray-800 rounded-full p-3 shadow-xl border theme-border">
+          <RefreshCw
+            size={24}
+            className={`theme-primary-text transition-transform duration-75 ${isRefreshingPull ? "animate-spin" : ""
+              }`}
+            style={{
+              transform: isRefreshingPull
+                ? "rotate(0deg)"
+                : `rotate(${Math.min((pullDistance / PULL_THRESHOLD) * 360, 360)}deg)`,
+            }}
+          />
         </div>
-        <span className="text-[10px] font-bold theme-text-secondary uppercase tracking-[0.2em] mt-2 glass-panel px-3 py-0.5 rounded-full">
-          {isRefreshing
-            ? t("common.loading")
-            : pullY >= PULL_THRESHOLD
-              ? t("common.done")
-              : t("common.search")}
-        </span>
       </div>
 
       <SearchResultsPanel
