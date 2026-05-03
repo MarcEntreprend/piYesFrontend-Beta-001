@@ -26,6 +26,45 @@ import { useTranslation } from "../App";
 import Button from "../components/Button";
 import PageHeader from "../components/PageHeader";
 
+// Fonction sécurisée pour évaluer des expressions mathématiques simples
+const safeEvaluate = (expression: string): number => {
+  let expr = expression
+    .replace(/×/g, '*')
+    .replace(/÷/g, '/')
+    .replace(/,/g, '.')
+    .replace(/%/g, '/100');
+
+  // Nettoyer les doubles opérateurs (ex: 8--2 → 8+2)
+  expr = expr
+    .replace(/--/g, '+')
+    .replace(/\+\+/g, '+')
+    .replace(/\*{2,}/g, '*')
+    .replace(/\/{2,}/g, '/');
+
+  // Vérifier que l'expression ne contient que des caractères autorisés
+  if (!/^[0-9+\-*/%().\s]+$/.test(expr)) {
+    throw new Error('Expression invalide');
+  }
+
+  const fn = new Function('return (' + expr + ')');
+  return fn();
+};
+
+// Vérifie si le dernier caractère est un opérateur
+const isLastCharOperator = (expr: string): boolean => {
+  if (!expr) return false;
+  const lastChar = expr.slice(-1);
+  return ['+', '-', '×', '÷', '*', '/', '%'].includes(lastChar);
+};
+
+// Vérifie si l'ajout d'un opérateur est autorisé
+const canAddOperator = (expr: string, operator: string): boolean => {
+  if (!expr) return false;
+  // Éviter deux opérateurs consécutifs
+  if (isLastCharOperator(expr)) return false;
+  return true;
+};
+
 const FinancialTools: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -105,13 +144,26 @@ const FinancialTools: React.FC = () => {
         .replace(/×/g, "*")
         .replace(/÷/g, "/")
         .replace(/%/g, "/100");
-      // eslint-disable-next-line no-eval
-      const res = eval(sanitized);
+      const res = safeEvaluate(sanitized);
       if (typeof res === "number" && isFinite(res)) setResult(res.toString());
     } catch (e) { }
   }, [formula]);
 
   const handleInput = (val: string) => {
+    const isOperator = ['+', '-', '×', '÷', '*', '/', '%'].includes(val);
+
+    // Si le dernier caractère est un opérateur et qu'on clique sur un opérateur
+    if (isOperator && isLastCharOperator(formula)) {
+      // Remplacer le dernier opérateur par le nouveau
+      setFormula((prev) => prev.slice(0, -1) + val);
+      return;
+    }
+
+    // Empêcher de commencer par un opérateur (sauf moins pour les nombres négatifs)
+    if (formula === "" && isOperator && val !== '-') {
+      return;
+    }
+
     if (isEvaluated) {
       if (!isNaN(Number(val)) || val === "(" || val === ".") {
         setFormula(val);
@@ -170,8 +222,7 @@ const FinancialTools: React.FC = () => {
         .replace(/×/g, "*")
         .replace(/÷/g, "/")
         .replace(/%/g, "/100");
-      // eslint-disable-next-line no-eval
-      const finalRes = eval(sanitized);
+      const finalRes = safeEvaluate(sanitized);
       setResult(finalRes.toString());
 
       // Sauvegarder dans l'historique (3 dernières opérations)
