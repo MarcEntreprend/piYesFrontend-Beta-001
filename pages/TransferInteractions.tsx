@@ -79,6 +79,8 @@ const TransferInteractions: React.FC = () => {
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const isFetching = useRef(false);
   const observerTarget = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const SCROLL_CACHE_KEY = `interactions_scroll_${contactId || "all"}`;
   const { highlight } = useHighlight();
 
   // Monthly filter state
@@ -196,11 +198,33 @@ const TransferInteractions: React.FC = () => {
     }
   }, [offset, hasMore, contactId, limit]);
 
+  // useEffect pour charger les données
   useEffect(() => {
     if (!isFetching.current && allTransactions.length === 0) {
       loadTransactions(true);
     }
   }, []);
+
+  // Restaurer la position de défilement après chargement
+  useEffect(() => {
+    if (!loading && scrollContainerRef.current && allTransactions.length > 0) {
+      const savedScroll = sessionStorage.getItem(SCROLL_CACHE_KEY);
+      if (savedScroll) {
+        scrollContainerRef.current.scrollTo({ top: parseInt(savedScroll, 10), behavior: "instant" });
+      }
+    }
+  }, [loading, allTransactions.length, SCROLL_CACHE_KEY]);
+
+  // Sauvegarder la position de défilement
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const handleScroll = () => {
+      sessionStorage.setItem(SCROLL_CACHE_KEY, container.scrollTop.toString());
+    };
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [SCROLL_CACHE_KEY]);
 
   // Infinite scroll
   useEffect(() => {
@@ -258,12 +282,17 @@ const TransferInteractions: React.FC = () => {
   const availableYears = useMemo(() => {
     const currentYear = new Date().getFullYear();
     const years = Array.from(yearsWithData);
-    if (!years.includes(currentYear)) years.unshift(currentYear);
+    // Toujours inclure l'année en cours
+    if (!years.includes(currentYear)) {
+      years.unshift(currentYear);
+      // Si l'année en cours n'a pas de données, il n'y aura aucun mois actif, mais le picker ne sera pas vide
+    }
     return years.sort((a, b) => b - a);
   }, [yearsWithData]);
 
   return (
     <div
+      ref={scrollContainerRef}
       className="min-h-screen theme-card-bg pb-24"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
@@ -278,16 +307,18 @@ const TransferInteractions: React.FC = () => {
             </button>
           }
         >
-          <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 theme-text-secondary" size={18} />
-            <input
-              type="text"
-              placeholder={t("reports.labels.interactions.search_placeholder")}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full theme-bubble-bg rounded-full py-2 pl-10 pr-4 text-sm theme-text-main outline-none border border-transparent focus:border-(--primary-color)"
-            />
-          </div>
+          {!contactId && (
+            <div className="relative mb-3">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 theme-text-secondary" size={18} />
+              <input
+                type="text"
+                placeholder={t("reports.labels.interactions.search_placeholder")}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full theme-bubble-bg rounded-full py-2 pl-10 pr-4 text-sm theme-text-main outline-none border border-transparent focus:border-(--primary-color)"
+              />
+            </div>
+          )}
 
           <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-2 px-2">
             {filterOrder.map((f) => (
@@ -413,10 +444,10 @@ const TransferInteractions: React.FC = () => {
                           onClick={() => hasData && setSelectedMonth(index)}
                           disabled={!hasData}
                           className={`py-4 rounded-2xl text-xs font-bold transition-all ${selectedMonth === index && hasData
-                              ? "theme-primary-bg text-white shadow-lg"
-                              : !hasData
-                                ? "opacity-30 cursor-not-allowed theme-bubble-bg theme-text-main border theme-border"
-                                : "theme-bubble-bg theme-text-main border theme-border"
+                            ? "theme-primary-bg text-white shadow-lg"
+                            : !hasData
+                              ? "opacity-30 cursor-not-allowed theme-bubble-bg theme-text-main border theme-border"
+                              : "theme-bubble-bg theme-text-main border theme-border"
                             }`}
                         >
                           {month}
