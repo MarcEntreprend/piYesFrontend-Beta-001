@@ -152,6 +152,18 @@ const History: React.FC = () => {
     [offset, hasMore],
   );
 
+  // Force un rechargement réseau quand on vient d'une notification (paramètre scroll)
+  useEffect(() => {
+    const scrollParam = searchParams.get("scroll");
+    if (scrollParam) {
+      sessionStorage.removeItem(historyStateKey);
+      setAllTransactions([]);
+      setOffset(0);
+      setHasMore(true);
+      loadTransactions(true);
+    }
+  }, [searchParams, loadTransactions]);
+
   // Realtime: écoute les nouvelles transactions et recharge
   const handleNewTransaction = useCallback(() => {
     console.log('[History] New transaction detected, reloading...');

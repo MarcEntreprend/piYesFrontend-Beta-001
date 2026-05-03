@@ -37,6 +37,7 @@ export const useRealtimeHistory = (
                         'sync',
                         'history_50_0',
                         'history_20_0',
+                        'piyes-history-state', // clé utilisée dans History.tsx pour sauvegarder l'état
                     ];
                     cacheKeys.forEach(key => {
                         sessionStorage.removeItem(key);
