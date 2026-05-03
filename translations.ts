@@ -2192,7 +2192,7 @@ export const translations = {
         small: "Piti",
         default: "Nòmal",
         large: "Gwo",
-        extra_large: "Trè gwo",
+        extra_large: "Gwo anpil",
       },
       items: {
         profile: { label: "Jere pwofil", sub: "Enfòmasyon pèsonèl ak foto" },

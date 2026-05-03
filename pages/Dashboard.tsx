@@ -74,6 +74,7 @@ import Button from "../components/Button";
 import { useRealtimeHistory } from '../hooks/useRealtimeHistory';
 import { useRealtimeBalance } from '../hooks/useRealtimeBalance';
 import { displayMoney, parseMoneyInputToCents } from "../shared/money";
+import { AutoScaleText } from '../components/AutoScaleText';
 
 interface DashboardProps {
   user: User;
@@ -989,14 +990,12 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
 
           <div className="space-y-1">
             <div className="flex justify-between items-center h-10">
-              <div className="text-3xl font-bold text-white">
+              <div className="font-bold text-white">
                 {showBalance ? (
                   <>
                     {activeAccount?.provider === "moncash" ? (
                       <div className="flex flex-col gap-1">
-                        <span className="text-sm opacity-60">
-                          Solde privé non disponible
-                        </span>
+                        <span className="text-sm opacity-60">Solde privé non disponible</span>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -1008,9 +1007,12 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                         </button>
                       </div>
                     ) : (
-                      <>
-                        {t("currency.symbol")}{" "}
-                        {displayMoney(
+                      <AutoScaleText
+                        maxFontSize={36}
+                        minFontSize={16}
+                        className="font-bold text-white"
+                      >
+                        {t("currency.symbol")} {displayMoney(
                           (selectedAccountId === "all"
                             ? totalBalance * 100
                             : (localBalance !== null && activeAccount?.provider === "piyes"
@@ -1018,13 +1020,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                               : (activeAccount?.balance || 0) * 100)
                           )
                         )}
-                      </>
+                      </AutoScaleText>
                     )}
                   </>
                 ) : (
-                  <div
-                    className={`w-32 h-8 rounded-md animate-pulse ${selectedAccountId === "all" ? "bg-gray-200" : "bg-white/20"}`}
-                  ></div>
+                  <div className="w-32 h-8 rounded-md animate-pulse bg-white/20"></div>
                 )}
               </div>
               <button
