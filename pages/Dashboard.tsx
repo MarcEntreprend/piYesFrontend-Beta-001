@@ -714,28 +714,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         className={`absolute top-[-100vh] left-0 right-0 h-screen z-0 ${headerColor}`}
       ></div>
 
-      {/*Pull-to-Refresh : icône circulaire */}
-      <div
-        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-200"
-        style={{
-          opacity: isPulling || isRefreshingPull ? 1 : 0,
-          transform: `translateY(${Math.min(pullDistance * 0.6, 60)}px)`,
-        }}
-      >
-        <div className="bg-white dark:bg-gray-800 rounded-full p-3 shadow-xl border theme-border">
-          <RefreshCw
-            size={24}
-            className={`theme-primary-text transition-transform duration-75 ${isRefreshingPull ? "animate-spin" : ""
-              }`}
-            style={{
-              transform: isRefreshingPull
-                ? "rotate(0deg)"
-                : `rotate(${Math.min((pullDistance / PULL_THRESHOLD) * 360, 360)}deg)`,
-            }}
-          />
-        </div>
-      </div>
-
       {/* Indicateur Pull-to-Refresh flottant (au-dessus de tout) */}
       {(isPulling || isRefreshingPull || pullDistance > 0) && (
         <div
@@ -1389,154 +1367,170 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           setBankSearchTerm("");
           setLinkCredentials({ username: "", password: "" });
         }}
+        type="bottom-sheet"
       >
-        <div className="p-8 space-y-8">
-          <div className="space-y-2">
-            <h3 className="text-2xl font-black theme-text-main tracking-tight">
-              {selectedBankToLink?.provider === "moncash"
-                ? t("banks.verify_title_moncash")
-                : t("banks.add_title")}
-            </h3>
-            <p className="text-sm theme-text-secondary">
-              {selectedBankToLink?.provider === "moncash"
-                ? t("banks.verify_sub_moncash")
-                : t("banks.add_sub")}
-            </p>
+        <div className="flex flex-col h-[85vh] overflow-y-auto animate-in slide-in-from-bottom duration-500">
+          <div className="px-6 py-4 border-b theme-border flex items-center justify-between shrink-0">
+            <div>
+              <h3 className="font-black theme-text-main text-sm uppercase tracking-wider">
+                {selectedBankToLink?.provider === "moncash"
+                  ? t("banks.verify_title_moncash")
+                  : t("banks.add_title")}
+              </h3>
+              <p className="text-[10px] theme-text-secondary font-bold uppercase opacity-60">
+                {selectedBankToLink?.provider === "moncash"
+                  ? t("banks.verify_sub_moncash")
+                  : t("banks.add_sub")}
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setShowAddBank(false);
+                setSelectedBankToLink(null);
+                setBankSearchTerm("");
+                setLinkCredentials({ username: "", password: "" });
+              }}
+              className="p-2 theme-bubble-bg rounded-full theme-text-secondary active:scale-90 transition-transform"
+            >
+              <X size={20} />
+            </button>
           </div>
 
-          {!selectedBankToLink ? (
-            <div className="space-y-4">
-              <div className="relative">
-                <Search
-                  className="absolute left-4 top-1/2 -translate-y-1/2 theme-text-secondary"
-                  size={18}
-                />
-                <input
-                  type="text"
-                  placeholder={t("common.search")}
-                  value={bankSearchTerm}
-                  onChange={(e) => setBankSearchTerm(e.target.value)}
-                  className="w-full py-4 pl-12 pr-4 theme-bubble-bg rounded-2xl outline-none theme-text-main border theme-border focus:border-(--primary-color) transition-all font-bold"
-                />
-              </div>
-
-              <div className="space-y-3 max-h-100 overflow-y-auto no-scrollbar">
-                <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
-                  {t("banks.select_bank")}
-                </label>
-                <div className="grid grid-cols-1 gap-3">
-                  {filteredAvailableBanks.map((bank) => (
-                    <button
-                      key={bank.id}
-                      onClick={() => setSelectedBankToLink(bank)}
-                      className="flex items-center justify-between p-5 theme-bubble-bg rounded-[28px] border theme-border active:scale-[0.98] transition-all hover:border-(--primary-color)"
-                    >
-                      <div className="flex items-center gap-4">
-                        <BankIcon
-                          logoUrl={bank.logoUrl}
-                          logoText={bank.name}
-                          color={bank.color}
-                          size="md"
-                        />
-                        <span className="font-bold theme-text-main">
-                          {bank.name}
-                        </span>
-                      </div>
-                      <ChevronRight
-                        size={18}
-                        className="theme-text-secondary opacity-30"
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-6 animate-in slide-in-from-right duration-300">
-              <button
-                onClick={() => setSelectedBankToLink(null)}
-                className="flex items-center gap-2 text-xs font-bold theme-primary-text"
-              >
-                <ArrowDown className="rotate-90" size={14} /> {t("common.back")}
-              </button>
-
-              <div className="flex items-center gap-4 p-4 theme-bubble-bg rounded-2xl border theme-border">
-                <BankIcon
-                  logoUrl={selectedBankToLink.logoUrl}
-                  logoText={selectedBankToLink.name}
-                  color={selectedBankToLink.color}
-                  size="lg"
-                />
-                <div>
-                  <p className="font-black theme-text-main">
-                    {selectedBankToLink.name}
-                  </p>
-                  <p className="text-[10px] font-bold theme-text-secondary uppercase tracking-widest">
-                    {selectedBankToLink.provider === "moncash"
-                      ? t("banks.credentials_title_moncash")
-                      : t("banks.credentials_title")}
-                  </p>
-                </div>
-              </div>
-
+          <div className="flex-1 p-6 space-y-6 overflow-y-auto no-scrollbar">
+            {!selectedBankToLink ? (
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
-                    {selectedBankToLink.provider === "moncash"
-                      ? t("banks.username_moncash")
-                      : t("banks.username")}
-                  </label>
+                <div className="relative">
+                  <Search
+                    className="absolute left-4 top-1/2 -translate-y-1/2 theme-text-secondary"
+                    size={18}
+                  />
                   <input
                     type="text"
-                    value={linkCredentials.username}
-                    onChange={(e) =>
-                      setLinkCredentials((prev) => ({
-                        ...prev,
-                        username: e.target.value,
-                      }))
-                    }
-                    className="w-full p-5 theme-bubble-bg rounded-[28px] outline-none theme-text-main border theme-border focus:border-(--primary-color) transition-all font-bold"
-                    placeholder={
-                      selectedBankToLink.provider === "moncash" ? "509..." : ""
-                    }
+                    placeholder={t("common.search")}
+                    value={bankSearchTerm}
+                    onChange={(e) => setBankSearchTerm(e.target.value)}
+                    className="w-full py-4 pl-12 pr-4 theme-bubble-bg rounded-2xl outline-none theme-text-main border theme-border focus:border-(--primary-color) transition-all font-bold"
                   />
                 </div>
-                {selectedBankToLink.provider !== "moncash" && (
+
+                <div className="space-y-3 max-h-100 overflow-y-auto no-scrollbar">
+                  <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
+                    {t("banks.select_bank")}
+                  </label>
+                  <div className="grid grid-cols-1 gap-3">
+                    {filteredAvailableBanks.map((bank) => (
+                      <button
+                        key={bank.id}
+                        onClick={() => setSelectedBankToLink(bank)}
+                        className="flex items-center justify-between p-5 theme-bubble-bg rounded-[28px] border theme-border active:scale-[0.98] transition-all hover:border-(--primary-color)"
+                      >
+                        <div className="flex items-center gap-4">
+                          <BankIcon
+                            logoUrl={bank.logoUrl}
+                            logoText={bank.name}
+                            color={bank.color}
+                            size="md"
+                          />
+                          <span className="font-bold theme-text-main">
+                            {bank.name}
+                          </span>
+                        </div>
+                        <ChevronRight
+                          size={18}
+                          className="theme-text-secondary opacity-30"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6 animate-in slide-in-from-right duration-300">
+                <button
+                  onClick={() => setSelectedBankToLink(null)}
+                  className="flex items-center gap-2 text-xs font-bold theme-primary-text"
+                >
+                  <ArrowDown className="rotate-90" size={14} /> {t("common.back")}
+                </button>
+
+                <div className="flex items-center gap-4 p-4 theme-bubble-bg rounded-2xl border theme-border">
+                  <BankIcon
+                    logoUrl={selectedBankToLink.logoUrl}
+                    logoText={selectedBankToLink.name}
+                    color={selectedBankToLink.color}
+                    size="lg"
+                  />
+                  <div>
+                    <p className="font-black theme-text-main">
+                      {selectedBankToLink.name}
+                    </p>
+                    <p className="text-[10px] font-bold theme-text-secondary uppercase tracking-widest">
+                      {selectedBankToLink.provider === "moncash"
+                        ? t("banks.credentials_title_moncash")
+                        : t("banks.credentials_title")}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
-                      {t("banks.password")}
+                      {selectedBankToLink.provider === "moncash"
+                        ? t("banks.username_moncash")
+                        : t("banks.username")}
                     </label>
                     <input
-                      type="password"
-                      value={linkCredentials.password}
+                      type="text"
+                      value={linkCredentials.username}
                       onChange={(e) =>
                         setLinkCredentials((prev) => ({
                           ...prev,
-                          password: e.target.value,
+                          username: e.target.value,
                         }))
                       }
                       className="w-full p-5 theme-bubble-bg rounded-[28px] outline-none theme-text-main border theme-border focus:border-(--primary-color) transition-all font-bold"
-                      placeholder="••••"
+                      placeholder={
+                        selectedBankToLink.provider === "moncash" ? "509..." : ""
+                      }
                     />
                   </div>
-                )}
-              </div>
+                  {selectedBankToLink.provider !== "moncash" && (
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black theme-text-secondary uppercase tracking-widest px-1">
+                        {t("banks.password")}
+                      </label>
+                      <input
+                        type="password"
+                        value={linkCredentials.password}
+                        onChange={(e) =>
+                          setLinkCredentials((prev) => ({
+                            ...prev,
+                            password: e.target.value,
+                          }))
+                        }
+                        className="w-full p-5 theme-bubble-bg rounded-[28px] outline-none theme-text-main border theme-border focus:border-(--primary-color) transition-all font-bold"
+                        placeholder="••••"
+                      />
+                    </div>
+                  )}
+                </div>
 
-              <div className="flex flex-col gap-3 pt-4">
-                <Button
-                  variant="primary"
-                  fullWidth
-                  onClick={handleLinkBank}
-                  isLoading={isLinking}
-                  className="py-4 rounded-2xl font-bold shadow-lg"
-                >
-                  {selectedBankToLink.provider === "moncash"
-                    ? t("banks.btn_verify_moncash")
-                    : t("banks.btn_link")}
-                </Button>
+                <div className="flex flex-col gap-3 pt-4">
+                  <Button
+                    variant="primary"
+                    fullWidth
+                    onClick={handleLinkBank}
+                    isLoading={isLinking}
+                    className="py-4 rounded-2xl font-bold shadow-lg"
+                  >
+                    {selectedBankToLink.provider === "moncash"
+                      ? t("banks.btn_verify_moncash")
+                      : t("banks.btn_link")}
+                  </Button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </Modal>
 
