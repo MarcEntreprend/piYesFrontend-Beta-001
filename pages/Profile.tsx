@@ -1297,18 +1297,18 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
             <AlertCircle size={32} />
           </div>
           <div className="space-y-2">
-            <h3 className="text-xl font-black theme-text-main tracking-tight">Modifications non sauvegardées</h3>
-            <p className="text-sm theme-text-secondary">Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter sans sauvegarder ?</p>
+            <h3 className="text-xl font-black theme-text-main tracking-tight">{t("profile_hub.unsaved_changes_title")}</h3>
+            <p className="text-sm theme-text-secondary">{t("profile_hub.unsaved_changes_message")}</p>
           </div>
           <div className="flex flex-col gap-3">
             <button
               onClick={() => { setShowExitConfirm(false); if (pendingExitAction) pendingExitAction(); setPendingExitAction(null); }}
               className="w-full py-4 bg-red-500 text-white rounded-2xl font-bold active:scale-95 transition-all shadow-lg"
             >
-              Quitter sans sauvegarder
+              {t("profile_hub.leave_without_saving")}
             </button>
             <button onClick={() => { setShowExitConfirm(false); setPendingExitAction(null); }} className="w-full py-4 theme-primary-bg text-white rounded-2xl font-bold active:scale-95 transition-all">
-              Rester
+              {t("common.stay")}
             </button>
           </div>
         </div>
@@ -1319,7 +1319,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
         <div className="p-6 space-y-4">
           <div className="flex items-center gap-3 pb-2 border-b theme-border">
             <Camera size={20} className="theme-primary-text" />
-            <h3 className="text-lg font-bold theme-text-main">Modifier la photo</h3>
+            <h3 className="text-lg font-bold theme-text-main">{t("profile_hub.modify_photo_title")}</h3>
           </div>
 
           {/* Appareil photo */}
@@ -1334,8 +1334,8 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
               <Camera size={20} className="text-green-500" />
             </div>
             <div className="flex-1 text-left">
-              <p className="font-bold theme-text-main">Appareil photo</p>
-              <p className="text-[10px] theme-text-secondary">Prendre une photo maintenant</p>
+              <p className="font-bold theme-text-main">{t("profile_hub.camera_option")}</p>
+              <p className="text-[10px] theme-text-secondary">{t("profile_hub.camera_desc")}</p>
             </div>
             <ChevronRight size={16} className="theme-text-secondary" />
           </button>
@@ -1356,8 +1356,8 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
               </svg>
             </div>
             <div className="flex-1 text-left">
-              <p className="font-bold theme-text-main">Galerie</p>
-              <p className="text-[10px] theme-text-secondary">Choisir une image depuis vos albums</p>
+              <p className="font-bold theme-text-main">{t("profile_hub.gallery_option")}</p>
+              <p className="text-[10px] theme-text-secondary">{t("profile_hub.gallery_desc")}</p>
             </div>
             <ChevronRight size={16} className="theme-text-secondary" />
           </button>
@@ -1376,8 +1376,8 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
                 <Edit2 size={20} className="text-purple-500" />
               </div>
               <div className="flex-1 text-left">
-                <p className="font-bold theme-text-main">Recadrer la photo actuelle</p>
-                <p className="text-[10px] theme-text-secondary">Ajuster le cadrage de votre photo</p>
+                <p className="font-bold theme-text-main">{t("profile_hub.crop_existing_option")}</p>
+                <p className="text-[10px] theme-text-secondary">{t("profile_hub.crop_existing_desc")}</p>
               </div>
               <ChevronRight size={16} className="theme-text-secondary" />
             </button>
@@ -1389,7 +1389,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
               onClick={() => {
                 setShowAvatarMenu(false);
                 setFormData((prev) => ({ ...prev, avatarUrl: "" }));
-                showToast("Photo supprimée", "success");
+                showToast(t("profile_hub.photo_deleted"), "success");
               }}
               className="w-full flex items-center gap-4 p-4 theme-bubble-bg rounded-2xl border theme-border active:scale-95 transition-all"
             >
@@ -1397,8 +1397,8 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
                 <Trash2 size={20} className="text-red-500" />
               </div>
               <div className="flex-1 text-left">
-                <p className="font-bold text-red-500">Supprimer la photo</p>
-                <p className="text-[10px] theme-text-secondary">Revenir aux initiales</p>
+                <p className="font-bold text-red-500">{t("profile_hub.delete_photo_option")}</p>
+                <p className="text-[10px] theme-text-secondary">{t("profile_hub.delete_photo_desc")}</p>
               </div>
               <ChevronRight size={16} className="text-red-500/50" />
             </button>
@@ -1408,7 +1408,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
             onClick={() => setShowAvatarMenu(false)}
             className="w-full py-4 theme-bubble-bg theme-text-secondary rounded-2xl font-bold text-sm active:scale-95 transition-all"
           >
-            Annuler
+            {t("common.cancel")}
           </button>
         </div>
       </Modal>
