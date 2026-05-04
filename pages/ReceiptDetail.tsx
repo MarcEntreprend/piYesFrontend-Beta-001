@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router';
-import { Share2, Download, FileText, Image as ImageIcon, X, CheckCircle, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { Share2, Download, FileText, Image as ImageIcon, X, CheckCircle, ArrowUpRight, ArrowDownLeft, Banknote } from 'lucide-react';
 import { receiptService } from '../services/receiptService';
 import { useTranslation } from '../App';
 import Modal from '../components/Modal';
@@ -631,14 +631,15 @@ const ReceiptDetail: React.FC = () => {
       )}
 
       <div className="px-6 py-4">
-        {/* Cartes Évolution du solde - style StatCard */}
+        {/* Cartes Évolution du solde */}
         {!loadingBalance && balanceBefore !== null && balanceAfter !== null && (
           <div className="grid grid-cols-2 gap-3 mb-4">
+            {/* Carte Avant - icône neutre */}
             <div className="theme-bubble-bg rounded-2xl p-3 border theme-border">
               <div className="flex items-center justify-between mb-1">
                 <p className="text-[9px] font-black theme-text-secondary uppercase tracking-widest">{t("receipt.balance.before")}</p>
-                <div className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                  <ArrowDownLeft size={12} className="text-green-500" />
+                <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
+                  <Banknote size={12} className="text-gray-500" />
                 </div>
               </div>
               <p className="text-base font-black theme-text-main">
@@ -649,15 +650,20 @@ const ReceiptDetail: React.FC = () => {
               </p>
             </div>
 
+            {/* Carte Après - flèche et signe selon variation */}
             <div className="theme-bubble-bg rounded-2xl p-3 border theme-border">
               <div className="flex items-center justify-between mb-1">
                 <p className="text-[9px] font-black theme-text-secondary uppercase tracking-widest">{t("receipt.balance.after")}</p>
-                <div className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                  <ArrowUpRight size={12} className="text-red-400" />
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${balanceAfter >= balanceBefore ? 'bg-green-500/10' : 'bg-red-500/10'}`}>
+                  {balanceAfter >= balanceBefore ? (
+                    <ArrowUpRight size={12} className="text-green-500" />
+                  ) : (
+                    <ArrowDownLeft size={12} className="text-red-400" />
+                  )}
                 </div>
               </div>
-              <p className="text-base font-black theme-text-main">
-                {displayMoney(balanceAfter * 100)} G
+              <p className={`text-base font-black ${balanceAfter >= balanceBefore ? 'text-green-600' : 'text-red-500'}`}>
+                {balanceAfter >= balanceBefore ? '+' : '-'}{displayMoney(Math.abs(balanceAfter * 100))} G
               </p>
               <p className="text-[8px] theme-text-secondary opacity-60 mt-0.5">
                 {t("receipt.balance.sub_after")}
@@ -665,8 +671,7 @@ const ReceiptDetail: React.FC = () => {
             </div>
           </div>
         )}
-        {/* adding a marging of 10px top and bottom  */}
-        <div className="mb-10 mt-10"></div>
+
 
         {/* Reçu existant */}
         <div ref={receiptRef} className="bg-white text-gray-900 rounded-3xl overflow-hidden shadow-sm border border-gray-200 flex flex-col">
