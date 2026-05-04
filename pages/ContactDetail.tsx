@@ -118,6 +118,12 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
             email: freshFound.email || "",
             randomKey: freshFound.randomKey || "",
           });
+
+          // Si c'est un contact piYès, sortir du mode édition
+          if (freshFound.contactUserId || freshFound.isVerified) {
+            setIsEditing(false);
+          }
+
         } else if (!found && !freshFound && isMounted) {
           // contact introuvable
           setContact(null);
@@ -268,6 +274,11 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
   };
 
   const handleSaveEdit = async () => {
+    if (isUserContact) {
+      showToast("Les contacts piYès ne peuvent pas être modifiés manuellement", "error");
+      setIsEditing(false);
+      return;
+    }
     if (!contact || !editForm.name.trim()) return;
     setSaving(true);
     try {
@@ -344,12 +355,15 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
           </button>
 
           {!isEditing ? (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="p-2 bg-white/20 text-white rounded-full backdrop-blur-md active:scale-90 transition-transform"
-            >
-              <Edit2 size={18} />
-            </button>
+            // Afficher le bouton d'édition uniquement si ce n'est pas un contact piYès
+            !isUserContact && (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="p-2 bg-white/20 text-white rounded-full backdrop-blur-md active:scale-90 transition-transform"
+              >
+                <Edit2 size={18} />
+              </button>
+            )
           ) : (
             <button
               onClick={handleSaveEdit}
@@ -383,6 +397,7 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
                   onChange={(e) => setEditForm((p) => ({ ...p, name: e.target.value }))}
                   className="text-xl font-bold bg-white/10 text-white placeholder-white/50 border-b border-white/30 outline-none text-center w-full px-4 py-1 rounded-full"
                   placeholder="Nom du contact"
+                  disabled={isUserContact}
                 />
               ) : (
                 <h2 className="text-xl font-bold text-white">
@@ -560,6 +575,7 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
                     onChange={(e) => setEditForm((p) => ({ ...p, tag: e.target.value }))}
                     className="w-full pl-4 bg-transparent theme-text-main text-sm font-bold outline-none border-b border-(--primary-color) pb-0.5"
                     placeholder="tag"
+                    disabled={isUserContact}
                   />
                 </div>
               ) : (
@@ -582,6 +598,7 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
                   onChange={(e) => setEditForm((p) => ({ ...p, phone: e.target.value }))}
                   className="w-full bg-transparent theme-text-main text-sm font-bold outline-none border-b border-(--primary-color) pb-0.5"
                   placeholder="+509..."
+                  disabled={isUserContact}
                 />
               ) : (
                 <p className="text-sm font-bold theme-text-main tracking-wider">
@@ -605,6 +622,7 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
                   onChange={(e) => setEditForm((p) => ({ ...p, email: e.target.value }))}
                   className="w-full bg-transparent theme-text-main text-sm font-bold outline-none border-b border-(--primary-color) pb-0.5"
                   placeholder="email@exemple.com"
+                  disabled={isUserContact}
                 />
               ) : (
                 <p className="text-sm font-bold theme-text-main">{contact.email || "—"}</p>
