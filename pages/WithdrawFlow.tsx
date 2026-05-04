@@ -60,7 +60,7 @@ const WithdrawFlow: React.FC<WithdrawFlowProps> = ({ user, onUpdateUser }) => {
   const [isVerifyingPin, setIsVerifyingPin] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
   const [withdrawalCode, setWithdrawalCode] = useState("");
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
+  const [timeLeft, setTimeLeft] = useState(10); // 10 secondes
   const [searchQuery, setSearchQuery] = useState("");
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const navigate = useNavigate();
@@ -71,14 +71,13 @@ const WithdrawFlow: React.FC<WithdrawFlowProps> = ({ user, onUpdateUser }) => {
     }
   }, [step]);
 
+  // timer simple, PAS d’exécution automatique
   useEffect(() => {
     let timer: any;
     if (step === "code" && timeLeft > 0) {
       timer = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
-    } else if (timeLeft === 0 && step === "code") {
-      setResult({ status: "failure", error: t("withdraw.code_expired") });
     }
     return () => clearInterval(timer);
   }, [step, timeLeft]);
@@ -119,27 +118,44 @@ const WithdrawFlow: React.FC<WithdrawFlowProps> = ({ user, onUpdateUser }) => {
     });
   };
 
+  // Stocker temporairement les infos pour exécuter le retrait plus tard
+  const [pendingWithdrawData, setPendingWithdrawData] = useState<{ agent: any; pin?: string } | null>(null);
+
   const handleWithdraw = async (agent: any, pin?: string) => {
+    // Ne pas exécuter le retrait ici, juste générer le code et stocker les infos
     setLoading(true);
     try {
-      const withdrawAmount = parseFloat(amount);
-      const tx = await api.withdraw(withdrawAmount, agent.name, pin);
-
       // Generate a fake withdrawal code
       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
       setWithdrawalCode(code);
 
-      // Store transaction for later use in result
-      setCurrentTx(tx);
+      // Stocker les infos pour exécution ultérieure
+      setPendingWithdrawData({ agent, pin });
 
-      // Trigger global sync refresh to update balance everywhere
+      setLoading(false);
+      setStep("code");
+      setTimeLeft(10);
+    } catch (e: any) {
+      setLoading(false);
+      setResult({ status: "failure", error: e.message || t("common.error") });
+    }
+  };
+
+  //exécuter le retrait
+  const executeWithdraw = async () => {
+    if (!pendingWithdrawData) return;
+
+    setLoading(true);
+    try {
+      const withdrawAmount = parseFloat(amount);
+      const tx = await api.withdraw(withdrawAmount, pendingWithdrawData.agent.name, pendingWithdrawData.pin);
+      setCurrentTx(tx);
       await api.syncFresh();
       await refresh();
       cacheService.clearHistoryCache();
       sessionStorage.removeItem('piyes-history-state');
-
       setLoading(false);
-      setStep("code");
+      setResult({ status: "success", tx });
     } catch (e: any) {
       setLoading(false);
       setResult({ status: "failure", error: e.message || t("common.error") });
@@ -376,12 +392,11 @@ const WithdrawFlow: React.FC<WithdrawFlowProps> = ({ user, onUpdateUser }) => {
                 </p>
               </div>
 
-              <div className="w-full pt-4">
+              <div className="w-full pt-4 pb-32">
                 <Button
                   fullWidth
-                  onClick={() =>
-                    setResult({ status: "success", tx: currentTx })
-                  }
+                  onClick={executeWithdraw}
+                  isLoading={loading}
                 >
                   {t("withdraw.received_money")}
                 </Button>
