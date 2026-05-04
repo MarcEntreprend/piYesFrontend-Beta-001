@@ -1,5 +1,5 @@
 // pages/Notifications.tsx
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Settings,
@@ -18,6 +18,7 @@ import {
   X,
   Plus,
   ArrowDown,
+  Check,
 } from "lucide-react";
 import { useTranslation, useToast } from "../App";
 import { useNotifications } from "../hooks/useNotifications";
@@ -39,6 +40,11 @@ const Notifications: React.FC = () => {
     refresh,
   } = useNotificationContext();
 
+  // Selection mode states
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   // Helper pour obtenir le montant formaté (ou null)
   const getFormattedAmountForNotif = (notif: Notification): string | null => {
     let rawAmount = notif.amount ?? notif.data?.amount;
@@ -55,7 +61,6 @@ const Notifications: React.FC = () => {
 
   // Helper pour formater les montants dans le texte (ex: "789.98" -> "789,98")
   const formatAmountInText = (text: string): string => {
-    // Remplacer les nombres comme "789.98" par "789,98"
     return text.replace(/\b(\d+(?:\.\d+)?)\b/g, (match) => {
       if (match.includes('.')) {
         return match.replace('.', ',');
@@ -74,6 +79,11 @@ const Notifications: React.FC = () => {
     return notifications.filter((n) => !clearedIds.includes(n.id));
   }, [notifications, clearedIds]);
 
+  const handleSelectAll = () => {
+    const allIds = visibleNotifications.map(n => n.id);
+    setSelectedIds(new Set(allIds));
+  };
+
   const handleClearOne = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     const newCleared = [...clearedIds, id];
@@ -84,14 +94,16 @@ const Notifications: React.FC = () => {
     );
   };
 
-  const handleClearAll = () => {
-    const allIds = notifications.map((n) => n.id);
-    const newCleared = Array.from(new Set([...clearedIds, ...allIds]));
+  const handleClearSelected = () => {
+    const idsToClear = Array.from(selectedIds);
+    const newCleared = [...clearedIds, ...idsToClear];
     setClearedIds(newCleared);
     localStorage.setItem(
       "piyes_cleared_notifications",
       JSON.stringify(newCleared),
     );
+    setIsSelectionMode(false);
+    setSelectedIds(new Set());
     showToast(t("common.done"), "success");
   };
 
@@ -131,6 +143,12 @@ const Notifications: React.FC = () => {
       dataTargetId: notif.data?.targetId,
       route: notif.data?.route,
     });
+
+    if (isSelectionMode) {
+      toggleSelection(notif.id);
+      return;
+    }
+
     markRead(notif.id);
 
     // Notif de demande d'ami → ouvrir page Contacts avec le contact en question
@@ -147,11 +165,9 @@ const Notifications: React.FC = () => {
     // Notif rappel de paiement reçu → onglet "À régler" avec modal de confirmation
     if (notif.type === "scheduled_request") {
       const scheduleId = notif.data?.targetId || notif.targetId;
-      // Essayer de parser les infos receiver depuis le champ amount (hack temporaire)
       try {
         const extra = notif.amount ? JSON.parse(notif.amount) : null;
         if (extra?.receiverUserId) {
-          // Sauvegarder les infos du receiver dans sessionStorage pour la page contacts
           sessionStorage.setItem(
             "pending_contact_from_scheduler",
             JSON.stringify({
@@ -164,9 +180,7 @@ const Notifications: React.FC = () => {
             }),
           );
         }
-      } catch (e) {
-        /* pas de données extra */
-      }
+      } catch (e) { }
       navigate(`/scheduler?tab=outgoing&confirm=${scheduleId}`);
       return;
     }
@@ -227,51 +241,86 @@ const Notifications: React.FC = () => {
     return date.toLocaleDateString();
   };
 
+  // Selection handlers
+  const toggleSelection = (id: string) => {
+    const next = new Set(selectedIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelectedIds(next);
+    if (next.size === 0) setIsSelectionMode(false);
+  };
+
+  const handleLongPressStart = (id: string) => {
+    longPressTimerRef.current = setTimeout(() => {
+      setIsSelectionMode(true);
+      toggleSelection(id);
+    }, 500);
+  };
+
+  const handleLongPressEnd = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
+
+  const handleCancelSelection = () => {
+    setIsSelectionMode(false);
+    setSelectedIds(new Set());
+  };
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <div className="theme-card-bg min-h-screen flex flex-col pb-20 animate-in fade-in duration-500">
+    <div className="theme-card-bg min-h-screen flex flex-col pb-20">
       <PageHeader
-        title={t("notifications.title")}
+        title={isSelectionMode
+          ? t("notifications.selected_count", { count: selectedIds.size })
+          : t("notifications.title")}
         subtitle={
-          unreadCount > 0
+          !isSelectionMode && unreadCount > 0
             ? t("notifications.unread_count", { count: unreadCount })
             : undefined
         }
         rightElement={
-          <div className="flex gap-1">
-            <button
-              onClick={refresh}
-              className="p-2 theme-text-secondary hover:theme-bubble-bg rounded-full active:scale-90"
-            >
-              <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
-            </button>
-            <button
-              onClick={() => navigate("/notifications/settings")}
-              className="p-2 theme-text-secondary hover:theme-bubble-bg rounded-full transition-colors active:scale-90"
-            >
-              <Settings size={22} />
-            </button>
-          </div>
+          !isSelectionMode ? (
+            <div className="flex gap-1">
+              <button
+                onClick={refresh}
+                className="p-2 theme-text-secondary hover:theme-bubble-bg rounded-full active:scale-90"
+              >
+                <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
+              </button>
+              <button
+                onClick={() => navigate("/notifications/settings")}
+                className="p-2 theme-text-secondary hover:theme-bubble-bg rounded-full transition-colors active:scale-90"
+              >
+                <Settings size={22} />
+              </button>
+            </div>
+          ) : null
         }
       />
 
-      <div className="flex bg-gray-50/50 dark:bg-white/5 border-b theme-border">
-        {unreadCount > 0 && (
-          <button
-            onClick={markAllRead}
-            className="flex-1 py-3 theme-primary-text text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:bg-gray-100 dark:active:bg-white/5 transition-colors border-r theme-border"
-          >
-            <CheckCheck size={14} /> {t("notifications.mark_all_read")}
-          </button>
-        )}
-        {visibleNotifications.length > 0 && (
-          <button
-            onClick={handleClearAll}
-            className="flex-1 py-3 theme-text-secondary text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:bg-gray-100 dark:active:bg-white/5 transition-colors"
-          >
-            <Trash2 size={14} /> {t("notifications.clear_all")}
-          </button>
-        )}
-      </div>
+      {!isSelectionMode && (
+        <div className="flex bg-gray-50/50 dark:bg-white/5 border-b theme-border">
+          {unreadCount > 0 && (
+            <button
+              onClick={markAllRead}
+              className="flex-1 py-3 theme-primary-text text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:bg-gray-100 dark:active:bg-white/5 transition-colors"
+            >
+              <CheckCheck size={14} /> {t("notifications.mark_all_read")}
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto no-scrollbar px-6">
         {loading && notifications.length === 0 ? (
@@ -285,86 +334,102 @@ const Notifications: React.FC = () => {
           </div>
         ) : (
           <div className="divide-y theme-border">
-            <div className="divide-y theme-border">
-              {visibleNotifications.map((notif) => {
-                const formattedAmount = getFormattedAmountForNotif(notif);
-                return (
-                  <div
-                    key={notif.id}
-                    onClick={() => handleNotifClick(notif)}
-                    className={`py-5 flex gap-4 transition-all active:theme-bubble-bg cursor-pointer relative group ${!notif.isRead ? "bg-purple-50/40 dark:bg-purple-900/5 -mx-6 px-6" : ""}`}
-                  >
-                    {!notif.isRead && (
-                      <div className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 theme-primary-bg rounded-full shadow-[0_0_8px_var(--primary-color)]"></div>
-                    )}
+            {visibleNotifications.map((notif) => {
+              const formattedAmount = getFormattedAmountForNotif(notif);
+              return (
+                <div
+                  key={notif.id}
+                  onClick={() => handleNotifClick(notif)}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    handleLongPressStart(notif.id);
+                  }}
+                  onTouchStart={() => handleLongPressStart(notif.id)}
+                  onTouchEnd={handleLongPressEnd}
+                  onMouseDown={() => handleLongPressStart(notif.id)}
+                  onMouseUp={handleLongPressEnd}
+                  onMouseLeave={handleLongPressEnd}
+                  className={`py-5 flex gap-4 active:theme-bubble-bg cursor-pointer relative group ${!notif.isRead && !isSelectionMode ? "bg-purple-50/40 dark:bg-purple-900/5 -mx-6 px-6" : ""} ${selectedIds.has(notif.id) ? "bg-(--primary-color)/10 ring-2 ring-(--primary-color) -mx-6 px-6" : ""}`}
+                >
+                  {!notif.isRead && !isSelectionMode && (
+                    <div className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 theme-primary-bg rounded-full shadow-[0_0_8px_var(--primary-color)]"></div>
+                  )}
 
-                    <div className="w-11 h-11 theme-bubble-bg rounded-2xl flex items-center justify-center shrink-0 border theme-border shadow-sm group-hover:scale-105 transition-transform">
-                      {getIcon(notif.type)}
+                  {isSelectionMode && (
+                    <div className="w-6 h-6 rounded-full border-2 theme-border flex items-center justify-center shrink-0 mt-1">
+                      {selectedIds.has(notif.id) && (
+                        <Check size={12} className="theme-primary-text" />
+                      )}
                     </div>
+                  )}
 
-                    <div className="flex-1 min-w-0 space-y-0.5">
-                      <div className="flex justify-between items-start gap-2">
-                        <h3
-                          className={`text-sm leading-tight theme-text-main truncate pr-6 ${!notif.isRead ? "font-black" : "font-bold"}`}
-                        >{(() => {
-                          const key = `notifications.types.${notif.type}.title`;
-                          const translation = t(key, {
-                            ...notif.data,
-                            name: notif.data?.name || notif.title,
-                            amount: formattedAmount ?? notif.amount ?? notif.data?.amount,
-                          });
-                          // Fallback si la traduction retourne la clé (ex: "transfer_out.title")
-                          if (translation === key) {
-                            if (notif.type === 'transfer_out') return 'Transfert envoyé';
-                            if (notif.type === 'transfer_received') return 'Transfert reçu';
-                            if (notif.type === 'deposit_success') return 'Dépôt réussi';
-                            return notif.title;
-                          }
-                          return translation;
-                        })()}
-                        </h3>
+                  <div className="w-11 h-11 theme-bubble-bg rounded-2xl flex items-center justify-center shrink-0 border theme-border shadow-sm group-hover:scale-105">
+                    {getIcon(notif.type)}
+                  </div>
+
+                  <div className="flex-1 min-w-0 space-y-0.5">
+                    <div className="flex justify-between items-start gap-2">
+                      <h3
+                        className={`text-sm leading-tight theme-text-main truncate pr-6 ${!notif.isRead ? "font-black" : "font-bold"}`}
+                      >{(() => {
+                        const key = `notifications.types.${notif.type}.title`;
+                        const translation = t(key, {
+                          ...notif.data,
+                          name: notif.data?.name || notif.title,
+                          amount: formattedAmount ?? notif.amount ?? notif.data?.amount,
+                        });
+                        if (translation === key) {
+                          if (notif.type === 'transfer_out') return 'Transfert envoyé';
+                          if (notif.type === 'transfer_received') return 'Transfert reçu';
+                          if (notif.type === 'deposit_success') return 'Dépôt réussi';
+                          return notif.title;
+                        }
+                        return translation;
+                      })()}
+                      </h3>
+                      {!isSelectionMode && (
                         <button
                           onClick={(e) => handleClearOne(notif.id, e)}
                           className="absolute right-4 top-5 p-1 theme-text-secondary opacity-0 group-hover:opacity-100 hover:theme-primary-text transition-all active:scale-90"
                         >
                           <X size={16} />
                         </button>
-                      </div>
-                      <p className="theme-text-secondary text-xs leading-relaxed line-clamp-2">
-                        {formatAmountInText(
-                          t(`notifications.types.${notif.type}.body`, {
-                            ...notif.data,
-                            name: notif.data?.name || notif.body,
-                            amount: formattedAmount ?? notif.amount ?? notif.data?.amount,
-                          })
-                        )}
+                      )}
+                    </div>
+                    <p className="theme-text-secondary text-xs leading-relaxed line-clamp-2">
+                      {formatAmountInText(
+                        t(`notifications.types.${notif.type}.body`, {
+                          ...notif.data,
+                          name: notif.data?.name || notif.body,
+                          amount: formattedAmount ?? notif.amount ?? notif.data?.amount,
+                        })
+                      )}
+                    </p>
+                    <div className="flex items-center justify-between mt-1">
+                      {(() => {
+                        let rawAmount = notif.amount ?? notif.data?.amount;
+                        if (!rawAmount) return null;
+                        let numericAmount: number | null = null;
+                        if (typeof rawAmount === 'number') numericAmount = rawAmount;
+                        else if (typeof rawAmount === 'string') {
+                          if (rawAmount.trim().startsWith('{')) return null;
+                          numericAmount = parseFloat(rawAmount);
+                        }
+                        if (numericAmount === null || isNaN(numericAmount)) return null;
+                        return (
+                          <p className="font-black theme-text-main text-xs">
+                            {displayMoney(numericAmount * 100)}
+                          </p>
+                        );
+                      })()}
+                      <p className="text-[9px] font-bold theme-text-secondary opacity-60 uppercase tracking-tighter">
+                        {formatTime(notif.timestamp)}
                       </p>
-                      <div className="flex items-center justify-between mt-1">
-                        {(() => {
-                          let rawAmount = notif.amount ?? notif.data?.amount;
-                          if (!rawAmount) return null;
-                          let numericAmount: number | null = null;
-                          if (typeof rawAmount === 'number') numericAmount = rawAmount;
-                          else if (typeof rawAmount === 'string') {
-                            if (rawAmount.trim().startsWith('{')) return null;
-                            numericAmount = parseFloat(rawAmount);
-                          }
-                          if (numericAmount === null || isNaN(numericAmount)) return null;
-                          return (
-                            <p className="font-black theme-text-main text-xs">
-                              {displayMoney(numericAmount * 100)}
-                            </p>
-                          );
-                        })()}
-                        <p className="text-[9px] font-bold theme-text-secondary opacity-60 uppercase tracking-tighter">
-                          {formatTime(notif.timestamp)}
-                        </p>
-                      </div>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -379,6 +444,41 @@ const Notifications: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Selection Bottom Bar */}
+      {isSelectionMode && selectedIds.size > 0 && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[90%] max-w-sm theme-card-bg shadow-2xl rounded-4xl p-4 border theme-border z-100 animate-in slide-in-from-bottom duration-300">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleCancelSelection}
+                className="p-2 theme-text-secondary active:scale-90"
+              >
+                <X size={20} />
+              </button>
+              <span className="text-xs font-bold theme-text-secondary">
+                {selectedIds.size} {selectedIds.size > 1 ? t("notifications.selected_count_plural") : t("notifications.selected_count_singular")}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              {selectedIds.size < visibleNotifications.length && (
+                <button
+                  onClick={handleSelectAll}
+                  className="px-3 py-2 text-xs font-bold theme-primary-text active:scale-95 transition-all"
+                >
+                  {t("notifications.select_all")}
+                </button>
+              )}
+              <button
+                onClick={handleClearSelected}
+                className="flex items-center gap-2 px-4 py-2.5 bg-red-500 text-white rounded-2xl text-xs font-bold active:scale-95 transition-all"
+              >
+                <Trash2 size={16} /> {t("notifications.clear_selected")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
