@@ -1049,6 +1049,15 @@ export const translations = {
         RECHARGE: "Preuve de recharge mobile",
         INTERNATIONAL: "Preuve de transfert international",
         CARD_PAYMENT: "Preuve de paiement par carte bancaire",
+        INTERBANK_OUT: "Preuve de transfert interbancaire",
+        INTERBANK_IN: "Preuve de transfert interbancaire",
+      },
+      balance: {
+        title: "Évolution du solde",
+        before: "Avant",
+        after: "Après",
+        sub_before: "Solde avant cette transaction",
+        sub_after: "Solde après cette transaction",
       },
     },
     transfer: {
@@ -2813,6 +2822,13 @@ export const translations = {
         withdraw: "Retire Lajan",
         recharge: "Rechaj telefòn",
       },
+      balance: {
+        title: "Evolisyon sal la",
+        before: "Anvan",
+        after: "Apre",
+        sub_before: "Sal anvan tranzaksyon sa a",
+        sub_after: "Sal apre tranzaksyon sa a",
+      },
     },
     transfer: {
       title: "Vire lajan",
@@ -4524,6 +4540,13 @@ export const translations = {
         deposit: "Deposit",
         withdraw: "Withdraw",
         recharge: "Recharge",
+      },
+      balance: {
+        title: "Evolution of the balance",
+        before: "Before",
+        after: "After",
+        sub_before: "Balance before this transaction",
+        sub_after: "Balance after this transaction",
       },
     },
     transfer: {

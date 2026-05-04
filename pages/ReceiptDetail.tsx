@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router';
-import { Share2, Download, FileText, Image as ImageIcon, X, CheckCircle } from 'lucide-react';
+import { Share2, Download, FileText, Image as ImageIcon, X, CheckCircle, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { receiptService } from '../services/receiptService';
 import { useTranslation } from '../App';
 import Modal from '../components/Modal';
@@ -189,14 +189,32 @@ const ReceiptDetail: React.FC = () => {
     return `🌍 Frais internationaux : seulement ${displayPercent(totalPercent)}. piYès vous offre le meilleur taux.`;
   }, [receipt]);
 
-  //calculateBalances
   const calculateBalances = async (receiptDate: string, receiptAmount: number, receiptRole: string) => {
     setLoadingBalance(true);
     try {
+      // Vérifier le cache d'abord
+      const balanceCacheKey = `receipt_balance_${id}`;
+      const cached = sessionStorage.getItem(balanceCacheKey);
+      if (cached) {
+        const { before, after } = JSON.parse(cached);
+        setBalanceBefore(before);
+        setBalanceAfter(after);
+        setLoadingBalance(false);
+        return;
+      }
+
+      // Calculer depuis l'API
       const balanceBeforeAmount = await api.getBalanceBefore(receiptDate);
       setBalanceBefore(balanceBeforeAmount);
       const impact = receiptRole === "RECEIVER" ? receiptAmount : -receiptAmount;
-      setBalanceAfter(balanceBeforeAmount + impact);
+      const after = balanceBeforeAmount + impact;
+      setBalanceAfter(after);
+
+      // Sauvegarder dans le cache
+      sessionStorage.setItem(balanceCacheKey, JSON.stringify({
+        before: balanceBeforeAmount,
+        after: after
+      }));
     } catch (error) {
       console.error("Failed to calculate balances:", error);
     } finally {
@@ -613,25 +631,42 @@ const ReceiptDetail: React.FC = () => {
       )}
 
       <div className="px-6 py-4">
-        {/* Section Évolution du solde - Au-dessus du reçu */}
+        {/* Cartes Évolution du solde - style StatCard */}
         {!loadingBalance && balanceBefore !== null && balanceAfter !== null && (
-          <div className="mb-4 p-4 bg-gray-50 rounded-2xl border border-gray-200">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center mb-3">
-              Évolution du solde
-            </p>
-            <div className="flex justify-between items-center text-sm">
-              <div className="text-center flex-1">
-                <p className="text-gray-400 text-[9px] uppercase">Avant</p>
-                <p className="font-black text-gray-800">{displayMoney(balanceBefore * 100)} G</p>
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="theme-bubble-bg rounded-2xl p-3 border theme-border">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-[9px] font-black theme-text-secondary uppercase tracking-widest">{t("receipt.balance.before")}</p>
+                <div className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <ArrowDownLeft size={12} className="text-green-500" />
+                </div>
               </div>
-              <div className="text-gray-300 text-xs">→</div>
-              <div className="text-center flex-1">
-                <p className="text-gray-400 text-[9px] uppercase">Après</p>
-                <p className="font-black text-gray-900">{displayMoney(balanceAfter * 100)} G</p>
+              <p className="text-base font-black theme-text-main">
+                {displayMoney(balanceBefore * 100)} G
+              </p>
+              <p className="text-[8px] theme-text-secondary opacity-60 mt-0.5">
+                {t("receipt.balance.sub_before")}
+              </p>
+            </div>
+
+            <div className="theme-bubble-bg rounded-2xl p-3 border theme-border">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-[9px] font-black theme-text-secondary uppercase tracking-widest">{t("receipt.balance.after")}</p>
+                <div className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <ArrowUpRight size={12} className="text-red-400" />
+                </div>
               </div>
+              <p className="text-base font-black theme-text-main">
+                {displayMoney(balanceAfter * 100)} G
+              </p>
+              <p className="text-[8px] theme-text-secondary opacity-60 mt-0.5">
+                {t("receipt.balance.sub_after")}
+              </p>
             </div>
           </div>
         )}
+        {/* adding a marging of 10px top and bottom  */}
+        <div className="mb-10 mt-10"></div>
 
         {/* Reçu existant */}
         <div ref={receiptRef} className="bg-white text-gray-900 rounded-3xl overflow-hidden shadow-sm border border-gray-200 flex flex-col">
