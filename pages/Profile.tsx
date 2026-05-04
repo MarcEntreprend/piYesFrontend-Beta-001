@@ -147,6 +147,8 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
   const [showCropModal, setShowCropModal] = useState(false);
   const [cropImg, setCropImg] = useState<HTMLImageElement | null>(null);
 
+  const [showAvatarMenu, setShowAvatarMenu] = useState(false);
+
   // states pour drag et zoom
   const [cropScale, setCropScale] = useState(1);
   const [cropPosition, setCropPosition] = useState({ x: 0, y: 0 });
@@ -630,7 +632,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
             {isEditing && (
               <div
                 className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full z-10"
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => setShowAvatarMenu(true)}
               >
                 <Camera size={24} className="text-white" />
               </div>
@@ -1228,6 +1230,60 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
               Rester
             </button>
           </div>
+        </div>
+      </Modal>
+
+      {/* Avatar Action Menu Modal */}
+      <Modal isOpen={showAvatarMenu} onClose={() => setShowAvatarMenu(false)} type="bottom-sheet">
+        <div className="p-6 space-y-4">
+          <div className="flex items-center gap-3 pb-2 border-b theme-border">
+            <Camera size={20} className="theme-primary-text" />
+            <h3 className="text-lg font-bold theme-text-main">Modifier la photo</h3>
+          </div>
+
+          <button
+            onClick={() => {
+              setShowAvatarMenu(false);
+              setTimeout(() => fileInputRef.current?.click(), 100);
+            }}
+            className="w-full flex items-center gap-4 p-4 theme-bubble-bg rounded-2xl border theme-border active:scale-95 transition-all"
+          >
+            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
+              <Camera size={20} className="text-blue-500" />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="font-bold theme-text-main">Nouvelle photo</p>
+              <p className="text-[10px] theme-text-secondary">Choisir une image depuis votre galerie</p>
+            </div>
+            <ChevronRight size={16} className="theme-text-secondary" />
+          </button>
+
+          {formData.avatarUrl && (
+            <button
+              onClick={() => {
+                setShowAvatarMenu(false);
+                setRawImageSrc(formData.avatarUrl);
+                setShowCropModal(true);
+              }}
+              className="w-full flex items-center gap-4 p-4 theme-bubble-bg rounded-2xl border theme-border active:scale-95 transition-all"
+            >
+              <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center shrink-0">
+                <Edit2 size={20} className="text-purple-500" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="font-bold theme-text-main">Recadrer la photo actuelle</p>
+                <p className="text-[10px] theme-text-secondary">Ajuster le cadrage de votre photo</p>
+              </div>
+              <ChevronRight size={16} className="theme-text-secondary" />
+            </button>
+          )}
+
+          <button
+            onClick={() => setShowAvatarMenu(false)}
+            className="w-full py-4 theme-bubble-bg theme-text-secondary rounded-2xl font-bold text-sm active:scale-95 transition-all"
+          >
+            Annuler
+          </button>
         </div>
       </Modal>
     </div>

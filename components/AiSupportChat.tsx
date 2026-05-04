@@ -1,3 +1,5 @@
+// components/AiSupportChat.tsx
+
 import React, { useState, useEffect, useRef } from "react";
 import {
   Send,
@@ -131,11 +133,10 @@ const AiSupportChat: React.FC<AiSupportChatProps> = ({
               className={`flex flex-col gap-1.5 max-w-[85%] ${m.role === "user" ? "self-end items-end" : "self-start items-start"}`}
             >
               <div
-                className={`p-4 rounded-3xl border shadow-sm ${
-                  m.role === "user"
+                className={`p-4 rounded-3xl border shadow-sm ${m.role === "user"
                     ? "theme-primary-bg text-white rounded-br-none border-transparent"
                     : "theme-bubble-bg theme-text-main rounded-bl-none theme-border"
-                }`}
+                  }`}
               >
                 <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap">
                   {m.text.split("**").map((part, i) =>
