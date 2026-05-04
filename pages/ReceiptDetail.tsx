@@ -15,6 +15,7 @@ import { financeService } from '../services/financeService';
 import { TransactionType } from '../shared/types';
 import { displayMoney, displayPercent } from '../shared/money';
 import { AutoScaleText } from '../components/AutoScaleText';
+import { api } from '@/services/apiService';
 
 const ReceiptDetail: React.FC = () => {
   const { id } = useParams();
@@ -29,6 +30,11 @@ const ReceiptDetail: React.FC = () => {
   const navigate = useNavigate();
   const receiptRef = useRef<HTMLDivElement>(null);
 
+  // États pour les soldes avant/après
+  const [balanceBefore, setBalanceBefore] = useState<number | null>(null);
+  const [balanceAfter, setBalanceAfter] = useState<number | null>(null);
+  const [loadingBalance, setLoadingBalance] = useState(false);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -40,6 +46,11 @@ const ReceiptDetail: React.FC = () => {
         .then(data => {
           if (!cancelled) {
             setReceipt(data);
+            // Calculer les soldes après chargement
+            if (data.date && data.amount) {
+              const receiptRole = searchParams.get('role') || 'payer';
+              calculateBalances(data.date, data.amount, receiptRole);
+            }
             setLoading(false);
           }
         })
@@ -177,6 +188,22 @@ const ReceiptDetail: React.FC = () => {
     }
     return `🌍 Frais internationaux : seulement ${displayPercent(totalPercent)}. piYès vous offre le meilleur taux.`;
   }, [receipt]);
+
+  //calculateBalances
+  const calculateBalances = async (receiptDate: string, receiptAmount: number, receiptRole: string) => {
+    setLoadingBalance(true);
+    try {
+      const balanceBeforeAmount = await api.getBalanceBefore(receiptDate);
+      setBalanceBefore(balanceBeforeAmount);
+      const impact = receiptRole === "RECEIVER" ? receiptAmount : -receiptAmount;
+      setBalanceAfter(balanceBeforeAmount + impact);
+    } catch (error) {
+      console.error("Failed to calculate balances:", error);
+    } finally {
+      setLoadingBalance(false);
+    }
+  };
+
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
@@ -586,6 +613,27 @@ const ReceiptDetail: React.FC = () => {
       )}
 
       <div className="px-6 py-4">
+        {/* Section Évolution du solde - Au-dessus du reçu */}
+        {!loadingBalance && balanceBefore !== null && balanceAfter !== null && (
+          <div className="mb-4 p-4 bg-gray-50 rounded-2xl border border-gray-200">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center mb-3">
+              Évolution du solde
+            </p>
+            <div className="flex justify-between items-center text-sm">
+              <div className="text-center flex-1">
+                <p className="text-gray-400 text-[9px] uppercase">Avant</p>
+                <p className="font-black text-gray-800">{displayMoney(balanceBefore * 100)} G</p>
+              </div>
+              <div className="text-gray-300 text-xs">→</div>
+              <div className="text-center flex-1">
+                <p className="text-gray-400 text-[9px] uppercase">Après</p>
+                <p className="font-black text-gray-900">{displayMoney(balanceAfter * 100)} G</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Reçu existant */}
         <div ref={receiptRef} className="bg-white text-gray-900 rounded-3xl overflow-hidden shadow-sm border border-gray-200 flex flex-col">
           <div className="p-8 space-y-8 flex-1">
             <div className="text-center space-y-6">
