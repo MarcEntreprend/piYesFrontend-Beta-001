@@ -14,6 +14,7 @@ import { Capacitor } from '@capacitor/core';
 import { financeService } from '../services/financeService';
 import { TransactionType } from '../shared/types';
 import { displayMoney, displayPercent } from '../shared/money';
+import { AutoScaleText } from '../components/AutoScaleText';
 
 const ReceiptDetail: React.FC = () => {
   const { id } = useParams();
@@ -594,9 +595,14 @@ const ReceiptDetail: React.FC = () => {
               </div>
 
               <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
-                <p className="text-4xl font-black text-gray-900 mb-1">
+                <AutoScaleText
+                  maxFontSize={36}
+                  minFontSize={16}
+                  className="font-black text-gray-900 mb-1"
+                  as="p"
+                >
                   {receipt.amount.toLocaleString('fr-HT')} G
-                </p>
+                </AutoScaleText>
                 <p className="text-[10px] text-gray-400 italic leading-relaxed">
                   {feeDisplayText}
                 </p>
