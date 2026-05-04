@@ -129,6 +129,16 @@ const Contacts: React.FC<ContactsProps> = ({ user }) => {
     fetchData(true);
   }, []);
 
+  // hook pour écouter les mise à jour des contacts
+  useEffect(() => {
+    const handleContactsUpdate = () => {
+      fetchData(true);
+    };
+    window.addEventListener('piyes:contacts_updated', handleContactsUpdate);
+    return () => window.removeEventListener('piyes:contacts_updated', handleContactsUpdate);
+  }, []);
+
+
   useEffect(() => {
     if (!contacts.length) return;
     const params = new URLSearchParams(location.search);

@@ -136,6 +136,18 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
     return () => { isMounted = false; };
   }, [contactId]);
 
+  // hook pour écouter les mise à jour des contacts
+  useEffect(() => {
+    const handleContactsUpdate = async () => {
+      if (!contactId) return;
+      const freshContacts = await api.getContactsFresh();
+      const freshFound = freshContacts.find(c => c.id === contactId || c.contactUserId === contactId);
+      if (freshFound) setContact(freshFound);
+    };
+    window.addEventListener('piyes:contacts_updated', handleContactsUpdate);
+    return () => window.removeEventListener('piyes:contacts_updated', handleContactsUpdate);
+  }, [contactId]);
+
   useEffect(() => {
     if (highlightFriendshipFromUrl) {
       setHighlightFriendship(true);
@@ -500,10 +512,10 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ user }) => {
                     variant={status === "friends" ? "danger" : status === "pending" ? "secondary" : "primary"}
                     size="sm"
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${status === "friends"
-                        ? "bg-red-500/10 text-red-500 border-none"
-                        : status === "pending"
-                          ? "bg-orange-500/10 text-orange-500 border-none"
-                          : ""
+                      ? "bg-red-500/10 text-red-500 border-none"
+                      : status === "pending"
+                        ? "bg-orange-500/10 text-orange-500 border-none"
+                        : ""
                       }`}
                     leftIcon={
                       status === "friends" ? (

@@ -82,6 +82,7 @@ import PrivacySettings from "./pages/PrivacySettings";
 import TransferInteractions from "./pages/TransferInteractions";
 import Onboarding from "./pages/Onboarding";
 import { clearNativeContactsCache } from './services/nativeContactsService';
+import { useRealtimeContacts } from './hooks/useRealtimeContacts';
 
 const PayRedirect: React.FC = () => {
   const { search } = useLocation();
@@ -365,6 +366,22 @@ const App: React.FC = () => {
     isRefreshing,
     refresh,
   } = useSync();
+
+
+  // Realtime contacts updates
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('piyes-user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setUserId(user.id);
+      } catch (e) { }
+    }
+  }, []);
+
+  useRealtimeContacts(userId);
 
   // Sync user state and security status with syncData
   useEffect(() => {

@@ -205,6 +205,19 @@ const TransferInteractions: React.FC = () => {
     }
   }, []);
 
+  // hook pour écouter les mise à jour des contacts 
+  // écouteur pour rafraîchir contact si le nom ou l’avatar change
+  useEffect(() => {
+    const handleContactsUpdate = async () => {
+      if (!contactId) return;
+      const allContacts = await api.getContactsFresh();
+      const found = allContacts.find((c) => c.id === contactId);
+      if (found) setContact(found);
+    };
+    window.addEventListener('piyes:contacts_updated', handleContactsUpdate);
+    return () => window.removeEventListener('piyes:contacts_updated', handleContactsUpdate);
+  }, [contactId]);
+
   // Restaurer la position de défilement après chargement
   useEffect(() => {
     if (!loading && scrollContainerRef.current && allTransactions.length > 0) {

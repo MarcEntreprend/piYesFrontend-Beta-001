@@ -89,8 +89,18 @@ const SchedulerCreate: React.FC = () => {
   const [copiedLink, setCopiedLink] = useState(false);
   const { showToast } = useToast();
 
+  // hook pour initialiser les contacts
   useEffect(() => {
     api.getContacts().then(setContacts);
+  }, []);
+
+  // hook pour écouter les mise à jour des contacts
+  useEffect(() => {
+    const handleContactsUpdate = () => {
+      api.getContactsFresh().then(setContacts);
+    };
+    window.addEventListener('piyes:contacts_updated', handleContactsUpdate);
+    return () => window.removeEventListener('piyes:contacts_updated', handleContactsUpdate);
   }, []);
 
   // Recalculer les slots quand la date change

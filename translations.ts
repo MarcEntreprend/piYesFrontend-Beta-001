@@ -1858,7 +1858,7 @@ export const translations = {
       step_of: "Etap {{current}} sou {{total}}",
       add: "Ajoute",
       select: "Chwazi",
-      example: "Egz:",
+      example: "Egzanp:",
       verify: "Verifye",
       piyes_contact: "Kontak piYès",
       auto_return: "Retounen na akèy nan {{seconds}}s...",

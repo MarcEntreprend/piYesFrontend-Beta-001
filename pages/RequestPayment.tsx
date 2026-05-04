@@ -67,6 +67,15 @@ const RequestPayment: React.FC<RequestPaymentProps> = ({ user }) => {
     fetchData();
   }, []);
 
+  // hook pour écouter les mise à jour des contacts
+  useEffect(() => {
+    const handleContactsUpdate = () => {
+      fetchData();
+    };
+    window.addEventListener('piyes:contacts_updated', handleContactsUpdate);
+    return () => window.removeEventListener('piyes:contacts_updated', handleContactsUpdate);
+  }, []);
+
   const fetchData = async () => {
     setLoading(true);
     try {

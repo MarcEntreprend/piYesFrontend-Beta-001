@@ -133,6 +133,15 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
     fetchContacts();
   }, []);
 
+  // hook pour écouter les mise à jour des contacts
+  useEffect(() => {
+    const handleContactsUpdate = () => {
+      fetchContacts();
+    };
+    window.addEventListener('piyes:contacts_updated', handleContactsUpdate);
+    return () => window.removeEventListener('piyes:contacts_updated', handleContactsUpdate);
+  }, []);
+
   const fetchContacts = async () => {
     const data = await api.getContacts();
     setContacts(data);
@@ -706,7 +715,6 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
                       className="animate-spin theme-text-secondary"
                     />
                   </div>
-
                   <div className="flex flex-col gap-1">
                     <span className="theme-text-secondary font-bold uppercase text-[9px] tracking-[0.2em]">
                       {t("transfer.review_dest")}

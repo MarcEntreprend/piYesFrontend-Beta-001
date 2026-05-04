@@ -72,6 +72,7 @@ piyes-wallet-frontend/
 │   ├── useMarketplaceBadges.ts
 │   ├── useNotifications.ts
 │   ├── useRealtimeBalance.ts
+│   ├── useRealtimeContacts.ts
 │   ├── useRealtimeHistory.ts
 │   └── useSync.ts
 │
