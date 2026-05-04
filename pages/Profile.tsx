@@ -1100,7 +1100,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
               <img
                 src={rawImageSrc}
                 alt="crop preview"
-                className="absolute w-full h-full object-cover select-none"
+                className="absolute w-full h-full object-cover select-none crop-image"
                 style={{
                   transform: `translate(${cropPosition.x}px, ${cropPosition.y}px) scale(${cropScale})`,
                   transformOrigin: 'center center',
@@ -1160,18 +1160,46 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
                     canvas.height = size;
                     const ctx = canvas.getContext('2d');
                     if (!ctx) return;
+
+                    const imageElement = document.querySelector('.crop-image') as HTMLImageElement;
+                    if (!imageElement) return;
+
+                    // Récupérer la position réelle de l'image dans le DOM
+                    const imageRect = imageElement.getBoundingClientRect();
+                    const containerRect = imageContainerRef.current.getBoundingClientRect();
+
+                    // Calculer la zone visible du cercle/carré (c'est un carré 256x256 au centre)
+                    const visibleLeft = containerRect.left;
+                    const visibleTop = containerRect.top;
+                    const visibleRight = containerRect.right;
+                    const visibleBottom = containerRect.bottom;
+
+                    // Calculer les proportions et la région source
+                    const scaleX = cropImg.naturalWidth / imageRect.width;
+                    const scaleY = cropImg.naturalHeight / imageRect.height;
+
+                    const sx = (visibleLeft - imageRect.left) * scaleX;
+                    const sy = (visibleTop - imageRect.top) * scaleY;
+                    const sWidth = (visibleRight - visibleLeft) * scaleX;
+                    const sHeight = (visibleBottom - visibleTop) * scaleY;
+
+                    // Vérifier les limites
+                    const clampedSx = Math.max(0, Math.min(sx, cropImg.naturalWidth - sWidth));
+                    const clampedSy = Math.max(0, Math.min(sy, cropImg.naturalHeight - sHeight));
+                    const clampedWidth = Math.min(sWidth, cropImg.naturalWidth - clampedSx);
+                    const clampedHeight = Math.min(sHeight, cropImg.naturalHeight - clampedSy);
+
+                    if (clampedWidth <= 0 || clampedHeight <= 0) return;
+
                     ctx.fillStyle = '#FFFFFF';
                     ctx.fillRect(0, 0, size, size);
-                    const imgSize = Math.min(cropImg.naturalWidth, cropImg.naturalHeight);
-                    const scaleFactor = imgSize / size;
-                    const centerX = cropImg.naturalWidth / 2;
-                    const centerY = cropImg.naturalHeight / 2;
-                    const offsetX = -cropPosition.x * scaleFactor / cropScale;
-                    const offsetY = -cropPosition.y * scaleFactor / cropScale;
-                    const sourceSize = size / cropScale;
-                    const sx = centerX - sourceSize / 2 + offsetX;
-                    const sy = centerY - sourceSize / 2 + offsetY;
-                    ctx.drawImage(cropImg, sx, sy, sourceSize, sourceSize, 0, 0, size, size);
+
+                    ctx.drawImage(
+                      cropImg,
+                      clampedSx, clampedSy, clampedWidth, clampedHeight,
+                      0, 0, size, size
+                    );
+
                     const croppedUrl = canvas.toDataURL("image/jpeg", 0.85);
                     setFormData((prev) => ({ ...prev, avatarUrl: croppedUrl }));
                   }
