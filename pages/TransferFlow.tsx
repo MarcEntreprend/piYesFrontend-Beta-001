@@ -700,12 +700,13 @@ const TransferFlow: React.FC<TransferFlowProps> = ({ user, onUpdateUser }) => {
               {/* Destinataire — 3 états : loading / erreur / succès */}
               {resolvingRecipient ? (
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
+                  <div className="w-12 h-12 rounded-full theme-bubble-bg flex items-center justify-center shrink-0">
                     <Loader2
                       size={20}
                       className="animate-spin theme-text-secondary"
                     />
                   </div>
+
                   <div className="flex flex-col gap-1">
                     <span className="theme-text-secondary font-bold uppercase text-[9px] tracking-[0.2em]">
                       {t("transfer.review_dest")}
