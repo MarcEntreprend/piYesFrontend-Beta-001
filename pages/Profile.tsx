@@ -35,6 +35,7 @@ import Modal from "../components/Modal";
 import PageHeader from "../components/PageHeader";
 import AvatarViewer from "../components/AvatarViewer";
 import { cacheService } from "../services/cacheService";
+import { App as CapacitorApp } from '@capacitor/app';
 
 interface ProfileProps {
   user: UserType;
@@ -201,6 +202,30 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
     setHasUnsavedChanges(changed);
   }, [formData, isEditing, user]);
 
+  // useEffect pour écouter le bouton retour matériel
+  useEffect(() => {
+    const handleBackButton = () => {
+      if (isEditing && hasUnsavedChanges) {
+        setPendingExitAction(() => () => {
+          handleCancelEdit();
+          navigate(-1);
+        });
+        setShowExitConfirm(true);
+      } else if (isEditing) {
+        handleCancelEdit();
+        navigate(-1);
+      } else {
+        navigate(-1);
+      }
+    };
+
+    CapacitorApp.addListener('backButton', handleBackButton);
+    return () => {
+      CapacitorApp.removeAllListeners();
+    };
+  }, [isEditing, hasUnsavedChanges, navigate]);
+
+  // Fonction pour annuler les modifications
   const handleCancelEdit = () => {
     if (hasUnsavedChanges) {
       setPendingExitAction(() => () => {
@@ -586,6 +611,20 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
 
       <PageHeader
         title={t("profile_hub.title")}
+        onBack={() => {
+          if (isEditing && hasUnsavedChanges) {
+            setPendingExitAction(() => () => {
+              handleCancelEdit();
+              navigate(-1);
+            });
+            setShowExitConfirm(true);
+          } else if (isEditing) {
+            handleCancelEdit();
+            navigate(-1);
+          } else {
+            navigate(-1);
+          }
+        }}
         rightElement={
           !isEditing ? (
             <button
