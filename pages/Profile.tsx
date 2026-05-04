@@ -651,14 +651,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
             {isEditing && (
               <div
                 className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full z-10"
-                onClick={() => {
-                  if (!formData.avatarUrl) {
-                    // Pas de photo → ouvrir directement la galerie
-                    fileInputRef.current?.click();
-                  } else {
-                    setShowAvatarMenu(true);
-                  }
-                }}
+                onClick={() => setShowAvatarMenu(true)}
               >
                 <Camera size={24} className="text-white" />
               </div>
@@ -1117,12 +1110,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
               onTouchEnd={handleDragEnd}
               style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
             >
-              <div className="absolute inset-0 rounded-full pointer-events-none z-10"
-                style={{
-                  boxShadow: 'inset 0 0 0 9999px rgba(0, 0, 0, 0.25)',
-                  border: '2px solid rgba(255, 255, 255, 0.2)'
-                }}
-              />
+              <div className="absolute inset-0 rounded-full pointer-events-none z-10 border-2 border-white/30 shadow-inner" />
               <img
                 src={rawImageSrc}
                 alt="crop preview"
@@ -1353,6 +1341,27 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
                 <p className="text-[10px] theme-text-secondary">Ajuster le cadrage de votre photo</p>
               </div>
               <ChevronRight size={16} className="theme-text-secondary" />
+            </button>
+          )}
+
+          {/* Supprimer la photo (toujours visible si une photo existe) */}
+          {formData.avatarUrl && (
+            <button
+              onClick={() => {
+                setShowAvatarMenu(false);
+                setFormData((prev) => ({ ...prev, avatarUrl: "" }));
+                showToast("Photo supprimée", "success");
+              }}
+              className="w-full flex items-center gap-4 p-4 theme-bubble-bg rounded-2xl border theme-border active:scale-95 transition-all"
+            >
+              <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center shrink-0">
+                <Trash2 size={20} className="text-red-500" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="font-bold text-red-500">Supprimer la photo</p>
+                <p className="text-[10px] theme-text-secondary">Revenir aux initiales</p>
+              </div>
+              <ChevronRight size={16} className="text-red-500/50" />
             </button>
           )}
 
