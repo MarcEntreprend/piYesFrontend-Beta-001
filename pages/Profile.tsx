@@ -1200,7 +1200,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
                       0, 0, size, size
                     );
 
-                    const croppedUrl = canvas.toDataURL("image/jpeg", 0.85);
+                    const croppedUrl = canvas.toDataURL("image/jpeg", 0.92);
                     setFormData((prev) => ({ ...prev, avatarUrl: croppedUrl }));
                   }
                   setShowCropModal(false);
