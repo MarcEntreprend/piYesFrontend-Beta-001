@@ -345,6 +345,25 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
     e.target.value = "";
   };
 
+  // Ouvrir la caméra native
+  const handleCameraCapture = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment'; // 'user' pour frontale, 'environment' pour arrière
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setRawImageSrc(reader.result as string);
+        setShowCropModal(true);
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  };
+
   // Calculer l'échelle minimale pour que l'image remplisse le cercle
   const calculateMinScale = (img: HTMLImageElement, containerSize: number) => {
     const imgSize = Math.min(img.naturalWidth, img.naturalHeight);
@@ -632,7 +651,14 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
             {isEditing && (
               <div
                 className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full z-10"
-                onClick={() => setShowAvatarMenu(true)}
+                onClick={() => {
+                  if (!formData.avatarUrl) {
+                    // Pas de photo → ouvrir directement la galerie
+                    fileInputRef.current?.click();
+                  } else {
+                    setShowAvatarMenu(true);
+                  }
+                }}
               >
                 <Camera size={24} className="text-white" />
               </div>
@@ -1269,6 +1295,25 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
             <h3 className="text-lg font-bold theme-text-main">Modifier la photo</h3>
           </div>
 
+          {/* Appareil photo */}
+          <button
+            onClick={() => {
+              setShowAvatarMenu(false);
+              setTimeout(() => handleCameraCapture(), 100);
+            }}
+            className="w-full flex items-center gap-4 p-4 theme-bubble-bg rounded-2xl border theme-border active:scale-95 transition-all"
+          >
+            <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0">
+              <Camera size={20} className="text-green-500" />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="font-bold theme-text-main">Appareil photo</p>
+              <p className="text-[10px] theme-text-secondary">Prendre une photo maintenant</p>
+            </div>
+            <ChevronRight size={16} className="theme-text-secondary" />
+          </button>
+
+          {/* Galerie */}
           <button
             onClick={() => {
               setShowAvatarMenu(false);
@@ -1277,15 +1322,20 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate, onLogout }) => {
             className="w-full flex items-center gap-4 p-4 theme-bubble-bg rounded-2xl border theme-border active:scale-95 transition-all"
           >
             <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
-              <Camera size={20} className="text-blue-500" />
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500">
+                <rect x="2" y="2" width="20" height="20" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="2.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
             </div>
             <div className="flex-1 text-left">
-              <p className="font-bold theme-text-main">Nouvelle photo</p>
-              <p className="text-[10px] theme-text-secondary">Choisir une image depuis votre galerie</p>
+              <p className="font-bold theme-text-main">Galerie</p>
+              <p className="text-[10px] theme-text-secondary">Choisir une image depuis vos albums</p>
             </div>
             <ChevronRight size={16} className="theme-text-secondary" />
           </button>
 
+          {/* Recadrer la photo actuelle (uniquement si une photo existe) */}
           {formData.avatarUrl && (
             <button
               onClick={() => {
