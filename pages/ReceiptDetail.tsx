@@ -30,11 +30,6 @@ const ReceiptDetail: React.FC = () => {
   const navigate = useNavigate();
   const receiptRef = useRef<HTMLDivElement>(null);
 
-  // États pour les soldes avant/après
-  const [balanceBefore, setBalanceBefore] = useState<number | null>(null);
-  const [balanceAfter, setBalanceAfter] = useState<number | null>(null);
-  const [loadingBalance, setLoadingBalance] = useState(false);
-
   useEffect(() => {
     let cancelled = false;
 
@@ -46,11 +41,6 @@ const ReceiptDetail: React.FC = () => {
         .then(data => {
           if (!cancelled) {
             setReceipt(data);
-            // Calculer les soldes après chargement
-            if (data.date && data.amount) {
-              const receiptRole = searchParams.get('role') || 'payer';
-              calculateBalances(data.date, data.amount, receiptRole);
-            }
             setLoading(false);
           }
         })
@@ -82,7 +72,6 @@ const ReceiptDetail: React.FC = () => {
     if (txTypeNormalized === 'TRANSFER' || txTypeNormalized === 'P2P') {
       if (description.includes('Rappel')) return formatTitle('Rappel de transfert');
       if (description.includes('lien') || description.includes('Link')) return formatTitle('Paiement par lien');
-      // Détection améliorée du QR code (insensible à la casse)
       if (description.toLowerCase().includes('qr')) return formatTitle('Paiement par QR Code');
       return formatTitle('Transfert via clé');
     }
@@ -110,7 +99,6 @@ const ReceiptDetail: React.FC = () => {
         return formatTitle(`Transfert interbancaire : piYès → ${receiverBank}`);
       }
       default:
-        // Fallback pour TRANSFER non reconnu → détection interbancaire par comparaison des banques
         if (txTypeNormalized === 'TRANSFER') {
           const senderBank = receipt.sender?.bank?.toLowerCase() || '';
           const receiverBank = receipt.receiver?.bank?.toLowerCase() || '';
@@ -133,27 +121,22 @@ const ReceiptDetail: React.FC = () => {
     const txTypeRaw = receipt.receipt_type;
     const txTypeNormalized = typeof txTypeRaw === 'string' ? txTypeRaw.toUpperCase() : txTypeRaw;
 
-    // Recharge mobile : afficher le numéro (description backend)
     if (txTypeNormalized === 'MOBILE_RECHARGE' || txTypeNormalized === 'RECHARGE') {
       if (receipt.description) return receipt.description;
       return 'Numéro mobile';
     }
 
-    // Dépôt : afficher le nom de l'agent (via receipt.receiver.name)
     if (txTypeNormalized === 'DEPOSIT') {
       if (receipt.receiver?.name) return `Agence ${receipt.receiver.name}`;
       if (receipt.description) return receipt.description;
       return '';
     }
 
-    // Retrait : pas de description
     if (txTypeNormalized === 'WITHDRAWAL' || txTypeNormalized === 'WITHDRAW') {
       return '';
     }
 
-    // Pour tous les autres, utiliser le commentaire utilisateur s'il existe ET qu'il n'est pas générique
     const defaultDesc = receipt.description || '';
-    // Ignorer les descriptions génériques comme "Transfer to XXX" ou "Paiement pour ..." (redondantes)
     const isGenericDesc = /^Transfer to |^Paiement pour /i.test(defaultDesc);
     if (!isGenericDesc) return defaultDesc;
     return '';
@@ -176,7 +159,7 @@ const ReceiptDetail: React.FC = () => {
 
     if (!hasFees) {
       const messages = [
-        "🎉 Aucun frais appliqué ! Avec piYaès, l'argent circule librement.",
+        "🎉 Aucun frais appliqué ! Avec piYès, l'argent circule librement.",
         "✨ Transfert gratuit — piYès ne prend rien sur cette opération.",
         "💜 Zéro frais. C'est ça, le transfert d'argent nouvelle génération.",
         "🚀 Aucun frais ! Continuez à profiter de piYès sans limite.",
@@ -188,40 +171,6 @@ const ReceiptDetail: React.FC = () => {
     }
     return `🌍 Frais internationaux : seulement ${displayPercent(totalPercent)}. piYès vous offre le meilleur taux.`;
   }, [receipt]);
-
-  const calculateBalances = async (receiptDate: string, receiptAmount: number, receiptRole: string) => {
-    setLoadingBalance(true);
-    try {
-      // Vérifier le cache d'abord
-      const balanceCacheKey = `receipt_balance_${id}`;
-      const cached = sessionStorage.getItem(balanceCacheKey);
-      if (cached) {
-        const { before, after } = JSON.parse(cached);
-        setBalanceBefore(before);
-        setBalanceAfter(after);
-        setLoadingBalance(false);
-        return;
-      }
-
-      // Calculer depuis l'API
-      const balanceBeforeAmount = await api.getBalanceBefore(receiptDate);
-      setBalanceBefore(balanceBeforeAmount);
-      const impact = receiptRole === "RECEIVER" ? receiptAmount : -receiptAmount;
-      const after = balanceBeforeAmount + impact;
-      setBalanceAfter(after);
-
-      // Sauvegarder dans le cache
-      sessionStorage.setItem(balanceCacheKey, JSON.stringify({
-        before: balanceBeforeAmount,
-        after: after
-      }));
-    } catch (error) {
-      console.error("Failed to calculate balances:", error);
-    } finally {
-      setLoadingBalance(false);
-    }
-  };
-
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
@@ -607,6 +556,10 @@ const ReceiptDetail: React.FC = () => {
 
   console.log("[RECEIPT DEBUG] description brute =", receipt.description);
 
+  // Récupération directe des soldes depuis le reçu (en gourdes)
+  const beforeBalance = receipt.balance_before !== undefined ? receipt.balance_before : null;
+  const afterBalance = receipt.balance_after !== undefined ? receipt.balance_after : null;
+
   return (
     <div className="theme-card-bg min-h-screen pb-20">
       <PageHeader
@@ -632,7 +585,7 @@ const ReceiptDetail: React.FC = () => {
 
       <div className="px-6 py-4">
         {/* Cartes Évolution du solde */}
-        {!loadingBalance && balanceBefore !== null && balanceAfter !== null && (
+        {beforeBalance !== null && afterBalance !== null && (
           <div className="grid grid-cols-2 gap-3 mb-4">
             {/* Carte Avant - icône neutre */}
             <div className="theme-bubble-bg rounded-2xl p-3 border theme-border">
@@ -643,7 +596,7 @@ const ReceiptDetail: React.FC = () => {
                 </div>
               </div>
               <p className="text-base font-black theme-text-main">
-                {displayMoney(balanceBefore * 100)} G
+                {displayMoney(beforeBalance * 100)} G
               </p>
               <p className="text-[8px] theme-text-secondary opacity-60 mt-0.5">
                 {t("receipt.balance.sub_before")}
@@ -654,16 +607,16 @@ const ReceiptDetail: React.FC = () => {
             <div className="theme-bubble-bg rounded-2xl p-3 border theme-border">
               <div className="flex items-center justify-between mb-1">
                 <p className="text-[9px] font-black theme-text-secondary uppercase tracking-widest">{t("receipt.balance.after")}</p>
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${balanceAfter >= balanceBefore ? 'bg-green-500/10' : 'bg-red-500/10'}`}>
-                  {balanceAfter >= balanceBefore ? (
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${afterBalance >= beforeBalance ? 'bg-green-500/10' : 'bg-red-500/10'}`}>
+                  {afterBalance >= beforeBalance ? (
                     <ArrowUpRight size={12} className="text-green-500" />
                   ) : (
                     <ArrowDownLeft size={12} className="text-red-400" />
                   )}
                 </div>
               </div>
-              <p className={`text-base font-black ${balanceAfter >= balanceBefore ? 'text-green-600' : 'text-red-500'}`}>
-                {balanceAfter >= balanceBefore ? '+' : '-'}{displayMoney(Math.abs(balanceAfter * 100))} G
+              <p className={`text-base font-black ${afterBalance >= beforeBalance ? 'text-green-600' : 'text-red-500'}`}>
+                {afterBalance >= beforeBalance ? '+' : '-'}{displayMoney(Math.abs(afterBalance * 100))} G
               </p>
               <p className="text-[8px] theme-text-secondary opacity-60 mt-0.5">
                 {t("receipt.balance.sub_after")}
@@ -672,9 +625,9 @@ const ReceiptDetail: React.FC = () => {
           </div>
         )}
 
-
         {/* Reçu existant */}
         <div ref={receiptRef} className="bg-white text-gray-900 rounded-3xl overflow-hidden shadow-sm border border-gray-200 flex flex-col">
+          {/* ... (le reste du JSX inchangé) ... */}
           <div className="p-8 space-y-8 flex-1">
             <div className="text-center space-y-6">
               <div className="flex flex-col items-center gap-1">

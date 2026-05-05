@@ -159,12 +159,6 @@ class PiyesApiService {
     return http.get<Transaction[]>(`/transactions?${query}`);
   }
 
-  // Obtenir le solde avant une date précise
-  async getBalanceBefore(date: string): Promise<number> {
-    const response = await http.get<{ balance: number }>(`/transactions/balance-before?date=${encodeURIComponent(date)}`);
-    return response.balance;
-  }
-
   async login(
     credentials: any,
   ): Promise<AuthResponse & { mfaRequired?: boolean; requestId?: string }> {
