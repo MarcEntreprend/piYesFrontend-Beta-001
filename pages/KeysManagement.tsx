@@ -834,6 +834,8 @@ const KeysManagement: React.FC = () => {
           />
         </div>
 
+        {/* User's keys section  */}
+
         <section
           id="keys-list"
           className="space-y-4 transition-all duration-700 p-2"

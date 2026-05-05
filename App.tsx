@@ -83,6 +83,7 @@ import TransferInteractions from "./pages/TransferInteractions";
 import Onboarding from "./pages/Onboarding";
 import { clearNativeContactsCache } from './services/nativeContactsService';
 import { useRealtimeContacts } from './hooks/useRealtimeContacts';
+import KeysSettings from "./pages/KeysSettings";
 
 const PayRedirect: React.FC = () => {
   const { search } = useLocation();
@@ -1029,6 +1030,7 @@ const App: React.FC = () => {
                               />
                             }
                           />
+                          <Route path="/keys-settings" element={<KeysSettings />} />
                           <Route
                             path="/security"
                             element={

@@ -349,6 +349,10 @@ export const translations = {
           label: "Gérer le profil",
           sub: "Informations personnelles et avatar",
         },
+        keys: {
+          label: "Mes clés",
+          sub: "Gérez vos identifiants (email, téléphone, tag)",
+        },
         security: {
           label: "Sécurité & MFA",
           sub: "Mot de passe et authentification forte",
@@ -2227,6 +2231,10 @@ export const translations = {
       },
       items: {
         profile: { label: "Jere pwofil", sub: "Enfòmasyon pèsonèl ak foto" },
+        keys: {
+          label: "Kle mwen yo",
+          sub: "Jere idantifyan ou (email, telefòn, tag)"
+        },
         security: { label: "Sekirite & MFA", sub: "Modpas ak pwoteksyon kont" },
         pin: {
           label: "Kòd PIN piYès",
@@ -3979,6 +3987,10 @@ export const translations = {
         security: {
           label: "Security & MFA",
           sub: "Password and strong authentication",
+        },
+        keys: {
+          label: "My Keys",
+          sub: "Manage your identifiers (email, phone, tag)",
         },
         pin: {
           label: "piYès PIN Code",

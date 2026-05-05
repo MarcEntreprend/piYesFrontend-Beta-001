@@ -26,6 +26,7 @@ import {
   Loader2,
   QrCode as QrIcon,
   Share2,
+  KeyIcon,
 } from "lucide-react";
 import { useToast, useTranslation } from "../App";
 import { Language } from "../translations";
@@ -266,6 +267,13 @@ const Settings: React.FC<SettingsProps> = ({
             label={t("settings.items.profile.label")}
             sublabel={t("settings.items.profile.sub")}
             onClick={() => navigate("/profile")}
+          />
+          <SettingItem
+            id="set-keys"
+            icon={<KeyIcon size={20} />}
+            label={t("settings.items.keys.label") || "Mes clés"}
+            sublabel={t("settings.items.keys.sub") || "Gérez vos identifiants (email, téléphone, tag)"}
+            onClick={() => navigate("/keys-settings")}
           />
           <SettingItem
             id="set-security"
