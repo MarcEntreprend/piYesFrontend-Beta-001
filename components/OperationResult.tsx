@@ -175,7 +175,7 @@ const OperationResult: React.FC<OperationResultProps> = ({
           <Button
             fullWidth
             onClick={() =>
-              navigate(`/receipt/${txId}?type=${type}&role=${role}`)
+              navigate(`/receipt/${txId}?type=${type}&role=${role}`, { replace: true })
             }
             leftIcon={<FileText size={20} />}
           >
