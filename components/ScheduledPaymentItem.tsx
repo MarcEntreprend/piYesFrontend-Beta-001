@@ -12,7 +12,7 @@ import {
   X,
   RefreshCw,
   Loader2,
-  CreditCard,
+  Banknote,
   Trash2,
   Copy,
 } from "lucide-react";
@@ -371,7 +371,7 @@ export const ScheduledPaymentItem: React.FC<ScheduledPaymentItemProps> = ({
               onClick={handlePayFromReminder}
               className="w-full flex items-center justify-center gap-2 py-3 theme-primary-bg text-white rounded-xl text-sm font-black active:scale-95 transition-all shadow-md"
             >
-              <CreditCard size={16} />{" "}
+              <Banknote size={16} />{" "}
               {t("scheduler.item.pay_now_amount", {
                 amount: displayMoney(payment.amount * 100),
               })}
