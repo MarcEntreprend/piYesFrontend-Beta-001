@@ -559,7 +559,7 @@ export const translations = {
       title: "Opérations",
       tagline:
         "Vérifiez vos reçus, scannez des QR codes et trouvez des amis à proximité.",
-      ai_placeholder: "Ex. : Jean, envoie-moi 150 gourdes",
+      ai_placeholder: "Ex. : ###, envoie-moi 150 gourdes",
       ai_step_reformulate: {
         title: "Interpretation piYès",
         hint: "Voici le message interprété. Vous pouvez le modifier si besoin.",
