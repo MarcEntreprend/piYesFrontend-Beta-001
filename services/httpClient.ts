@@ -2,6 +2,9 @@
 
 // BASE_URL dynamique : pointe vers le backend local en dev, Vercel en prod
 
+// Vérifie quel fichier est réellement chargé ?
+console.log("🔍 VITE_API_URL =", import.meta.env.VITE_API_URL);
+
 // Configurer VITE_API_URL dans .env pour changer l'environnement
 const BASE_URL = `${import.meta.env.VITE_API_URL || ""}/api/v1`;
 
