@@ -10,8 +10,15 @@ const __dirname = path.dirname(__filename);
 export default defineConfig(({ mode }) => {
   return {
     server: {
-      port: 5173, // ← forcer le port 5173, pas 3000
+      port: 5173,
       host: "localhost",
+      proxy: {
+        '/api': {
+          target: 'https://piyesbackend001.vercel.app',
+          changeOrigin: true,
+          secure: false,
+        }
+      }                                // ← FIN DU BLOC AJOUTÉ
     },
     plugins: [react(), tailwindcss()],
     resolve: {

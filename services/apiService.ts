@@ -449,6 +449,19 @@ class PiyesApiService {
     cacheService.clearSensitiveData();
   }
 
+  // --- DEMO MODE ---
+  async demoStart(sessionName: "auto" | "preferred", preferredName?: string): Promise<AuthResponse> {
+    const response = await http.post<AuthResponse>("/auth/demo/start", {
+      sessionName,
+      preferredName: sessionName === "preferred" ? preferredName : undefined,
+    });
+    if (response.token) {
+      localStorage.setItem("piyes-auth-token", response.token);
+      localStorage.setItem("piyes-user", JSON.stringify(response.user));
+    }
+    return response;
+  }
+
   async deleteAccount(): Promise<void> {
     await http.delete("/user/delete");
     localStorage.clear();

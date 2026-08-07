@@ -18,7 +18,7 @@ import Input from "../components/Input";
 import PageTransition from "../components/PageTransition";
 import { cn } from "../src/lib/utils";
 import { motion } from "motion/react";
-
+import { api } from "../services/apiService";  // ⬅️ IMPORTANT : ajout de l'API
 
 interface LoginProps {
     onLogin: (credentials: any) => void;
@@ -37,7 +37,26 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     const [isOffline, setIsOffline] = useState(!navigator.onLine);
     const navigate = useNavigate();
 
+    // 🔥 États pour le mode démo
+    const [showDemoModal, setShowDemoModal] = useState(false);
+    const [demoName, setDemoName] = useState("");
+    const [demoLoading, setDemoLoading] = useState(false);
 
+    // Fonction pour démarrer une session démo
+    const startDemoSession = async (type: "auto" | "preferred", name?: string) => {
+        setDemoLoading(true);
+        try {
+            const response = await api.demoStart(type, name);
+            // La méthode api.demoStart stocke déjà le token et l'utilisateur dans localStorage
+            window.location.href = "/";
+        } catch (error) {
+            console.error("Demo start error:", error);
+            showToast("Mode découverte temporairement indisponible", "error");
+        } finally {
+            setDemoLoading(false);
+            setShowDemoModal(false);
+        }
+    };
 
     useEffect(() => {
         const handleHighlight = () => {
@@ -312,12 +331,25 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                         </div>
                     )}
 
+                    <Button
+                        onClick={handleSubmit}
+                        isLoading={isSubmitting}
+                        disabled={step === 2 && password.length < 6}
+                        fullWidth
+                        rightIcon={!isSubmitting ? <ChevronRight size={20} /> : undefined}
+                        className="uppercase tracking-widest"
+                    >
+                        {t("common.continue")}
+                    </Button>
+
+                    {/*
                     <div className="flex items-center justify-between text-xs theme-text-secondary font-bold uppercase tracking-widest">
                         <span className="flex items-center gap-2">
                             <ShieldCheck size={16} className="text-green-500" />
-                            {/* {t("auth.secure_access")} */}
+                            {/* {t("auth.secure_access")} 
                         </span>
                     </div>
+                    */}
                 </form>
 
                 {/* Social login — only on step 1 */}
@@ -371,16 +403,18 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             </div>
 
             <div className="pb-12 flex flex-col gap-4 mt-8">
-                <Button
-                    onClick={handleSubmit}
-                    isLoading={isSubmitting}
-                    disabled={step === 2 && password.length < 6}
-                    fullWidth
-                    rightIcon={!isSubmitting ? <ChevronRight size={20} /> : undefined}
-                    className="uppercase tracking-widest"
-                >
-                    {t("common.continue")}
-                </Button>
+                {/* BOUTON MODE DÉCOUVERTE */}
+                <div className="mt-6 pt-4 border-t theme-border">
+                    <Button
+                        variant="primary"
+                        fullWidth
+                        onClick={() => setShowDemoModal(true)}
+                        leftIcon={<span className="text-xl">🎮</span>}
+                        className="bg-linear-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600"
+                    >
+                        Mode découverte (essayer sans compte)
+                    </Button>
+                </div>
                 <div className="flex justify-center">
                     <Button
                         variant="text"
@@ -416,6 +450,63 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                     >
                         Compris 👍
                     </Button>
+                </div>
+            </Modal>
+
+            {/* MODAL MODE DÉCOUVERTE */}
+            <Modal isOpen={showDemoModal} onClose={() => setShowDemoModal(false)} type="bottom-sheet">
+                <div className="p-6 space-y-6">
+                    <div className="text-center space-y-2">
+                        <div className="w-16 h-16 mx-auto bg-linear-to-br from-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center">
+                            <span className="text-3xl">🎮</span>
+                        </div>
+                        <h3 className="text-xl font-black theme-text-main">
+                            Mode découverte
+                        </h3>
+                        <p className="text-sm theme-text-secondary">
+                            Essayez piYès sans créer de compte. Vos données seront sauvegardées pour une prochaine visite.
+                        </p>
+                    </div>
+
+                    <div className="space-y-3">
+                        <button
+                            onClick={() => startDemoSession("auto")}
+                            className="w-full py-4 theme-bubble-bg rounded-2xl font-bold theme-text-main flex items-center justify-between active:scale-95 transition-all"
+                        >
+                            <span>🔄 Session automatique</span>
+                            <span className="text-xs theme-text-secondary">demo_001, demo_002...</span>
+                        </button>
+
+                        <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t theme-border"></div>
+                            </div>
+                            <div className="relative flex justify-center text-xs">
+                                <span className="px-2 theme-bg theme-text-secondary">ou</span>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3">
+                            <input
+                                type="text"
+                                placeholder="Votre prénom"
+                                value={demoName}
+                                onChange={(e) => setDemoName(e.target.value)}
+                                className="flex-1 p-4 theme-bubble-bg rounded-2xl outline-none theme-text-main border theme-border focus:border-purple-500"
+                            />
+                            <button
+                                onClick={() => startDemoSession("preferred", demoName)}
+                                disabled={!demoName.trim()}
+                                className="px-6 py-4 bg-purple-500 text-white rounded-2xl font-bold disabled:opacity-50 active:scale-95 transition-all"
+                            >
+                                Continuer
+                            </button>
+                        </div>
+                    </div>
+
+                    <p className="text-[10px] text-center theme-text-secondary opacity-60">
+                        ✨ Compte pré-chargé avec 10,000 Gdes • Contacts et transactions d'exemple
+                    </p>
                 </div>
             </Modal>
         </PageTransition>
