@@ -1,7 +1,6 @@
-```markdown
-<div align="center">
-  <img width="1200" height="475" alt="GHBanner" src="src/assets/images/logo-piyes-ppl-wh-wh-svg.svg" />
-</div>
+<p align="center">
+  <img src="src/assets/images/logo-piyes-ppl-wh-wh-svg.svg" width="400" alt="Piyes Wallet" />
+</p>
 
 # Piyes Wallet Frontend
 
@@ -226,5 +225,4 @@ npx cap open android
 npm run build
 npx cap copy
 npx cap sync
-```
 ```
