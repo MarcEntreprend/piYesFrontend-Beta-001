@@ -331,7 +331,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                             <div className="h-px flex-1 theme-border border-t" />
                         </div>
                         <div className="flex justify-center gap-4">
-                            <div className="flex-1 max-w-[160px]">
+                            <div className="flex-1 max-w-40">
                                 <Button
                                     type="button"
                                     variant="utility"
@@ -348,7 +348,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                                     Google
                                 </Button>
                             </div>
-                            <div className="flex-1 max-w-[160px]">
+                            <div className="flex-1 max-w-40">
                                 <Button
                                     type="button"
                                     variant="utility"

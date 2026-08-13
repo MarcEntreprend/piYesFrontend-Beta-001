@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5173,
       host: "0.0.0.0", // ← MODIFIER : "localhost" → "0.0.0.0" pour accepter les connexions externes
-      proxy: {          // ← AJOUTER CE BLOC
+      proxy: {
         '/api': {
           target: 'http://localhost:3000',
           changeOrigin: true,
