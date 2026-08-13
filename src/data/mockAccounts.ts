@@ -1,0 +1,47 @@
+// src/data/mockAccounts.ts
+import type { Account } from "@/types";
+
+export const mockAccounts: Account[] = [
+  {
+    id: "acc_piyes_main",
+    provider: "piyes",
+    label: "Compte piYès",
+    balance: 15250.75,
+    color: "#0C7C74",
+    accountNumber: "PY-4471-2298",
+    logoText: "P",
+    status: "active",
+    isVerified: true,
+    kycStatus: "verified",
+    createdAt: "2024-11-02T08:15:00.000Z",
+    updatedAt: "2026-08-12T09:00:00.000Z",
+  },
+  {
+    id: "acc_moncash",
+    provider: "moncash",
+    label: "MonCash",
+    balance: 3200,
+    color: "#E4032E",
+    accountNumber: "MC-8891-0043",
+    logoText: "MC",
+    status: "active",
+    isVerified: true,
+    kycStatus: "verified",
+    createdAt: "2025-02-14T10:00:00.000Z",
+    updatedAt: "2026-08-11T18:30:00.000Z",
+  },
+  {
+    id: "acc_unibank",
+    provider: "unibank",
+    label: "Unibank",
+    balance: 0,
+    color: "#004A99",
+    accountNumber: "UB-2231-8890",
+    logoText: "UB",
+    status: "pending",
+    isVerified: false,
+    kycStatus: "pending",
+    createdAt: "2026-08-09T12:00:00.000Z",
+    updatedAt: "2026-08-09T12:00:00.000Z",
+  },
+];
