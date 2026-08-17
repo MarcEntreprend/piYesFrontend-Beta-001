@@ -6,11 +6,8 @@ export function Logo({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
   return (
     <div className="flex items-center gap-2.5">
       <div
-        className={cn(
-          "flex items-center justify-center rounded-2xl font-extrabold text-white",
-          "bg-gradient-to-br from-[var(--color-brand)] to-[#1aa79a] shadow-[var(--shadow-brand)]",
-          dims[size]
-        )}
+        className={cn("flex items-center justify-center rounded-2xl font-extrabold text-white shadow-[var(--shadow-brand)]", dims[size])}
+        style={{ backgroundImage: "var(--gradient-brand)" }}
       >
         P
       </div>

@@ -59,6 +59,10 @@ export default function Home() {
         return t.home.greetingEvening;
     };
 
+    const lastReceived = mockTransactions
+        .filter((txn) => txn.role === TransactionRole.RECEIVER && txn.status === "COMPLETED")
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
     const quickActions = [
         { icon: <PaperPlaneTilt weight="bold" size={20} />, label: t.home.send, tone: "brand" as const },
         { icon: <QrCode weight="bold" size={20} />, label: t.home.receive, tone: "accent" as const },
@@ -74,8 +78,8 @@ export default function Home() {
                 <div className="flex items-center gap-3">
                     <Avatar name={currentUser.name} src={currentUser.avatarUrl} verified size="md" />
                     <div>
-                        <p className="text-xs text-(--color-text-tertiary)">{greeting()}</p>
-                        <p className="text-[15px] font-bold text-(--color-text-primary)">
+                        <p className="text-xs text-[var(--color-text-tertiary)]">{greeting()}</p>
+                        <p className="text-[15px] font-bold text-[var(--color-text-primary)]">
                             {currentUser.firstName ?? currentUser.name}
                         </p>
                     </div>
@@ -90,7 +94,7 @@ export default function Home() {
                     <div className="relative">
                         <IconButton icon={<Bell size={18} weight="light" />} aria-label="Notifications" onClick={notImplemented} size="sm" />
                         {unreadNotificationsCount > 0 && (
-                            <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-(--color-accent) px-1 text-[10px] font-bold text-white">
+                            <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--color-accent)] px-1 text-[10px] font-bold text-white">
                                 {unreadNotificationsCount}
                             </span>
                         )}
@@ -98,28 +102,37 @@ export default function Home() {
                 </div>
             </div>
 
-            <div className="px-5">
+            {/* Balance card + badge flottant (montant reçu récemment) */}
+            <div className="relative px-5">
                 {loading ? (
                     <Skeleton className="h-44 w-full" />
                 ) : (
-                    <Card variant="brand">
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium uppercase tracking-wide text-white/70">{t.home.accountHint}</span>
-                            <Badge tone="neutral">
-                                <span className="text-white/90">{maskAccountNumber(currentUser.accountNumber)}</span>
-                            </Badge>
-                        </div>
+                    <>
+                        <Card variant="brand">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-medium uppercase tracking-wide text-white/70">{t.home.accountHint}</span>
+                                <span className="rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold text-white/90">
+                                    {maskAccountNumber(currentUser.accountNumber)}
+                                </span>
+                            </div>
 
-                        <p className="mt-4 text-xs text-white/70">{t.home.balanceLabel}</p>
-                        <div className="mt-1">
-                            <AmountDisplay amount={currentUser.balance} unit="gourdes" masked={masked} onToggleMask={toggleMasked} tone="inverse" size="xl" />
-                        </div>
+                            <p className="mt-4 text-xs text-white/70">{t.home.balanceLabel}</p>
+                            <div className="mt-1">
+                                <AmountDisplay amount={currentUser.balance} unit="gourdes" masked={masked} onToggleMask={toggleMasked} tone="inverse" size="xl" />
+                            </div>
 
-                        <div className="mt-5 flex items-center gap-1.5 text-[11px] text-white/75">
-                            <ShieldCheck weight="fill" size={14} />
-                            {t.home.verifiedFunds}
-                        </div>
-                    </Card>
+                            <div className="mt-5 flex items-center gap-1.5 text-[11px] text-white/75">
+                                <ShieldCheck weight="fill" size={14} />
+                                {t.home.verifiedFunds}
+                            </div>
+                        </Card>
+
+                        {lastReceived && !masked && (
+                            <div className="absolute -top-3 right-8 rounded-full bg-[var(--color-accent)] px-3.5 py-1.5 text-xs font-bold text-white shadow-[var(--shadow-accent)]">
+                                +{formatHTG(lastReceived.amount, { unit: "centimes" })}
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
 
@@ -128,25 +141,25 @@ export default function Home() {
                     <button
                         key={action.label}
                         onClick={notImplemented}
-                        className="flex flex-col items-center gap-2 rounded-lg py-3 transition-transform active:scale-95"
+                        className="flex flex-col items-center gap-2 rounded-[var(--radius-lg)] py-3 transition-transform active:scale-95"
                     >
                         <span
                             className={
                                 action.tone === "accent"
-                                    ? "flex h-12 w-12 items-center justify-center rounded-full bg-(--color-accent-soft) text-(--color-accent)"
-                                    : "flex h-12 w-12 items-center justify-center rounded-full bg-(--color-brand-soft) text-(--color-brand)"
+                                    ? "flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-accent-soft)] text-[var(--color-accent)]"
+                                    : "flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-brand-soft)] text-[var(--color-brand)]"
                             }
                         >
                             {action.icon}
                         </span>
-                        <span className="text-xs font-semibold text-(--color-text-secondary)">{action.label}</span>
+                        <span className="text-xs font-semibold text-[var(--color-text-secondary)]">{action.label}</span>
                     </button>
                 ))}
             </div>
 
             <div className="mt-7">
                 <div className="flex items-center justify-between px-5">
-                    <h2 className="text-sm font-bold text-(--color-text-primary)">{t.home.linkedAccounts}</h2>
+                    <h2 className="text-sm font-bold text-[var(--color-text-primary)]">{t.home.linkedAccounts}</h2>
                 </div>
                 <div className="mt-3 flex gap-3 overflow-x-auto px-5 pb-1">
                     {loading
@@ -154,12 +167,12 @@ export default function Home() {
                         : mockAccounts
                             .filter((a) => a.provider !== "piyes")
                             .map((account) => (
-                                <div key={account.id} className="w-40 shrink-0 rounded-lg border border-(--color-border) bg-(--color-surface) p-3.5 shadow-(--shadow-xs)">
+                                <div key={account.id} className="w-40 shrink-0 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] p-3.5 shadow-[var(--shadow-xs)]">
                                     <div className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold text-white" style={{ backgroundColor: account.color }}>
                                         {account.logoText}
                                     </div>
-                                    <p className="mt-2.5 text-xs font-medium text-(--color-text-secondary)">{account.label}</p>
-                                    <p className="mt-0.5 text-sm font-bold font-mono-tabular text-(--color-text-primary)">{formatHTG(account.balance)}</p>
+                                    <p className="mt-2.5 text-xs font-medium text-[var(--color-text-secondary)]">{account.label}</p>
+                                    <p className="mt-0.5 text-sm font-bold font-mono-tabular text-[var(--color-text-primary)]">{formatHTG(account.balance)}</p>
                                     <div className="mt-1.5">
                                         <Badge tone={account.status === "active" ? "success" : "warning"}>
                                             {account.status === "active" ? t.home.statusActive : t.home.statusPending}
@@ -172,8 +185,8 @@ export default function Home() {
 
             <div className="mt-7 px-5">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-sm font-bold text-(--color-text-primary)">{t.home.recentActivity}</h2>
-                    <button onClick={notImplemented} className="text-xs font-semibold text-(--color-brand)">
+                    <h2 className="text-sm font-bold text-[var(--color-text-primary)]">{t.home.recentActivity}</h2>
+                    <button onClick={notImplemented} className="text-xs font-semibold text-[var(--color-brand)]">
                         {t.common.seeAll}
                     </button>
                 </div>
@@ -184,25 +197,25 @@ export default function Home() {
                         : mockTransactions.slice(0, 5).map((txn) => {
                             const isReceived = txn.role === TransactionRole.RECEIVER;
                             return (
-                                <div key={txn.id} className="flex items-center gap-3 rounded-lg bg-(--color-surface) border border-(--color-border) p-3">
-                                    <Avatar name={txn.counterpartyName} size="sm" />
+                                <div key={txn.id} className="flex items-center gap-3 rounded-[var(--radius-lg)] bg-[var(--color-surface)] border border-[var(--color-border)] p-3">
+                                    <span
+                                        className={
+                                            "flex h-9 w-9 shrink-0 items-center justify-center rounded-full " +
+                                            (isReceived ? "bg-[var(--color-success-soft)] text-[var(--color-success)]" : "bg-[var(--color-danger-soft)] text-[var(--color-danger)]")
+                                        }
+                                    >
+                                        {isReceived ? <ArrowDownLeft weight="bold" size={16} /> : <ArrowUpRight weight="bold" size={16} />}
+                                    </span>
                                     <div className="min-w-0 flex-1">
-                                        <p className="truncate text-sm font-semibold text-(--color-text-primary)">{txn.counterpartyName}</p>
-                                        <p className="text-xs text-(--color-text-tertiary)">
+                                        <p className="truncate text-sm font-semibold text-[var(--color-text-primary)]">{txn.counterpartyName}</p>
+                                        <p className="text-xs text-[var(--color-text-tertiary)]">
                                             {t.transactionType[txn.type]} · {formatRelativeDate(txn.date)}
                                         </p>
                                     </div>
-                                    <div className="flex items-center gap-1">
-                                        {isReceived ? (
-                                            <ArrowDownLeft weight="bold" size={14} className="text-(--color-success)" />
-                                        ) : (
-                                            <ArrowUpRight weight="bold" size={14} className="text-(--color-danger)" />
-                                        )}
-                                        <span className={"font-mono-tabular text-sm font-bold " + (isReceived ? "text-(--color-success)" : "text-(--color-text-primary)")}>
-                                            {isReceived ? "+" : "-"}
-                                            {formatHTG(txn.amount, { unit: "centimes" })}
-                                        </span>
-                                    </div>
+                                    <span className={"font-mono-tabular text-sm font-bold " + (isReceived ? "text-[var(--color-success)]" : "text-[var(--color-text-primary)]")}>
+                                        {isReceived ? "+" : "-"}
+                                        {formatHTG(txn.amount, { unit: "centimes" })}
+                                    </span>
                                 </div>
                             );
                         })}

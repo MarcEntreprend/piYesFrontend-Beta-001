@@ -1,153 +1,145 @@
 /* src/styles/index.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer base {
-  :root {
-    /* ---- Couleurs — Lagoon & Sunset (clair, valeurs par défaut) ---- */
-    --color-bg: #faf9f6;
-    --color-bg-elevated: #ffffff;
-    --color-bg-sunken: #f1efe9;
-    --color-surface: #ffffff;
-    --color-border: rgba(15, 23, 22, 0.08);
-    --color-border-strong: rgba(15, 23, 22, 0.14);
+@theme {
+  /* ---- Couleurs — Royal Blue & Sunset (clair, valeurs par défaut) ---- */
+  --color-bg: #f4f5fb;
+  --color-bg-elevated: #ffffff;
+  --color-bg-sunken: #eceefa;
+  --color-surface: #ffffff;
+  --color-border: rgba(24, 28, 51, 0.08);
+  --color-border-strong: rgba(24, 28, 51, 0.14);
 
-    --color-text-primary: #10201e;
-    --color-text-secondary: #57635f;
-    --color-text-tertiary: #8b948f;
-    --color-text-inverse: #f7fbfa;
+  --color-text-primary: #12162b;
+  --color-text-secondary: #5b6178;
+  --color-text-tertiary: #9195a8;
+  --color-text-inverse: #ffffff;
 
-    --color-brand: #0c7c74;
-    --color-brand-strong: #095c56;
-    --color-brand-soft: #e3f3ef;
+  --color-brand: #3552f0;
+  --color-brand-strong: #2439c4;
+  --color-brand-soft: #eaedfe;
 
-    --color-accent: #f0784a;
-    --color-accent-strong: #d9602f;
-    --color-accent-soft: #fde7db;
+  --color-accent: #ff7a45;
+  --color-accent-strong: #e85f2a;
+  --color-accent-soft: #ffede3;
 
-    --color-success: #1e9e5a;
-    --color-success-soft: #dff3e6;
-    --color-danger: #e5484d;
-    --color-danger-soft: #fbe4e4;
-    --color-warning: #e2a336;
-    --color-warning-soft: #fbf0da;
+  --color-success: #17a672;
+  --color-success-soft: #dff7ec;
+  --color-danger: #ef4444;
+  --color-danger-soft: #fde8e8;
+  --color-warning: #f5a623;
+  --color-warning-soft: #fef3dc;
 
-    /* ---- Rayons ---- */
-    --radius-sm: 10px;
-    --radius-md: 16px;
-    --radius-lg: 22px;
-    --radius-xl: 28px;
-    --radius-2xl: 34px;
+  /* ---- Rayons ---- */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+  --radius-2xl: 34px;
 
-    /* ---- Ombres ---- */
-    --shadow-xs: 0 1px 2px rgba(16, 32, 30, 0.04);
-    --shadow-sm: 0 2px 8px rgba(16, 32, 30, 0.06);
-    --shadow-md: 0 8px 24px rgba(16, 32, 30, 0.08);
-    --shadow-lg: 0 20px 48px rgba(16, 32, 30, 0.14);
-    --shadow-brand: 0 16px 36px rgba(12, 124, 116, 0.28);
-    --shadow-accent: 0 14px 30px rgba(240, 120, 74, 0.3);
+  /* ---- Ombres (froides, nettes) ---- */
+  --shadow-xs: 0 1px 2px rgba(18, 22, 43, 0.05);
+  --shadow-sm: 0 2px 10px rgba(18, 22, 43, 0.07);
+  --shadow-md: 0 10px 28px rgba(18, 22, 43, 0.1);
+  --shadow-lg: 0 24px 56px rgba(18, 22, 43, 0.16);
+  --shadow-brand: 0 18px 40px rgba(53, 82, 240, 0.32);
+  --shadow-accent: 0 16px 34px rgba(255, 122, 69, 0.32);
 
-    /* ---- Typo ---- */
-    --font-sans: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-    --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
+  /* ---- Typo ---- */
+  --font-sans: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
 
-    /* ---- Easing ---- */
-    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --ease-smooth: cubic-bezier(0.32, 0.72, 0, 1);
-  }
-
-  [data-theme="dark"] {
-    --color-bg: #0a1615;
-    --color-bg-elevated: #0f1e1c;
-    --color-bg-sunken: #060d0c;
-    --color-surface: #12211f;
-    --color-border: rgba(255, 255, 255, 0.08);
-    --color-border-strong: rgba(255, 255, 255, 0.16);
-
-    --color-text-primary: #f3f7f5;
-    --color-text-secondary: #a7b5b1;
-    --color-text-tertiary: #6e7b77;
-    --color-text-inverse: #0a1615;
-
-    --color-brand: #35c4b4;
-    --color-brand-strong: #4fdbc9;
-    --color-brand-soft: rgba(53, 196, 180, 0.14);
-
-    --color-accent: #ff9466;
-    --color-accent-strong: #ffab85;
-    --color-accent-soft: rgba(255, 148, 102, 0.14);
-
-    --color-success: #3fcb82;
-    --color-success-soft: rgba(63, 203, 130, 0.14);
-    --color-danger: #ff6b6e;
-    --color-danger-soft: rgba(255, 107, 110, 0.14);
-    --color-warning: #f0bb55;
-    --color-warning-soft: rgba(240, 187, 85, 0.14);
-
-    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.32);
-    --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 24px 56px rgba(0, 0, 0, 0.5);
-    --shadow-brand: 0 16px 36px rgba(53, 196, 180, 0.22);
-    --shadow-accent: 0 14px 30px rgba(255, 148, 102, 0.22);
-  }
+  /* ---- Easing ---- */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-@layer base {
-  * {
-    border-color: var(--color-border);
-  }
+/* Dégradé signature — hors @theme (pas une couleur unique, pas d'utility à générer) */
+:root {
+  --gradient-brand: linear-gradient(135deg, #3552f0 0%, #6c4cf0 100%);
+}
 
-  html,
-  body,
-  #root {
-    height: 100%;
-  }
+/* ---- Mode sombre — même variables, valeurs redéfinies ---- */
+[data-theme="dark"] {
+  --color-bg: #0b0e1a;
+  --color-bg-elevated: #12172b;
+  --color-bg-sunken: #070912;
+  --color-surface: #151b32;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.16);
 
-  body {
-    background: var(--color-bg);
-    color: var(--color-text-primary);
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
-    transition: background-color 250ms var(--ease-smooth);
-  }
+  --color-text-primary: #f4f5fa;
+  --color-text-secondary: #a6abc2;
+  --color-text-tertiary: #6c7089;
+  --color-text-inverse: #0b0e1a;
 
-  .font-mono-tabular {
-    font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
-  }
+  --color-brand: #5b7bff;
+  --color-brand-strong: #7c97ff;
+  --color-brand-soft: rgba(91, 123, 255, 0.16);
 
-  /* Scrollbar discrète */
-  ::-webkit-scrollbar {
-    width: 0px;
-    height: 0px;
-  }
+  --color-accent: #ff9466;
+  --color-accent-strong: #ffab85;
+  --color-accent-soft: rgba(255, 148, 102, 0.16);
 
-  /* Focus clavier visible */
-  :focus-visible {
-    outline: 2px solid var(--color-brand);
-    outline-offset: 2px;
-    border-radius: 6px;
-  }
+  --color-success: #3fcb82;
+  --color-success-soft: rgba(63, 203, 130, 0.16);
+  --color-danger: #ff6b6e;
+  --color-danger-soft: rgba(255, 107, 110, 0.16);
+  --color-warning: #f0bb55;
+  --color-warning-soft: rgba(240, 187, 85, 0.16);
 
-  @media (prefers-reduced-motion: reduce) {
+  --gradient-brand: linear-gradient(135deg, #3f5aff 0%, #8c6cff 100%);
 
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.32);
+  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 24px 56px rgba(0, 0, 0, 0.5);
+  --shadow-brand: 0 18px 40px rgba(91, 123, 255, 0.28);
+  --shadow-accent: 0 16px 34px rgba(255, 148, 102, 0.26);
+}
 
-  .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
+* {
+  border-color: var(--color-border);
+}
 
-  .safe-top {
-    padding-top: env(safe-area-inset-top, 0px);
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--dur-base, 250ms) var(--ease-smooth);
+}
+
+.font-mono-tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
@@ -162,10 +154,15 @@
 }
 
 .skeleton-shimmer {
-  background: linear-gradient(90deg,
-      var(--color-bg-sunken) 25%,
-      var(--color-border-strong) 50%,
-      var(--color-bg-sunken) 75%);
+  background: linear-gradient(90deg, var(--color-bg-sunken) 25%, var(--color-border-strong) 50%, var(--color-bg-sunken) 75%);
   background-size: 800px 100%;
   animation: shimmer 1.6s linear infinite;
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
 }
